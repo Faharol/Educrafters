@@ -44,6 +44,31 @@
   function norm(s) { return String(s).toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, " ").trim(); }
   function wordCount(s) { var m = s.trim().match(/\S+/g); return m ? m.length : 0; }
 
+  /* ---------- issue content (images + next issue) ---------- */
+  var TITLES = ["Basics of Technical Communication", "Preparing for the Workplace", "Research Skills & Paraphrasing", "Reading Skills for Technical Communication", "Writing for Technical Communication", "Drawing Conclusions & Referencing", "Graphics & Visuals in Technical Communication", "Reading Test", "Language Skills for Technical Writing", "Writing Test & Poster Supervision 2", "Group Communication", "Speaking Practice & Final Consultation", "Speaking Assessment · Part 1", "Speaking Assessment · Part 2"];
+  var IMG = "../assets/img/";
+  // first image = cover; the rest are used for chapter openers and photo breaks
+  var PHOTOS = {
+    1: ["team-casual", "team-office", "whiteboard", "business-team", "sticky-notes"],
+    2: ["handshake", "laptop-notes", "writing-hand", "business-team", "team-office", "typing", "pen-paper"],
+    3: ["books-stack", "laptop-notes-2", "dashboard", "books-desk", "stock-chart"],
+    4: ["books-desk", "writing-hand", "lecture-hall", "pen-paper", "books-dark", "students-class"],
+    5: ["writing-hand", "dashboard", "pen-paper", "chart-screen", "laptop-notes"],
+    6: ["books-dark", "sticky-notes", "pen-hold", "lecture-hall", "books-stack", "whiteboard"],
+    7: ["dashboard", "stock-chart", "chart-screen", "board-pins", "whiteboard", "hourglass"],
+    8: ["exam-hall", "students-class", "lecture-hall", "pen-hold"],
+    9: ["typing", "pen-paper", "hourglass", "laptop-notes-2", "chart-screen"],
+    10: ["pen-hold", "hourglass", "whiteboard", "laptop-notes", "exam-hall"],
+    11: ["team-table", "team-casual", "whiteboard", "business-team", "team-office"],
+    12: ["business-team", "team-table", "board-pins", "hourglass"],
+    13: ["lecture-hall", "business-team", "hourglass", "students-class"],
+    14: ["handshake", "team-table", "lecture-hall", "business-team"]
+  };
+  var WN = parseInt(WEEK, 10) || 1;
+  var pool = PHOTOS[WN] || PHOTOS[1];
+  function photoUrl(i) { return IMG + pool[i % pool.length] + ".jpg"; }
+  var STATIC = /[?&]static\b/.test(location.search);
+
   /* ---------- chrome ---------- */
   var slides = $$(".slide");
   if (!slides.length) return;
@@ -53,20 +78,16 @@
       '<span class="deck-top__logo">ETC</span><span class="long">SMB31202</span></a>' +
     '<div class="deck-top__title">Week ' + WEEK.replace(/^0/, "") + " · " + TITLE + "</div>" +
     '<div class="deck-top__xp" title="Experience points earned this week">⚡ <span id="xpVal">0</span> XP</div>' +
-    '<button class="btn btn--ghost" id="tocBtn" aria-controls="toc" aria-expanded="false">☰ Contents</button>');
-  var bar = el("div", { class: "progress", role: "progressbar", "aria-label": "Lesson progress" });
-  var nav = el("nav", { class: "deck-nav", "aria-label": "Slide navigation" },
-    '<button class="btn" id="prevBtn" aria-label="Previous slide">← <span class="lbl">Back</span></button>' +
-    '<div class="deck-nav__count" id="count" aria-live="polite"></div>' +
-    '<button class="btn btn--primary" id="nextBtn" aria-label="Next slide"><span class="lbl">Next</span> →</button>');
+    '<button class="btn btn--ghost" id="tocBtn" aria-controls="toc" aria-expanded="false">Contents</button>');
+  var bar = el("div", { class: "progress", role: "progressbar", "aria-label": "Reading progress" });
   var toc = el("aside", { class: "toc", id: "toc", "aria-label": "Contents" },
-    '<div class="toc__head"><strong>Contents</strong><button class="btn btn--sm" id="tocClose">✕ Close</button></div><ul class="toc__list" id="tocList"></ul>' +
-    '<div style="padding:.8rem 1.1rem;border-top:1px solid var(--line)" class="small muted">Keys: <kbd>←</kbd> <kbd>→</kbd> move · <kbd>C</kbd> contents</div>');
+    '<div class="toc__head"><strong>Contents</strong><button class="btn btn--sm" id="tocClose">Close</button></div><ul class="toc__list" id="tocList"></ul>' +
+    '<div style="padding:.8rem 1.1rem;border-top:1px solid var(--line)" class="small muted">Press <kbd>C</kbd> to open or close this list.</div>');
   var scrim = el("div", { class: "scrim" });
   var toast = el("div", { class: "toast", role: "status", "aria-live": "polite" });
   body.insertBefore(bar, body.firstChild);
   body.insertBefore(top, body.firstChild);
-  body.appendChild(nav); body.appendChild(toc); body.appendChild(scrim); body.appendChild(toast);
+  body.appendChild(toc); body.appendChild(scrim); body.appendChild(toast);
 
   var xpVal = $("#xpVal");
   function renderXP(bump) {
@@ -103,10 +124,69 @@
     return chip;
   }
 
+  /* ---------- newsletter layout ---------- */
+  var main = $("main.deck") || slides[0].parentNode;
+  var masthead = el("div", { class: "masthead" },
+    '<span class="masthead__name">ETC Weekly</span><span>SMB31202 · English for Technical Communication · Week ' + WEEK.replace(/^0/, "") + "</span>");
+  main.insertBefore(masthead, main.firstChild);
+
+  // title slide: cover photo
+  var titleSlide = slides[0].classList.contains("slide--title") ? slides[0] : null;
+  if (titleSlide) {
+    var hero = el("img", { class: "hero-img", src: photoUrl(0), alt: "", decoding: "async" });
+    titleSlide.appendChild(hero);
+  }
+
+  // chapter openers get a photo; plain sections alternate backgrounds; every 7th plain section is followed by a photo band
+  var partN = 0, plainN = 0;
+  slides.forEach(function (sl, i) {
+    if (sl.classList.contains("slide--part")) {
+      partN++;
+      sl.style.backgroundImage = "url(" + photoUrl(partN) + ")";
+    } else if (sl !== titleSlide && !$(".finale", sl)) {
+      plainN++;
+      if (plainN % 2 === 0) sl.classList.add("sec--alt");
+    }
+  });
+
+  // "In this issue": chapters if there are 2+, otherwise every titled section
+  var tocIssue = null;
+  (function () {
+    var parts = slides.filter(function (x) { return x.classList.contains("slide--part"); });
+    var list = parts.length >= 2 ? parts : slides.filter(function (x, i) { return i > 0 && !$(".finale", x) && x.getAttribute("data-title"); });
+    if (list.length < 2) return;
+    tocIssue = el("section", { class: "toc-issue" }, "<h2>In this issue</h2>");
+    var ol = el("ol");
+    list.forEach(function (x) {
+      var t = x.getAttribute("data-title") || ($("h2, h3", x) || {}).textContent || "";
+      var li = el("li", parts.length >= 2 ? { class: "is-part" } : null);
+      var a = el("a", { href: "#" }, t.replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "").trim());
+      a.addEventListener("click", function (e) { e.preventDefault(); go(slides.indexOf(x)); });
+      li.appendChild(a); ol.appendChild(li);
+    });
+    tocIssue.appendChild(ol);
+    (titleSlide || slides[0]).after(tocIssue);
+  })();
+
+  // next issue + footer (after the last slide)
+  (function () {
+    var last = slides[slides.length - 1];
+    if (WN < 14) {
+      var n = WN + 1, nn = ("0" + n).slice(-2);
+      var img = (PHOTOS[n] || PHOTOS[1])[0];
+      var sec = el("section", { class: "next-issue" },
+        '<a class="next-issue__card" href="week-' + nn + '.html"><img src="' + IMG + img + '.jpg" alt="" loading="lazy"><div class="next-issue__body"><div class="k">Next issue · Week ' + n + '</div><h3>' + TITLES[n - 1] + '</h3><p class="muted">Keep going. Your progress and XP are saved on this device.</p><span class="link-arrow btn--ghost">Read Week ' + n + '</span></div></a>');
+      last.after(sec);
+      sec.after(el("footer", { class: "site-foot" }, '<p><a href="../index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photographs from Unsplash, used under the Unsplash License.</p>'));
+    } else {
+      last.after(el("footer", { class: "site-foot" }, '<p><a href="../index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photographs from Unsplash, used under the Unsplash License.</p>'));
+    }
+  })();
+
   /* ---------- contents drawer ---------- */
   var tocList = $("#tocList");
   slides.forEach(function (s, i) {
-    var t = s.getAttribute("data-title") || ($("h1, h2, h3", s) || {}).textContent || "Slide " + (i + 1);
+    var t = s.getAttribute("data-title") || ($("h1, h2, h3", s) || {}).textContent || "Section " + (i + 1);
     var li = el("li", s.classList.contains("slide--part") ? { class: "toc__part" } : null);
     var b = el("button", { type: "button", "data-i": i }, '<span class="toc__n">' + (i + 1) + "</span><span>" + t.trim() + "</span>");
     b.addEventListener("click", function () { go(i); closeToc(); });
@@ -118,61 +198,75 @@
   $("#tocClose").addEventListener("click", closeToc);
   scrim.addEventListener("click", closeToc);
 
-  /* ---------- navigation ---------- */
-  var cur = -1;
+  /* ---------- scroll behaviour ---------- */
+  var cur = 0;
   wk.total = slides.length;
-  function go(i, fromHash) {
+  function go(i) {
     i = Math.max(0, Math.min(slides.length - 1, i));
-    if (i === cur) return;
-    var back = i < cur;
-    if (cur >= 0) slides[cur].classList.remove("is-active", "is-back");
+    slides[i].scrollIntoView({ behavior: "smooth", block: "start" });
+    try { history.replaceState(null, "", "#" + (i + 1)); } catch (e) {}
+  }
+  function markCurrent(i) {
+    if (i === cur && $$(".slide.is-active").length) return;
     cur = i;
-    var s = slides[cur];
-    s.classList.toggle("is-back", back);
-    s.classList.add("is-active");
-    if (wk.seen.indexOf(cur) < 0) wk.seen.push(cur);
-    wk.last = cur; save();
-    $("#count").textContent = (cur + 1) + " / " + slides.length;
-    $("#prevBtn").disabled = cur === 0;
-    $("#nextBtn").disabled = cur === slides.length - 1;
-    bar.style.width = ((cur + 1) / slides.length * 100) + "%";
+    slides.forEach(function (s, j) { s.classList.toggle("is-active", j === i); });
     $$("#tocList button").forEach(function (b, j) {
-      b.classList.toggle("is-current", j === cur);
+      b.classList.toggle("is-current", j === i);
       b.classList.toggle("is-seen", wk.seen.indexOf(j) >= 0);
     });
-    if (!fromHash) { try { history.replaceState(null, "", "#" + (cur + 1)); } catch (e) {} }
-    window.scrollTo(0, 0);
-    s.dispatchEvent(new CustomEvent("slide:enter", { bubbles: true }));
   }
-  $("#prevBtn").addEventListener("click", function () { go(cur - 1); });
-  $("#nextBtn").addEventListener("click", function () { go(cur + 1); });
+  function updateProgress() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? Math.min(100, (window.scrollY / max) * 100) : 0) + "%";
+  }
+  window.addEventListener("scroll", updateProgress, { passive: true });
+  window.addEventListener("resize", updateProgress);
+
+  if ("IntersectionObserver" in window) {
+    // which section is on screen: mark seen, remember place, fire slide:enter
+    var vis = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var i = slides.indexOf(en.target);
+        if (en.isIntersecting && !vis[i]) {
+          vis[i] = true;
+          if (wk.seen.indexOf(i) < 0) wk.seen.push(i);
+          wk.last = Math.max(wk.last || 0, i); save();
+          en.target.dispatchEvent(new CustomEvent("slide:enter", { bubbles: true }));
+        } else if (!en.isIntersecting) { vis[i] = false; }
+      });
+      var best = -1, bestRatio = 0;
+      slides.forEach(function (s, j) {
+        if (vis[j]) { var r = s.getBoundingClientRect(); var v = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0); if (v > bestRatio) { bestRatio = v; best = j; } }
+      });
+      if (best >= 0) markCurrent(best);
+    }, { threshold: [0, 0.3] });
+    slides.forEach(function (s) { io.observe(s); });
+
+    // fade-up on scroll
+    if (!STATIC) {
+      var ro = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); ro.unobserve(en.target); } });
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+      slides.forEach(function (s) {
+        if (s.classList.contains("slide--part")) return;
+        Array.prototype.forEach.call(s.children, function (c, k) { c.classList.add("reveal-on"); c.style.transitionDelay = Math.min(k, 3) * 70 + "ms"; ro.observe(c); });
+      });
+    }
+  } else {
+    slides.forEach(function (s) { s.dispatchEvent(new CustomEvent("slide:enter", { bubbles: true })); });
+  }
 
   document.addEventListener("keydown", function (e) {
     var t = e.target;
     if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-    if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); go(cur + 1); }
-    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
-    else if (e.key === "Home") go(0);
-    else if (e.key === "End") go(slides.length - 1);
-    else if (e.key === "c" || e.key === "C") { toc.classList.contains("is-open") ? closeToc() : openToc(); }
+    if (e.key === "c" || e.key === "C") { toc.classList.contains("is-open") ? closeToc() : openToc(); }
     else if (e.key === "Escape") closeToc();
   });
-
-  /* swipe */
-  var sx = null, sy = null;
-  document.addEventListener("touchstart", function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-  document.addEventListener("touchend", function (e) {
-    if (sx === null) return;
-    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-    var t = e.target;
-    var inWidget = t.closest && t.closest("textarea, input, .table-wrap, .sorter, .timer, .flip");
-    if (!inWidget && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.6) go(cur + (dx < 0 ? 1 : -1));
-    sx = sy = null;
-  }, { passive: true });
-
   window.addEventListener("hashchange", function () {
     var n = parseInt(location.hash.slice(1), 10);
-    if (n) go(n - 1, true);
+    if (n) slides[Math.min(slides.length, n) - 1].scrollIntoView();
   });
 
   /* ---------- widgets ---------- */
@@ -519,7 +613,7 @@
     var c = el("canvas", { style: "position:fixed;inset:0;pointer-events:none;z-index:100", "aria-hidden": "true" });
     document.body.appendChild(c);
     var ctx = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
-    var cols = ["#3ee6ff", "#9b7bff", "#ff5fd2", "#8dff6a", "#ffc24b"], ps = [];
+    var cols = ["#0071e3", "#6e4ff6", "#d1307a", "#1a8f3c", "#ff9f0a"], ps = [];
     for (var i = 0; i < 140; i++) ps.push({ x: c.width / 2, y: c.height / 3, vx: (Math.random() - 0.5) * 14, vy: Math.random() * -12 - 3, s: Math.random() * 6 + 3, c: cols[i % 5], r: Math.random() * 6 });
     var f = 0;
     (function loop() {
@@ -534,6 +628,15 @@
 
   /* ---------- start ---------- */
   renderXP(false);
-  var start = parseInt(location.hash.slice(1), 10);
-  go(start ? start - 1 : (wk.last || 0), !!start);
+  updateProgress();
+  markCurrent(0);
+  var startN = parseInt(location.hash.slice(1), 10);
+  if (startN) {
+    setTimeout(function () { slides[Math.min(slides.length, startN) - 1].scrollIntoView(); }, 60);
+  } else if (wk.last > 2 && wk.last < slides.length - 1) {
+    var rb = el("button", { class: "btn btn--dark btn--sm", type: "button", style: "position:fixed;right:16px;bottom:16px;z-index:85;box-shadow:0 8px 24px rgba(0,0,0,.2)" }, "Continue where you left off ↓");
+    rb.addEventListener("click", function () { go(wk.last); rb.remove(); });
+    body.appendChild(rb);
+    setTimeout(function () { rb.remove(); }, 12000);
+  }
 })();

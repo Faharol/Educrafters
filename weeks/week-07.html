@@ -11,12 +11,12 @@
 <link rel="stylesheet" href="../assets/css/style.css">
 <style>
 /* ---- Week 7 only: live charts and diagrams ---- */
-.viz { background: rgba(8, 12, 26, .72); border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; margin: 0 0 1rem; }
+.viz { background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; margin: 0 0 1rem; }
 .viz svg { display: block; width: 100%; height: auto; }
 .viz text { font-family: var(--font); }
 .viz text:not([fill]) { fill: var(--text); }
 .viz .ax { stroke: var(--muted); stroke-width: 1.5; }
-.viz .gl { stroke: rgba(154, 168, 204, .18); stroke-width: 1; }
+.viz .gl { stroke: rgba(0,0,0,.09); stroke-width: 1; }
 .viz .lab { fill: var(--muted); font-size: 13px; }
 .viz .val { font: 600 13px var(--mono); fill: var(--text); }
 .viz .ttl { font: 700 15px var(--display); fill: var(--text); }
@@ -27,7 +27,7 @@
 .figcap { font: .84rem var(--mono); color: var(--muted); margin: .55rem 0 0; }
 .figcap--top { margin: 0 0 .55rem; }
 .viz__bar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .7rem; }
-.btn.is-on { border-color: var(--cyan); background: rgba(62, 230, 255, .12); color: var(--cyan); }
+.btn.is-on { border-color: var(--cyan); background: rgba(0,113,227,.10); color: var(--cyan); }
 .illus { font: .76rem var(--mono); color: var(--dim); margin: .4rem 0 0; }
 .stepbox { background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1rem 1.15rem; }
 .stepbox__n { font: 700 .78rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--pink); }
@@ -45,7 +45,7 @@
 .decide button { text-align: left; font: 500 .95rem var(--font); color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: .75rem .9rem; cursor: pointer; }
 .decide button:hover { border-color: var(--cyan); }
 .decide button b { display: block; font: 700 .78rem var(--mono); color: var(--violet); letter-spacing: .08em; text-transform: uppercase; margin-top: .35rem; opacity: 0; transition: opacity .3s; }
-.decide button.is-open { border-color: var(--ok); background: rgba(67, 240, 160, .08); }
+.decide button.is-open { border-color: var(--ok); background: rgba(26,143,60,.09); }
 .decide button.is-open b { opacity: 1; color: var(--ok); }
 .decide__root { font: 700 1rem var(--display); text-align: center; border: 2px solid var(--violet); border-radius: 50% / 40%; padding: .7rem 1rem; margin: 0 auto .8rem; max-width: 420px; }
 .swatches { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
@@ -68,12 +68,12 @@
 .paper td { border-bottom: 1px solid #ccc; }
 .paper caption { color: #111; font-family: inherit; text-align: center; padding: .2rem 0 .5rem; }
 .paper tbody tr:hover td { background: none; }
-.informal { font-family: var(--mono); background: rgba(10, 16, 34, .6); border-radius: var(--radius-sm); padding: .6rem 1rem; display: inline-grid; grid-template-columns: auto auto; gap: .1rem 2.5rem; }
+.informal { font-family: var(--mono); background: var(--bg-2); border-radius: var(--radius-sm); padding: .6rem 1rem; display: inline-grid; grid-template-columns: auto auto; gap: .1rem 2.5rem; }
 .informal span:nth-child(even) { text-align: right; color: var(--cyan); }
 .cvd-filter { position: absolute; width: 0; height: 0; overflow: hidden; }
 .tilt-wrap { perspective: 520px; display: grid; place-items: center; min-height: 230px; }
 .tilt { transition: transform .9s cubic-bezier(.2, .8, .2, 1); width: min(240px, 70vw); }
-.tilt.is-3d { transform: rotateX(62deg) rotateZ(-25deg) translateY(30px); filter: drop-shadow(0 18px 0 rgba(0, 0, 0, .45)); }
+.tilt.is-3d { transform: rotateX(62deg) rotateZ(-25deg) translateY(30px); filter: drop-shadow(0 18px 0 rgba(0,0,0,.18)); }
 .gray { filter: grayscale(1); }
 .viz svg.gray-t { transition: filter .5s; }
 @media (max-width: 640px) { .viz { padding: .6rem; } .stepbox { padding: .8rem; } }
@@ -699,8 +699,8 @@
     <div class="grid grid-2">
       <div class="viz" style="margin:0">
         <svg viewBox="0 0 560 500" role="img" aria-label="Flowchart: chart ready, print in black and white, decision: is every series still clear? Yes leads to add to poster and done. No leads to add a second channel, then back to print in black and white.">
-          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa8cc"/></marker></defs>
-          <g fill="none" stroke="#9aa8cc" stroke-width="2" marker-end="url(#arr)">
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+          <g fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#arr)">
             <line x1="250" y1="66" x2="250" y2="98"/>
             <line x1="250" y1="150" x2="250" y2="178"/>
             <line x1="250" y1="292" x2="250" y2="330"/>
@@ -708,23 +708,23 @@
             <line x1="370" y1="235" x2="408" y2="235"/>
             <polyline points="482,190 482,124 382,124"/>
           </g>
-          <ellipse cx="250" cy="40" rx="120" ry="26" fill="rgba(62,230,255,.12)" stroke="#3ee6ff" stroke-width="2"/>
+          <ellipse cx="250" cy="40" rx="120" ry="26" fill="rgba(0,113,227,.10)" stroke="#0071e3" stroke-width="2"/>
           <text x="250" y="45" text-anchor="middle" font-size="15">Chart is ready</text>
-          <rect x="118" y="100" width="264" height="50" rx="4" fill="rgba(155,123,255,.14)" stroke="#9b7bff" stroke-width="2"/>
+          <rect x="118" y="100" width="264" height="50" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
           <text x="250" y="130" text-anchor="middle" font-size="15">Print it in black and white</text>
-          <polygon points="250,180 370,235 250,290 130,235" fill="rgba(255,194,75,.12)" stroke="#ffc24b" stroke-width="2"/>
+          <polygon points="250,180 370,235 250,290 130,235" fill="rgba(255,194,75,.12)" stroke="#b25e00" stroke-width="2"/>
           <text x="250" y="230" text-anchor="middle" font-size="14">Is every series</text>
           <text x="250" y="248" text-anchor="middle" font-size="14">still clear?</text>
-          <text x="262" y="316" font-size="13" font-weight="700" fill="#43f0a0">Yes</text>
-          <text x="376" y="226" font-size="13" font-weight="700" fill="#ff6b8b">No</text>
-          <rect x="410" y="192" width="145" height="88" rx="4" fill="rgba(155,123,255,.14)" stroke="#9b7bff" stroke-width="2"/>
+          <text x="262" y="316" font-size="13" font-weight="700" fill="#1a8f3c">Yes</text>
+          <text x="376" y="226" font-size="13" font-weight="700" fill="#d70015">No</text>
+          <rect x="410" y="192" width="145" height="88" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
           <text x="482" y="218" text-anchor="middle" font-size="13">Add a second</text>
           <text x="482" y="236" text-anchor="middle" font-size="13">channel: shape,</text>
           <text x="482" y="254" text-anchor="middle" font-size="13">line style or</text>
           <text x="482" y="272" text-anchor="middle" font-size="13">direct label</text>
-          <rect x="118" y="332" width="264" height="50" rx="4" fill="rgba(155,123,255,.14)" stroke="#9b7bff" stroke-width="2"/>
+          <rect x="118" y="332" width="264" height="50" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
           <text x="250" y="362" text-anchor="middle" font-size="15">Add it to the poster</text>
-          <ellipse cx="250" cy="448" rx="80" ry="26" fill="rgba(62,230,255,.12)" stroke="#3ee6ff" stroke-width="2"/>
+          <ellipse cx="250" cy="448" rx="80" ry="26" fill="rgba(0,113,227,.10)" stroke="#0071e3" stroke-width="2"/>
           <text x="250" y="453" text-anchor="middle" font-size="15">Done</text>
         </svg>
         <p class="figcap">Example: the greyscale test from Part C, drawn as a flowchart</p>
@@ -760,11 +760,11 @@
     <div class="grid grid-2">
       <div class="viz" style="margin:0">
         <svg id="explode" viewBox="0 0 460 380" role="img" aria-label="Exploded diagram of a bolted joint: bolt, washer, plate A, plate B, washer and nut pulled apart along one vertical axis, in assembly order, each labelled.">
-          <line x1="180" y1="6" x2="180" y2="372" stroke="#9aa8cc" stroke-dasharray="6 5" stroke-width="1.2"/>
+          <line x1="180" y1="6" x2="180" y2="372" stroke="#6e6e73" stroke-dasharray="6 5" stroke-width="1.2"/>
           <g class="xp-part" data-off="-105">
             <rect x="140" y="125" width="80" height="25" rx="3" fill="#56B4E9"/>
             <rect x="166" y="150" width="28" height="112" fill="#56B4E9"/>
-            <g stroke="#0a0f1f" stroke-width="1.5"><line x1="166" y1="200" x2="194" y2="206"/><line x1="166" y1="212" x2="194" y2="218"/><line x1="166" y1="224" x2="194" y2="230"/><line x1="166" y1="236" x2="194" y2="242"/><line x1="166" y1="248" x2="194" y2="254"/></g>
+            <g stroke="#f5f5f7" stroke-width="1.5"><line x1="166" y1="200" x2="194" y2="206"/><line x1="166" y1="212" x2="194" y2="218"/><line x1="166" y1="224" x2="194" y2="230"/><line x1="166" y1="236" x2="194" y2="242"/><line x1="166" y1="248" x2="194" y2="254"/></g>
           </g>
           <g class="xp-part" data-off="25"><rect x="146" y="150" width="68" height="8" rx="2" fill="#F0E442"/></g>
           <g class="xp-part" data-off="42"><rect x="90" y="158" width="180" height="30" fill="#009E73"/></g>
@@ -772,7 +772,7 @@
           <g class="xp-part" data-off="87"><rect x="146" y="218" width="68" height="8" rx="2" fill="#F0E442"/></g>
           <g class="xp-part" data-off="104"><rect x="150" y="226" width="60" height="24" rx="3" fill="#E69F00"/></g>
           <g id="xp-labels" style="opacity:0;transition:opacity .5s .5s" font-size="13">
-            <g stroke="#9aa8cc" stroke-width="1"><line x1="222" y1="32" x2="320" y2="32"/><line x1="216" y1="179" x2="320" y2="179"/><line x1="272" y1="215" x2="320" y2="215"/><line x1="272" y1="270" x2="320" y2="270"/><line x1="216" y1="309" x2="320" y2="309"/><line x1="212" y1="342" x2="320" y2="342"/></g>
+            <g stroke="#6e6e73" stroke-width="1"><line x1="222" y1="32" x2="320" y2="32"/><line x1="216" y1="179" x2="320" y2="179"/><line x1="272" y1="215" x2="320" y2="215"/><line x1="272" y1="270" x2="320" y2="270"/><line x1="216" y1="309" x2="320" y2="309"/><line x1="212" y1="342" x2="320" y2="342"/></g>
             <text x="326" y="36">① Hex bolt</text><text x="326" y="183">② Washer</text><text x="326" y="219">③ Plate A</text><text x="326" y="274">④ Plate B</text><text x="326" y="313">⑤ Washer</text><text x="326" y="346">⑥ Hex nut</text>
           </g>
         </svg>
@@ -1546,32 +1546,32 @@
       $("fig1h").textContent = STEPS[step - 1][0]; $("fig1p").textContent = STEPS[step - 1][1];
       if (step === 1) {
         r.yTitle.classList.add("hl"); leg.querySelectorAll("text").forEach(function (e) { e.classList.add("hl"); });
-        S("rect", { x: 412, y: 6, width: 150, height: 30, rx: 6, fill: "none", stroke: "#3ee6ff", "stroke-width": 2 }, ann);
+        S("rect", { x: 412, y: 6, width: 150, height: 30, rx: 6, fill: "none", stroke: "#0071e3", "stroke-width": 2 }, ann);
       } else if (step === 2) {
-        S("line", { x1: r.L, x2: r.W - r.R, y1: r.base, y2: r.base, stroke: "#3ee6ff", "stroke-width": 4 }, ann);
+        S("line", { x1: r.L, x2: r.W - r.R, y1: r.base, y2: r.base, stroke: "#0071e3", "stroke-width": 4 }, ann);
         r.tickTxt[0].classList.add("hl");
-        S("text", { x: r.L + 10, y: r.base - 8, class: "ann", fill: "#3ee6ff" }, ann, "starts at 0 ✓");
+        S("text", { x: r.L + 10, y: r.base - 8, class: "ann", fill: "#0071e3" }, ann, "starts at 0 ✓");
       } else if (step === 3) {
         allBars.concat(allVals).forEach(function (e) { e.classList.add("dim"); });
         r.bars[1][0].classList.remove("dim"); r.vals[1][0].classList.remove("dim");
         var b = r.bars[1][0];
-        S("rect", { x: +b.getAttribute("x") - 4, y: +b.getAttribute("y") - 26, width: +b.getAttribute("width") + 8, height: r.base - b.getAttribute("y") + 26, rx: 4, fill: "none", stroke: "#3ee6ff", "stroke-width": 2 }, ann);
+        S("rect", { x: +b.getAttribute("x") - 4, y: +b.getAttribute("y") - 26, width: +b.getAttribute("width") + 8, height: r.base - b.getAttribute("y") + 26, rx: 4, fill: "none", stroke: "#0071e3", "stroke-width": 2 }, ann);
       } else if (step === 4) {
         V22.forEach(function (v, i) {
           var d = V24[i] - v, pct = (d / v * 100).toFixed(1);
           var yy = r.y(Math.max(v, V24[i])) - 30;
-          S("text", { x: r.gx(i), y: yy, "text-anchor": "middle", class: "ann", fill: i === 0 ? "#3ee6ff" : "#9aa8cc" }, ann, (d > 0 ? "+" : "−") + Math.abs(d) + " (" + (d > 0 ? "+" : "−") + Math.abs(pct) + "%)");
+          S("text", { x: r.gx(i), y: yy, "text-anchor": "middle", class: "ann", fill: i === 0 ? "#0071e3" : "#6e6e73" }, ann, (d > 0 ? "+" : "−") + Math.abs(d) + " (" + (d > 0 ? "+" : "−") + Math.abs(pct) + "%)");
         });
         [1, 2, 3, 4].forEach(function (i) { dimGroup(i, true); });
       } else if (step === 5) {
         [1, 3, 4].forEach(function (i) { dimGroup(i, true); });
-        S("text", { x: r.gx(1), y: r.y(46) - 4, "text-anchor": "middle", class: "ann", fill: "#3ee6ff" }, ann, "2022: 41 > 34");
-        S("text", { x: r.gx(1), y: r.y(46) + 16, "text-anchor": "middle", class: "ann", fill: "#3ee6ff" }, ann, "2024: 46 > 38");
-        S("text", { x: r.gx(1), y: r.y(46) + 36, "text-anchor": "middle", class: "ann", fill: "#ffc24b" }, ann, "order reversed");
+        S("text", { x: r.gx(1), y: r.y(46) - 4, "text-anchor": "middle", class: "ann", fill: "#0071e3" }, ann, "2022: 41 > 34");
+        S("text", { x: r.gx(1), y: r.y(46) + 16, "text-anchor": "middle", class: "ann", fill: "#0071e3" }, ann, "2024: 46 > 38");
+        S("text", { x: r.gx(1), y: r.y(46) + 36, "text-anchor": "middle", class: "ann", fill: "#b25e00" }, ann, "order reversed");
       } else if (step === 6) {
         [0, 4].forEach(function (i) { dimGroup(i, true); });
         [1, 2, 3].forEach(function (i) {
-          S("text", { x: r.gx(i), y: r.y(Math.max(V22[i], V24[i])) - 26, "text-anchor": "middle", class: "ann", fill: "#ff6b8b" }, ann, "▼ " + (V24[i] - V22[i]));
+          S("text", { x: r.gx(i), y: r.y(Math.max(V22[i], V24[i])) - 26, "text-anchor": "middle", class: "ann", fill: "#d70015" }, ann, "▼ " + (V24[i] - V22[i]));
         });
         D.award(f1id, 15);
       }
@@ -1607,7 +1607,7 @@
     vals.forEach(function (v, i) {
       var a1 = a + v / tot * Math.PI * 2;
       var x0 = cx + rad * Math.sin(a), y0 = cy - rad * Math.cos(a), x1 = cx + rad * Math.sin(a1), y1 = cy - rad * Math.cos(a1);
-      out.push(S("path", { d: "M" + cx + "," + cy + "L" + x0 + "," + y0 + "A" + rad + "," + rad + " 0 " + (a1 - a > Math.PI ? 1 : 0) + " 1 " + x1 + "," + y1 + "Z", fill: cols[i], stroke: stroke || "#0a0f1f", "stroke-width": 2 }, svg));
+      out.push(S("path", { d: "M" + cx + "," + cy + "L" + x0 + "," + y0 + "A" + rad + "," + rad + " 0 " + (a1 - a > Math.PI ? 1 : 0) + " 1 " + x1 + "," + y1 + "Z", fill: cols[i], stroke: stroke || "#f5f5f7", "stroke-width": 2 }, svg));
       a = a1;
     });
     return out;
@@ -1619,7 +1619,7 @@
     mt.setAttribute("viewBox", "0 0 240 120");
     var rows = [["Year", "Mandarin", "German", "Total"], ["2021", "70", "55", "447"], ["2022", "77", "86", "497"], ["2023", "130", "113", "666"], ["2024", "98", "125", "693"]];
     rows.forEach(function (row, i) {
-      row.forEach(function (c, j) { S("text", { x: [8, 54, 130, 190][j], y: 20 + i * 22, "font-size": 12, fill: i ? "#e8eeff" : "#3ee6ff", "font-weight": i ? 400 : 700 }, mt, c); });
+      row.forEach(function (c, j) { S("text", { x: [8, 54, 130, 190][j], y: 20 + i * 22, "font-size": 12, fill: i ? "#1d1d1f" : "#0071e3", "font-weight": i ? 400 : 700 }, mt, c); });
       S("line", { x1: 8, x2: 232, y1: 26 + i * 22, y2: 26 + i * 22, class: "gl" }, mt);
     });
   }
@@ -1658,16 +1658,16 @@
     S("rect", { width: 8, height: 8, fill: "#F0E442" }, hatch); S("line", { x1: 0, y1: 0, x2: 0, y2: 8, stroke: "#8a7f10", "stroke-width": 3 }, hatch);
     S("circle", { cx: cx, cy: cy, r: 140, fill: "url(#shine)" }, cut);
     var wedge = S("g", { style: "opacity:0;transition:opacity .6s" }, cut);
-    function quarter(rad, fill) { return S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - rad) + "A" + rad + "," + rad + " 0 0 1 " + (cx + rad) + "," + cy + "Z", fill: fill, stroke: "#0a0f1f", "stroke-width": 1.5 }, wedge); }
-    S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - 146) + "A146,146 0 0 1 " + (cx + 146) + "," + cy + "Z", fill: "#0a0f1f" }, wedge);
+    function quarter(rad, fill) { return S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - rad) + "A" + rad + "," + rad + " 0 0 1 " + (cx + rad) + "," + cy + "Z", fill: fill, stroke: "#f5f5f7", "stroke-width": 1.5 }, wedge); }
+    S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - 146) + "A146,146 0 0 1 " + (cx + 146) + "," + cy + "Z", fill: "#f5f5f7" }, wedge);
     layers.forEach(function (l, i) { quarter(l[0], i === 1 ? "url(#hatchI)" : l[1]); });
     var labs = S("g", { "font-size": 13 }, wedge);
     var lp = [[129, 300, 40], [107, 300, 82], [91, 300, 124], [50, 300, 166]];
     layers.forEach(function (l, i) {
       var ang = Math.PI / 4 + (i - 1.5) * 0.18, rr = lp[i][0];
       var px = cx + rr * Math.sin(ang), py = cy - rr * Math.cos(ang);
-      S("line", { x1: px, y1: py, x2: lp[i][1] + 8, y2: lp[i][2] - 4, stroke: "#9aa8cc", "stroke-width": 1 }, labs);
-      S("circle", { cx: px, cy: py, r: 3, fill: "#e8eeff" }, labs);
+      S("line", { x1: px, y1: py, x2: lp[i][1] + 8, y2: lp[i][2] - 4, stroke: "#6e6e73", "stroke-width": 1 }, labs);
+      S("circle", { cx: px, cy: py, r: 3, fill: "#1d1d1f" }, labs);
       S("text", { x: lp[i][1] + 12, y: lp[i][2] }, labs, l[2]);
     });
     var cutOn = false, cId = D.widgetId("cut");
@@ -1683,7 +1683,7 @@
   if (bd) {
     var defsB = S("defs", {}, bd);
     var mk = S("marker", { id: "arrB", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, orient: "auto" }, defsB);
-    S("path", { d: "M0,0 L10,5 L0,10 z", fill: "#3ee6ff" }, mk);
+    S("path", { d: "M0,0 L10,5 L0,10 z", fill: "#0071e3" }, mk);
     var BW = 116, BH = 50;
     var blocks = [["Setpoint", OI.purple], ["Controller", OI.sky], ["Heater", OI.orange], ["Tank", OI.green], ["Sensor", OI.yellow]];
     var edges = [[0, 1, "target"], [1, 2, "power"], [2, 3, "heat"], [3, 4, "temperature"], [4, 1, "signal"]];
@@ -1692,11 +1692,11 @@
     var gE = S("g", {}, bd), gB = S("g", {}, bd), lines = [], boxes = [];
     edges.forEach(function (e) {
       var g = S("g", {}, gE);
-      lines.push({ l: S("line", { stroke: "#3ee6ff", "stroke-width": 2, "marker-end": "url(#arrB)" }, g), t: S("text", { "font-size": 12, fill: "#9aa8cc", "text-anchor": "middle" }, g, e[2]) });
+      lines.push({ l: S("line", { stroke: "#0071e3", "stroke-width": 2, "marker-end": "url(#arrB)" }, g), t: S("text", { "font-size": 12, fill: "#6e6e73", "text-anchor": "middle" }, g, e[2]) });
     });
     blocks.forEach(function (b) {
       var g = S("g", {}, gB);
-      S("rect", { x: -BW / 2, y: -BH / 2, width: BW, height: BH, rx: 6, fill: "rgba(10,15,31,.95)", stroke: b[1], "stroke-width": 2.5 }, g);
+      S("rect", { x: -BW / 2, y: -BH / 2, width: BW, height: BH, rx: 6, fill: "var(--bg-2)", stroke: b[1], "stroke-width": 2.5 }, g);
       S("text", { x: 0, y: 5, "text-anchor": "middle", "font-size": 15, "font-weight": 700 }, g, b[0]);
       boxes.push(g);
     });
@@ -1779,9 +1779,9 @@
   var PIE_COL = [OI.orange, OI.sky, OI.green, OI.yellow, OI.blue, OI.verm, OI.purple, OI.black];
   function drawBadPie(svg, offset) {
     var g = S("g", {}, svg);
-    pie(g, 130 + (offset || 0), 140, 115, PIE_ORDER.map(function (k) { return DT[k][1]; }), PIE_COL, "#e8eeff");
+    pie(g, 130 + (offset || 0), 140, 115, PIE_ORDER.map(function (k) { return DT[k][1]; }), PIE_COL, "#1d1d1f");
     PIE_ORDER.forEach(function (k, i) {
-      S("rect", { x: 280 + (offset || 0), y: 40 + i * 28, width: 14, height: 14, fill: PIE_COL[i], stroke: "#e8eeff", "stroke-width": 1 }, g);
+      S("rect", { x: 280 + (offset || 0), y: 40 + i * 28, width: 14, height: 14, fill: PIE_COL[i], stroke: "#1d1d1f", "stroke-width": 1 }, g);
       S("text", { x: 300 + (offset || 0), y: 52 + i * 28, class: "lab" }, g, DT[k][0]);
     });
     return g;
@@ -1796,8 +1796,8 @@
     var BL = 160, BR = 420, top0 = 16, rowH = 30;
     DT.forEach(function (d, i) {
       var w = d[1] / 25 * (BR - BL), y = top0 + i * rowH, hot = i < 3;
-      S("text", { x: BL - 8, y: y + 18, "text-anchor": "end", class: "lab", fill: hot ? "#e8eeff" : "#9aa8cc" }, gBar, d[0]);
-      var rect = S("rect", { x: BL, y: y + 4, width: 0, height: 20, rx: 2, fill: hot ? OI.orange : "#5d6b8f" }, gBar);
+      S("text", { x: BL - 8, y: y + 18, "text-anchor": "end", class: "lab", fill: hot ? "#1d1d1f" : "#6e6e73" }, gBar, d[0]);
+      var rect = S("rect", { x: BL, y: y + 4, width: 0, height: 20, rx: 2, fill: hot ? OI.orange : "#86868b" }, gBar);
       rect.setAttribute("data-w", w);
       S("text", { x: BL + w + 6, y: y + 19, class: "val" }, gBar, d[1] + "%");
     });
@@ -1904,10 +1904,10 @@
     var jHatch = S("g", {}, jk);
     jr.bars[0].forEach(function (b) { S("rect", { x: b.getAttribute("x"), y: b.getAttribute("y"), width: b.getAttribute("width"), height: b.getAttribute("height"), fill: "url(#hatchJ)" }, jHatch); });
     var jLeg = S("g", {}, jk);
-    S("rect", { x: 380, y: 10, width: 120, height: 28, fill: "#111a34", stroke: "#e8eeff" }, jLeg);
+    S("rect", { x: 380, y: 10, width: 120, height: 28, fill: "#111a34", stroke: "#1d1d1f" }, jLeg);
     S("rect", { x: 390, y: 18, width: 12, height: 12, fill: OI.orange }, jLeg);
     S("text", { x: 408, y: 29, class: "lab" }, jLeg, "Injuries 2024");
-    var jBorder = S("rect", { x: 4, y: 4, width: 512, height: 352, fill: "none", stroke: "#e8eeff", "stroke-width": 8 }, jk);
+    var jBorder = S("rect", { x: 4, y: 4, width: 512, height: 352, fill: "none", stroke: "#1d1d1f", "stroke-width": 8 }, jk);
     var jVals = S("g", { style: "opacity:0" }, jk);
     jr.bars[0].forEach(function (b, i) { S("text", { x: +b.getAttribute("x") + jr.bw / 2, y: +b.getAttribute("y") - 6, "text-anchor": "middle", class: "val" }, jVals, V24[i]); });
     var JSTEPS = [
@@ -1917,7 +1917,7 @@
       function (on) { jLeg.style.opacity = on ? 1 : 0; },
       function (on) { jGrid.forEach(function (l, i) { if (i > 0) l.style.opacity = on ? 1 : 0; }); },
       function (on) {
-        jr.bars[0].forEach(function (b, i) { b.setAttribute("fill", on ? [OI.orange, OI.sky, OI.green, OI.purple, OI.yellow][i] : (i === 0 ? OI.orange : "#5d6b8f")); });
+        jr.bars[0].forEach(function (b, i) { b.setAttribute("fill", on ? [OI.orange, OI.sky, OI.green, OI.purple, OI.yellow][i] : (i === 0 ? OI.orange : "#86868b")); });
         jVals.style.opacity = on ? 0 : 1;
       }
     ];
@@ -1945,12 +1945,12 @@
       [[2, 74, 120, "Solutions", "table"], [2, 204, 70, "Conclusion", "one big number"], [2, 284, 60, "References", "+ QR"]]
     ];
     blocksP.forEach(function (col) { col.forEach(function (b) {
-      S("rect", { x: cols[b[0]], y: b[1], width: 104, height: b[2], rx: 4, fill: "#ffffff", stroke: "#9aa8cc" }, ps);
+      S("rect", { x: cols[b[0]], y: b[1], width: 104, height: b[2], rx: 4, fill: "#ffffff", stroke: "#6e6e73" }, ps);
       S("text", { x: cols[b[0]] + 8, y: b[1] + 18, "font-size": 12, "font-weight": 700, fill: "#111" }, ps, b[3]);
       S("rect", { x: cols[b[0]] + 8, y: b[1] + 28, width: 88, height: Math.min(40, b[2] - 52), fill: "#E69F00", opacity: .55 }, ps);
       S("text", { x: cols[b[0]] + 8, y: b[1] + b[2] - 10, "font-size": 10, fill: "#444" }, ps, b[4]);
     }); });
-    S("rect", { x: 14, y: 362, width: 332, height: 124, rx: 4, fill: "none", stroke: "#9aa8cc", "stroke-dasharray": "5 5" }, ps);
+    S("rect", { x: 14, y: 362, width: 332, height: 124, rx: 4, fill: "none", stroke: "#6e6e73", "stroke-dasharray": "5 5" }, ps);
     S("text", { x: 180, y: 428, "text-anchor": "middle", "font-size": 12, fill: "#555" }, ps, "white space: about 70% coverage");
 
     var pth = S("path", { d: "M68,78 L68,340 Q68,358 124,358 Q180,358 180,340 L180,78 Q180,66 236,66 Q292,66 292,78 L292,340", fill: "none", stroke: "#D55E00", "stroke-width": 4, "stroke-linecap": "round" }, ps);
