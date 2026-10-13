@@ -101,6 +101,7 @@ html.vz-on .vz.in .vz-fade{opacity:1}
 .vz-numbar .vz-seg{padding:0 .5rem}
 .vz-tickrow{position:relative;height:1.4rem;margin-top:.4rem;font:600 .72rem var(--font);color:var(--muted)}
 .vz-tickrow span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+@media(max-width:700px){.vz-tickrow .t38{display:none}}
 .vz-tickrow span:first-child{transform:none}.vz-tickrow span:last-child{transform:translateX(-100%)}
 .vz-legend{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-top:.8rem}
 @media(max-width:700px){.vz-legend{grid-template-columns:1fr 1fr}.vz-numbar .vz-seg span{display:none}}
@@ -291,7 +292,7 @@ html.vz-on .vz.in .vz-fade{opacity:1}
         <div class="vz-seg c3" style="flex:28" data-tip="10 to 38 min · Introduction, Findings, Recommendation."><b data-count="28" data-suffix=" min">28 min</b><span>Write</span></div>
         <div class="vz-seg c4" style="flex:7" data-tip="38 to 45 min · Count words, check numbers, hedging, parallel lists, tense. Sign the cover."><b data-count="7">7</b><span>Check</span></div>
       </div></div>
-      <div class="vz-tickrow" aria-hidden="true"><span style="left:0">0</span><span style="left:11.1%">5</span><span style="left:22.2%">10</span><span style="left:84.4%">38</span><span style="left:100%">45 min</span></div>
+      <div class="vz-tickrow" aria-hidden="true"><span style="left:0">0</span><span style="left:11.1%">5</span><span style="left:22.2%">10</span><span class="t38" style="left:84.4%">38</span><span style="left:100%">45 min</span></div>
       <div class="vz-legend">
         <div style="border-color:var(--cyan)"><b>0–5 · Read</b>Situation, target, Figure 1, Table 1</div>
         <div style="border-color:var(--violet)"><b>5–10 · Plan</b>On the question paper</div>
