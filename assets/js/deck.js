@@ -184,6 +184,7 @@
     var chip = headFor(q, q.getAttribute("data-label") || "Quick check", id, pts);
     var fb = $(".quiz__fb", q) || q.appendChild(el("p", { class: "quiz__fb" }));
     var btns = $$(".quiz__opts button", q);
+    if (btns.filter(function (x) { return x.hasAttribute("data-correct"); }).length !== 1) console.warn("Quiz without exactly one data-correct:", q);
     var keys = "ABCDEFGH";
     var tries = 0;
     btns.forEach(function (b, i) {
@@ -331,6 +332,7 @@
     var chip = headFor(w, w.getAttribute("data-label") || "Your turn: write", id, pts);
     var ta = $("textarea", w) || w.appendChild(el("textarea"));
     if (!ta.getAttribute("aria-label")) ta.setAttribute("aria-label", "Your writing");
+    if (max >= 150 || min >= 150) ta.style.minHeight = "20rem";
     if (store.drafts[key]) ta.value = store.drafts[key];
     var meta = el("div", { class: "write__meta" },
       '<span class="write__count">0 words</span><div class="write__meter"><span></span></div><span class="write__target">' +
@@ -468,9 +470,12 @@
     r.innerHTML = '<div class="small muted" style="margin-bottom:.5rem">' + label + '</div><div class="rate__row"><span class="small mono">' + min + '</span><input type="range" min="' + min + '" max="' + max + '" step="1"><span class="small mono">' + max + '</span><span class="rate__val"></span></div>';
     var inp = $("input", r), val = $(".rate__val", r);
     inp.setAttribute("aria-label", r.textContent.trim().slice(0, 80));
-    inp.value = store.drafts[key] || Math.round((+min + +max) / 2);
-    function upd() { val.textContent = inp.value; store.drafts[key] = inp.value; save(); }
-    inp.addEventListener("input", upd); upd();
+    var saved = store.drafts[key];
+    inp.value = saved || Math.round((+min + +max) / 2);
+    val.textContent = saved ? inp.value : "?";
+    if (!saved) inp.style.opacity = "0.5";
+    function upd() { inp.style.opacity = ""; val.textContent = inp.value; store.drafts[key] = inp.value; save(); }
+    inp.addEventListener("input", upd);
   });
 
   // Random picker: .picker[data-items='["a","b"]'] (data-label)
