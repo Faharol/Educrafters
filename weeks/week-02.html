@@ -9,6 +9,111 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
+<style>
+/* visual pass: scoped to v-* classes */
+.v-js .v-anim .v-seg{transition:stroke-dasharray 1.1s cubic-bezier(.2,.7,.2,1)}
+.v-js .v-anim:not(.in) .v-seg{stroke-dasharray:0 100 !important}
+.v-js .v-anim .v-grow{transform-origin:0 50%;transform-box:fill-box;transition:transform .9s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--i,0)*110ms)}
+.v-js .v-anim:not(.in) .v-grow{transform:scaleX(0)}
+.v-js .v-anim .v-pop{transition:opacity .6s ease,transform .6s ease;transition-delay:calc(var(--i,0)*90ms)}
+.v-js .v-anim:not(.in) .v-pop{opacity:0;transform:translateY(10px)}
+.chart-card svg text.t1{font-size:14px}.chart-card svg text.t2{font-size:16px}.chart-card svg text.t3{font-size:12.5px}
+.chart-card svg text.big{font-size:30px;font-weight:800;fill:var(--text);letter-spacing:-.02em}
+.chart-card svg text.mid{font-size:22px;font-weight:700;fill:var(--text)}
+.chart-card svg text.w{fill:#fff;font-weight:700}
+.v-title{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .9rem}
+.v-flow{display:flex;align-items:stretch;gap:.5rem;flex-wrap:nowrap}
+.v-step{flex:1 1 0;min-width:0;border-radius:18px;padding:1rem 1rem 1.05rem;background:color-mix(in srgb,var(--c,var(--cyan)) 9%,#fff);border-top:4px solid var(--c,var(--cyan))}
+.v-step .k{display:block;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--cyan));margin-bottom:.25rem}
+.v-step b{display:block;font-size:1.05rem;line-height:1.2;color:var(--text);letter-spacing:-.01em}
+.v-step span.d{display:block;font-size:.82rem;color:var(--muted);margin-top:.35rem;line-height:1.35}
+.v-step--dash{border-top-style:dashed;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.v-arrow{flex:0 0 auto;align-self:center;color:var(--line-strong);font-size:1.5rem;line-height:1}
+.v-back{margin-top:.7rem;border:2px dashed var(--line-strong);border-radius:16px;padding:.7rem 1rem;font-size:.85rem;color:var(--muted)}
+.v-back b{color:var(--text)}
+@media (max-width:700px){.v-flow{flex-direction:column}.v-arrow{transform:rotate(90deg);margin:-.1rem 0}}
+.v-cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.9rem}
+.v-ic{display:flex;flex-direction:column;gap:.35rem;padding:1.1rem 1rem;border-radius:20px;background:color-mix(in srgb,var(--c) 8%,#fff)}
+.v-ic svg{width:48px;height:48px;fill:none;stroke:var(--c);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;margin-bottom:.3rem}
+.v-ic b{font-size:1.1rem;color:var(--text)}
+.v-ic .d{font-size:.85rem;color:var(--muted)}
+.v-ic .e{font-size:.78rem;color:var(--text);margin-top:.3rem;padding-top:.5rem;border-top:1px solid color-mix(in srgb,var(--c) 25%,#fff)}
+@media (max-width:760px){.v-cards4{grid-template-columns:1fr 1fr}}
+@media (max-width:420px){.v-cards4{grid-template-columns:1fr}}
+.v-donut-wrap{max-width:460px;margin:0 auto}
+.v-co{display:flex;gap:4px;margin:.2rem 0 .5rem}
+.v-co>div{border-radius:14px;padding:.8rem .7rem;color:#fff;min-width:0}
+.v-co b{display:block;font-size:1.5rem;letter-spacing:-.03em;line-height:1}
+.v-co .n{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.v-co .t{display:block;font-size:.72rem;line-height:1.3;margin-top:.45rem;opacity:.95}
+.v-weeks{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px}
+.v-wk{border-radius:12px;background:var(--bg-2);padding:.55rem .3rem .6rem;text-align:center;min-height:6.2rem;display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.v-wk b{font-size:1.15rem;letter-spacing:-.02em;color:var(--text)}
+.v-wk small{font-size:.66rem;line-height:1.2;color:var(--muted)}
+.v-wk i{font-style:normal;font-size:.58rem;font-weight:800;letter-spacing:.06em;margin-top:auto;padding:.1rem .35rem;border-radius:99px;background:rgba(255,255,255,.28)}
+.v-wk--a{background:var(--cyan)}.v-wk--a b,.v-wk--a small{color:#fff}
+.v-wk--p{background:color-mix(in srgb,var(--violet) 16%,#fff)}
+.v-wk--p b{color:var(--violet)}
+.v-wk--t{background:color-mix(in srgb,var(--lime) 14%,#fff)}
+.v-wk--t b{color:var(--lime)}
+.v-wk--n b,.v-wk--n small{color:var(--dim)}
+.v-wk--n{background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
+.v-key{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin-top:.9rem;font-size:.78rem;color:var(--muted)}
+.v-key span::before{content:"";display:inline-block;width:.7rem;height:.7rem;border-radius:4px;background:var(--k);margin-right:.4rem;vertical-align:-1px}
+@media (max-width:760px){.v-weeks{grid-template-columns:1fr 1fr}.v-wk{flex-direction:row;min-height:0;text-align:left;padding:.55rem .7rem;gap:.55rem}.v-wk b{min-width:1.7rem;font-size:1.05rem}.v-wk small{font-size:.74rem}.v-wk i{margin:0 0 0 auto}}
+.v-tree{text-align:center}
+.v-root{display:inline-block;background:var(--text);color:#fff;font-weight:700;padding:.6rem 1.2rem;border-radius:99px}
+.v-root::after{content:"";display:block;width:2px;height:18px;background:var(--line-strong);margin:.9rem auto -1.6rem;position:relative;top:.2rem}
+.v-branches{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem;text-align:left}
+.v-br{border-radius:20px;padding:1.1rem;background:color-mix(in srgb,var(--c) 8%,#fff);border-top:4px solid var(--c)}
+.v-br h4{margin:0 0 .15rem;font-size:1rem}.v-br p{margin:0 0 .7rem;font-size:.8rem;color:var(--muted)}
+.v-br ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.v-br li{background:#fff;border-radius:99px;padding:.3rem .75rem;font-size:.82rem;font-weight:600;box-shadow:0 0 0 1px var(--line);margin:0}
+@media (max-width:640px){.v-branches{grid-template-columns:1fr}}
+.v-mx{width:100%;border-collapse:separate;border-spacing:0;font-size:.88rem}
+.v-mx th,.v-mx td{padding:.65rem .7rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.v-mx thead th{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line-strong)}
+.v-mx tbody th{font-weight:700;color:var(--text);white-space:nowrap}
+.v-mx .tc{background:color-mix(in srgb,var(--cyan) 8%,#fff);font-weight:600;color:var(--text)}
+.v-mx thead .tc{color:var(--cyan)}
+.v-dots{letter-spacing:.15em;color:var(--cyan);font-size:1rem;white-space:nowrap}.v-dots s{text-decoration:none;color:var(--line-strong)}
+.v-mxwrap{overflow-x:auto}
+.v-mx td{min-width:7.5rem}
+@media (max-width:640px){.v-mx{font-size:.8rem}.v-mx th,.v-mx td{padding:.5rem .45rem}.v-mx td{min-width:0}.v-mx tbody th{white-space:normal}}
+
+.v-ad{border-radius:20px;background:var(--bg-2);padding:1.3rem 1.3rem 1.1rem}
+.v-ad__h{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;padding-bottom:.8rem;margin-bottom:.9rem;border-bottom:2px solid var(--line-strong)}
+.v-ad__h b{font-size:1.2rem;letter-spacing:-.02em}
+.v-ad__cols{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+.v-ad h4{margin:0 0 .5rem;font-size:.85rem}
+.v-ad ul{list-style:none;margin:0;padding:0;display:grid;gap:.45rem}
+.v-ad li{display:flex;gap:.6rem;align-items:baseline;font-size:.88rem;line-height:1.35;margin:0}
+.v-b{flex:0 0 1.45rem;height:1.45rem;border-radius:7px;color:#fff;font-size:.7rem;font-weight:800;display:inline-grid;place-items:center}
+.v-b--r{background:var(--cyan)}.v-b--t{background:var(--lime)}.v-b--w{background:var(--violet)}.v-b--q{background:var(--amber)}
+.v-rep{font-style:normal;font-size:.68rem;font-weight:700;color:var(--pink);white-space:nowrap}
+.v-key b{display:inline-block;min-width:1.2rem;text-align:center}
+@media (max-width:640px){.v-ad__cols{grid-template-columns:1fr}}
+.v-lad{display:grid;gap:1rem}
+.v-row{display:grid;grid-template-columns:5.6rem 1fr;gap:.8rem;align-items:center}
+.v-lab{font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.v-bar{display:flex;gap:3px;min-width:0}
+.v-sg{flex:1 1 auto;min-width:0;padding:.55rem .7rem .6rem;border-radius:12px;font-size:.84rem;line-height:1.3;color:#fff;font-weight:600}
+.v-sg i,.v-an__s i{display:block;font-style:normal;font-size:.62rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:.15rem}
+.v-sg--s{background:var(--cyan);flex:0 0 auto}.v-sg--e{background:var(--violet)}.v-sg--i{background:var(--lime);flex:0 0 auto;max-width:42%}
+@media (max-width:640px){.v-row{grid-template-columns:1fr;gap:.3rem}.v-bar{flex-wrap:wrap}.v-sg--i{max-width:none}}
+.v-an{display:flex;gap:4px;margin:0 0 .8rem}
+.v-an__s{padding:.6rem .8rem .7rem;border-radius:12px;color:#fff;font-size:.88rem;font-weight:600;line-height:1.3;min-width:0}
+.v-an--a{background:var(--cyan);flex:0 0 auto}.v-an--t{background:var(--violet);flex:1 1 0}.v-an--i{background:var(--lime);flex:1 1 0}
+@media (max-width:640px){.v-an{flex-direction:column}}
+.v-hub{text-align:center}
+.v-core{display:inline-block;background:var(--grad);color:#fff;font-weight:800;font-size:1.3rem;padding:.7rem 2rem;border-radius:99px;letter-spacing:-.02em}
+.v-core::after{content:"";display:block;width:2px;height:20px;background:var(--line-strong);margin:.9rem auto -1.5rem;position:relative;top:.2rem}
+.v-spokes{list-style:none;margin:1.3rem 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:.6rem}
+.v-spokes li{margin:0;padding:.5rem 1rem;border-radius:99px;font-size:.9rem;font-weight:600;background:color-mix(in srgb,var(--c) 10%,#fff);color:var(--text);box-shadow:inset 0 0 0 1.5px var(--c)}
+.chart-card svg text.t4{font-size:20px}.chart-card svg text.t5{font-size:15px}
+@media (max-width:560px){.keystats.v-ks{grid-template-columns:1fr 1fr;gap:.7rem}.keystats.v-ks .keystat{padding:1rem 1.05rem}.keystats.v-ks .keystat span{font-size:.8rem}}
+.v-ks b[data-count]{font-variant-numeric:tabular-nums}
+</style>
 </head>
 <body data-week="02" data-title="Preparing for the Workplace">
 <main class="deck">
@@ -47,6 +152,13 @@
       <li><div><h3>Interview</h3></div></li>
       <li><div><h3>Job offer</h3></div></li>
     </ol>
+    <figure class="chart-card mt v-anim" style="max-width:560px;margin-left:auto;margin-right:auto">
+      <svg viewBox="0 0 420 366" role="img" aria-label="Funnel of the seven recruitment stages from job advertisement to job offer; the ATS screening is stage three, before a recruiter reviews">
+        <g class="v-pop" style="--i:0"><rect x="20" y="10" width="380" height="38" rx="19" fill="var(--cyan)" opacity="1.0"/><text x="210" y="34" text-anchor="middle" class="t2 w">1 · Job advertisement</text><title>Stage 1: Job advertisement</title></g><g class="v-pop" style="--i:1"><rect x="35" y="58" width="350" height="38" rx="19" fill="var(--cyan)" opacity="0.93"/><text x="210" y="82" text-anchor="middle" class="t2 w">2 · Online application</text><title>Stage 2: Online application</title></g><g class="v-pop" style="--i:2"><rect x="50" y="106" width="320" height="38" rx="19" fill="var(--violet)" opacity="1"/><text x="210" y="130" text-anchor="middle" class="t2 w">3 · ATS / initial screening</text><title>Stage 3: ATS / initial screening</title></g><g class="v-pop" style="--i:3"><rect x="65" y="178" width="290" height="38" rx="19" fill="var(--cyan)" opacity="0.79"/><text x="210" y="202" text-anchor="middle" class="t2 w">4 · Recruiter review</text><title>Stage 4: Recruiter review</title></g><g class="v-pop" style="--i:4"><rect x="80" y="226" width="260" height="38" rx="19" fill="var(--cyan)" opacity="0.72"/><text x="210" y="250" text-anchor="middle" class="t2 w">5 · Assessment</text><title>Stage 5: Assessment</title></g><g class="v-pop" style="--i:5"><rect x="95" y="274" width="230" height="38" rx="19" fill="var(--cyan)" opacity="0.65"/><text x="210" y="298" text-anchor="middle" class="t2 w">6 · Interview</text><title>Stage 6: Interview</title></g><g class="v-pop" style="--i:6"><rect x="110" y="322" width="200" height="38" rx="19" fill="var(--lime)" opacity="1"/><text x="210" y="346" text-anchor="middle" class="t2 w">7 · Job offer</text><title>Stage 7: Job offer</title></g>
+        <text x="210" y="166" text-anchor="middle" class="t2" style="fill:var(--violet);font-weight:600;font-size:15px">a machine screens before a human reads</text>
+      </svg>
+      <figcaption>The seven stages in order. The narrowing shape is illustrative: it is not data on how many applicants reach each stage.</figcaption>
+    </figure>
     <p>Technology and AI are increasingly used throughout recruitment. Current recruiting research describes hiring as increasingly <strong>skills-driven</strong>. But employers are still trying to answer one basic question:</p>
     <div class="example">Can this person do the job?</div>
     <div class="quiz mt" data-xp="10">
@@ -69,6 +181,11 @@
       <div class="card"><span class="num-badge">03</span><h3 class="mt">Prove</h3><p>Provide evidence of your skills and achievements.</p></div>
       <div class="card"><span class="num-badge">04</span><h3 class="mt">Communicate</h3><p>Present your value effectively in your application and interview.</p></div>
     </div>
+    <figure class="chart-card mt v-anim">
+      <p class="v-title">Your route through this lesson</p>
+      <div class="v-flow"><div class="v-step v-pop" style="--c:var(--cyan);--i:0"><svg viewBox="0 0 48 48" style="width:40px;height:40px;fill:none;stroke:var(--cyan);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:.4rem" aria-hidden="true"><circle cx="21" cy="21" r="13"/><path d="M31 31l12 12"/></svg><span class="k">Step 1</span><b>Find</b><span class="d">Understand the job and employer.</span><span class="d" style="color:var(--cyan);font-weight:600">Part 1</span></div><span class="v-arrow" aria-hidden="true">→</span><div class="v-step v-pop" style="--c:var(--violet);--i:1"><svg viewBox="0 0 48 48" style="width:40px;height:40px;fill:none;stroke:var(--violet);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:.4rem" aria-hidden="true"><circle cx="16" cy="24" r="11"/><circle cx="32" cy="24" r="11"/></svg><span class="k">Step 2</span><b>Match</b><span class="d">Identify what you can offer.</span><span class="d" style="color:var(--violet);font-weight:600">Part 2</span></div><span class="v-arrow" aria-hidden="true">→</span><div class="v-step v-pop" style="--c:var(--pink);--i:2"><svg viewBox="0 0 48 48" style="width:40px;height:40px;fill:none;stroke:var(--pink);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:.4rem" aria-hidden="true"><path d="M24 4l6 5 8-1 2 8 6 5-4 7 1 8-8 2-5 6-6-4-6 4-5-6-8-2 1-8-4-7 6-5 2-8 8 1z" transform="translate(0 0) scale(.9) translate(2 2)"/><path d="M16 25l6 6 11-12"/></svg><span class="k">Step 3</span><b>Prove</b><span class="d">Provide evidence of your skills and achievements.</span><span class="d" style="color:var(--pink);font-weight:600">Parts 3 to 4 · résumé and digital presence</span></div><span class="v-arrow" aria-hidden="true">→</span><div class="v-step v-pop" style="--c:var(--lime);--i:3"><svg viewBox="0 0 48 48" style="width:40px;height:40px;fill:none;stroke:var(--lime);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:.4rem" aria-hidden="true"><path d="M6 8h36a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H22l-10 8v-8H6a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z"/></svg><span class="k">Step 4</span><b>Communicate</b><span class="d">Present your value in your application and interview.</span><span class="d" style="color:var(--lime);font-weight:600">Parts 5 to 7 · cover letter, AI, interview</span></div></div>
+      <figcaption>Each step of the framework, and the parts of this lesson that practise it.</figcaption>
+    </figure>
     <div class="callout mt"><p><strong>Key message:</strong> getting hired is not simply about having qualifications. It is about <strong>communicating your fit</strong> for the job.</p></div>
     <div class="sorter mt" data-xp="15" data-label="Which step is it?">
       <div class="sorter__pool">
@@ -98,6 +215,7 @@
     <div class="slide__kicker">Part 1 · Find</div>
     <h2>Start with the job advertisement</h2>
     <p class="slide__lead">Before writing anything, read the advert carefully. Look for five things:</p>
+    <figure class="photo-fig"><img src="../assets/img/laptop-notes-2.jpg" alt="Hands holding notes beside an open laptop while reading about a job" loading="lazy" width="1200" height="521"><figcaption>Read the advert like an applicant: notes in hand, keywords marked.</figcaption></figure>
     <div class="flip-grid" data-xp="10">
       <div class="flip"><div class="flip__front"><span class="tag">1</span><h4 class="mt">Responsibilities</h4></div><div class="flip__back"><p>What will I be expected to do?</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">2</span><h4 class="mt">Technical skills</h4></div><div class="flip__back"><p>What must I know or be able to use?</p></div></div>
@@ -169,6 +287,18 @@
     <details class="reveal" data-xp="5"><summary>So what must you prove?</summary><div class="reveal__body">
       <p>From this advert, your application needs evidence of: <strong>analysing data</strong> (and Excel), <strong>problem solving</strong>, <strong>written communication</strong> (technical reports), <strong>verbal communication</strong>, <strong>teamwork</strong> with multidisciplinary teams, and a relevant <strong>degree</strong>.</p>
     </div></details>
+    <figure class="chart-card mt v-anim">
+      <p class="v-title">The advert, decoded</p>
+      <div class="v-ad">
+        <div class="v-ad__h"><b>Graduate Process Engineer</b><span class="muted small">Sample vacancy</span></div>
+        <div class="v-ad__cols">
+          <div><h4>The successful candidate will:</h4><ul><li><span class="v-b v-b--r" title="Responsibility">R</span><span>assist in monitoring manufacturing processes</span></li><li><span class="v-b v-b--r" title="Responsibility">R</span><span>analyse production data and identify areas for improvement <em class="v-rep" title="This idea appears in both the duties and the requirements">↻ repeats</em></span></li><li><span class="v-b v-b--r" title="Responsibility">R</span><span>prepare technical reports <em class="v-rep" title="This idea appears in both the duties and the requirements">↻ repeats</em></span></li><li><span class="v-b v-b--r" title="Responsibility">R</span><span>collaborate with multidisciplinary teams <em class="v-rep" title="This idea appears in both the duties and the requirements">↻ repeats</em></span></li><li><span class="v-b v-b--r" title="Responsibility">R</span><span>support continuous improvement activities</span></li></ul></div>
+          <div><h4>Requirements:</h4><ul><li><span class="v-b v-b--q" title="Qualification">Q</span><span>Degree in Chemical/Manufacturing Engineering or related field</span></li><li><span class="v-b v-b--w" title="Transferable skill">W</span><span>Strong analytical and problem-solving skills <em class="v-rep" title="This idea appears in both the duties and the requirements">↻ repeats</em></span></li><li><span class="v-b v-b--w" title="Transferable skill">W</span><span>Good written and verbal communication <em class="v-rep" title="This idea appears in both the duties and the requirements">↻ repeats</em></span></li><li><span class="v-b v-b--t" title="Technical skill">T</span><span>Proficiency in Microsoft Excel</span></li><li><span class="v-b v-b--w" title="Transferable skill">W</span><span>Ability to work effectively in teams <em class="v-rep" title="This idea appears in both the duties and the requirements">↻ repeats</em></span></li></ul></div>
+        </div>
+      </div>
+      <div class="v-key" style="margin-top:1rem"><span style="--k:var(--cyan)"><b>R</b> Responsibility</span><span style="--k:var(--lime)"><b>T</b> Technical skill</span><span style="--k:var(--violet)"><b>W</b> Transferable skill</span><span style="--k:var(--amber)"><b>Q</b> Qualification</span></div>
+      <figcaption>Answer key for the sorting task. “↻ repeats” marks ideas that appear in both lists: these are the keywords to prove.</figcaption>
+    </figure>
   </section>
 
   <!-- Part 2 -->
@@ -194,6 +324,7 @@
       <li>Part-time jobs</li>
       <li>Personal projects</li>
     </ul>
+    <figure class="photo-fig mt"><img src="../assets/img/hardhat-solar.jpg" alt="A hard hat resting on solar panels, a symbol of hands-on engineering experience" loading="lazy" width="1200" height="521"><figcaption>Industrial training, lab work and projects all count as evidence.</figcaption></figure>
     <div class="callout callout--ok mt"><p>Your experience is useful when you can <strong>explain what it demonstrates</strong>.</p></div>
   </section>
 
@@ -201,6 +332,7 @@
   <section class="slide" data-title="Skills-based hiring">
     <div class="slide__kicker">Part 2 · Match</div>
     <h2>Skills-based hiring</h2>
+    <p class="pull">Can this person do the job?<cite>The question employers still ask · Getting hired has changed</cite></p>
     <div class="grid grid-2">
       <div class="card card--accent"><p class="small muted">Employers increasingly look at:</p><h3>WHAT CAN YOU DO?</h3></div>
       <div class="card"><p class="small muted">not simply:</p><h3>WHAT QUALIFICATION DO YOU HAVE?</h3></div>
@@ -259,6 +391,15 @@
       <li><div><h3>Better</h3><p>Led a five-member project team.</p></div></li>
       <li><div><h3>Even better</h3><p>Led a five-member project team to design and test a prototype within a six-week deadline.</p></div></li>
     </ol>
+    <figure class="chart-card mt v-anim">
+      <p class="v-title">The same skill, three ways</p>
+      <div class="v-lad">
+        <div class="v-row"><span class="v-lab">Weak</span><div class="v-bar v-grow" style="--i:0;width:28%"><span class="v-sg v-sg--s"><i>Skill</i>Leadership</span></div></div>
+        <div class="v-row"><span class="v-lab">Better</span><div class="v-bar v-grow" style="--i:1;width:62%"><span class="v-sg v-sg--s"><i>Skill</i>Led</span><span class="v-sg v-sg--e"><i>Evidence</i>a five-member project team</span></div></div>
+        <div class="v-row"><span class="v-lab">Even better</span><div class="v-bar v-grow" style="--i:2;width:100%"><span class="v-sg v-sg--s"><i>Skill</i>Led</span><span class="v-sg v-sg--e"><i>Evidence</i>a five-member project team to design and test a prototype</span><span class="v-sg v-sg--i"><i>Impact</i>within a six-week deadline</span></div></div>
+      </div>
+      <figcaption>Bar length is illustrative: it shows how much proof each version carries.</figcaption>
+    </figure>
     <div class="callout mt"><p><strong>SKILL → EVIDENCE → IMPACT.</strong> Employers should not have to guess whether you possess a skill. Show them.</p></div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">What does “within a six-week deadline” add to the “Even better” version?</p>
@@ -287,6 +428,7 @@
     </div>
     <p class="mt">Its purpose is <strong>not</strong> to tell your entire life story. Its immediate purpose is:</p>
     <div class="example">GET THE INTERVIEW.</div>
+    <figure class="photo-fig mt"><img src="../assets/img/typing.jpg" alt="Hands typing a document on a laptop" loading="lazy" width="1200" height="521"><figcaption>A résumé is concise, targeted and built to get the interview.</figcaption></figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">What is the immediate purpose of a résumé?</p>
       <div class="quiz__opts">
@@ -332,6 +474,13 @@
       <li><div><h3>Achievements / activities / leadership</h3></div></li>
       <li><div><h3>Certifications / languages / other relevant information</h3></div></li>
     </ol>
+    <figure class="chart-card mt v-anim" style="max-width:440px;margin-left:auto;margin-right:auto">
+      <svg viewBox="0 0 360 552" role="img" aria-label="Wireframe of a graduate résumé page with seven numbered sections: name and contact, optional summary, education, skills, experience, achievements, certifications and languages">
+        <rect x="8" y="6" width="344" height="540" rx="16" fill="#fff" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <g class="v-pop" style="--i:0"><circle cx="48" cy="38" r="13" fill="var(--cyan)" stroke="var(--cyan)" stroke-width="2" /><text x="48" y="43" text-anchor="middle" class="t1 w" style="fill:#fff">1</text><text x="72" y="43" class="t4 lbl-strong" style="font-size:16px">Name + contact information<tspan class="t3" style="font-weight:500;fill:var(--muted)"></tspan></text><rect x="72" y="56" width="250" height="6" rx="3" fill="var(--line)"/><rect x="72" y="69" width="190" height="6" rx="3" fill="var(--line)"/></g><g class="v-pop" style="--i:1"><circle cx="48" cy="112" r="13" fill="#fff" stroke="var(--violet)" stroke-width="2" stroke-dasharray="3 3"/><text x="48" y="117" text-anchor="middle" class="t1 w" style="fill:var(--violet)">2</text><text x="72" y="117" class="t4 lbl-strong" style="font-size:16px">Professional summary<tspan class="t3" style="font-weight:500;fill:var(--muted)"> (optional)</tspan></text><rect x="72" y="130" width="190" height="6" rx="3" fill="var(--line)"/><rect x="72" y="143" width="220" height="6" rx="3" fill="var(--line)"/></g><g class="v-pop" style="--i:2"><circle cx="48" cy="186" r="13" fill="var(--pink)" stroke="var(--pink)" stroke-width="2" /><text x="48" y="191" text-anchor="middle" class="t1 w" style="fill:#fff">3</text><text x="72" y="191" class="t4 lbl-strong" style="font-size:16px">Education<tspan class="t3" style="font-weight:500;fill:var(--muted)"></tspan></text><rect x="72" y="204" width="220" height="6" rx="3" fill="var(--line)"/><rect x="72" y="217" width="250" height="6" rx="3" fill="var(--line)"/></g><g class="v-pop" style="--i:3"><circle cx="48" cy="260" r="13" fill="var(--lime)" stroke="var(--lime)" stroke-width="2" /><text x="48" y="265" text-anchor="middle" class="t1 w" style="fill:#fff">4</text><text x="72" y="265" class="t4 lbl-strong" style="font-size:16px">Technical / relevant skills<tspan class="t3" style="font-weight:500;fill:var(--muted)"></tspan></text><rect x="72" y="278" width="250" height="6" rx="3" fill="var(--line)"/><rect x="72" y="291" width="190" height="6" rx="3" fill="var(--line)"/></g><g class="v-pop" style="--i:4"><circle cx="48" cy="334" r="13" fill="var(--amber)" stroke="var(--amber)" stroke-width="2" /><text x="48" y="339" text-anchor="middle" class="t1 w" style="fill:#fff">5</text><text x="72" y="339" class="t4 lbl-strong" style="font-size:16px">Experience<tspan class="t3" style="font-weight:500;fill:var(--muted)"></tspan></text><rect x="72" y="352" width="190" height="6" rx="3" fill="var(--line)"/><rect x="72" y="365" width="220" height="6" rx="3" fill="var(--line)"/><rect x="72" y="378" width="250" height="6" rx="3" fill="var(--line)"/></g><g class="v-pop" style="--i:5"><circle cx="48" cy="421" r="13" fill="var(--cyan)" stroke="var(--cyan)" stroke-width="2" /><text x="48" y="426" text-anchor="middle" class="t1 w" style="fill:#fff">6</text><text x="72" y="426" class="t4 lbl-strong" style="font-size:16px">Achievements · leadership<tspan class="t3" style="font-weight:500;fill:var(--muted)"></tspan></text><rect x="72" y="439" width="220" height="6" rx="3" fill="var(--line)"/><rect x="72" y="452" width="250" height="6" rx="3" fill="var(--line)"/></g><g class="v-pop" style="--i:6"><circle cx="48" cy="495" r="13" fill="var(--violet)" stroke="var(--violet)" stroke-width="2" /><text x="48" y="500" text-anchor="middle" class="t1 w" style="fill:#fff">7</text><text x="72" y="500" class="t4 lbl-strong" style="font-size:16px">Certifications · languages · other<tspan class="t3" style="font-weight:500;fill:var(--muted)"></tspan></text><rect x="72" y="513" width="250" height="6" rx="3" fill="var(--line)"/></g>
+      </svg>
+      <figcaption>Anatomy of a graduate résumé. The dashed circle marks the optional section. Not every résumé needs exactly these sections: relevance decides.</figcaption>
+    </figure>
     <div class="callout mt"><p>Not every résumé needs exactly the same sections. <strong>Relevance determines what stays.</strong></p></div>
   </section>
 
@@ -370,6 +519,12 @@
       <div class="card"><p class="small muted">Instead of:</p><p>Responsible for testing equipment.</p><p class="small muted mt">Write:</p><div class="example">Conducted performance testing on prototype components and documented results for the engineering team.</div></div>
       <div class="card"><p class="small muted">Instead of:</p><p>Helped organise an event.</p><p class="small muted mt">Write:</p><div class="example">Coordinated registration for a university programme involving 300 participants.</div></div>
     </div>
+    <figure class="chart-card mt v-anim">
+      <p class="v-title">Anatomy of a strong line</p>
+      <div class="v-an"><div class="v-an__s v-grow v-an--a" style="--i:0"><i>Action</i>Coordinated</div><div class="v-an__s v-grow v-an--t" style="--i:1"><i>Task</i>registration for a university programme</div><div class="v-an__s v-grow v-an--i" style="--i:2"><i>Impact</i>involving 300 participants</div></div>
+      <div class="v-an"><div class="v-an__s v-grow v-an--a" style="--i:0"><i>Action</i>Conducted</div><div class="v-an__s v-grow v-an--t" style="--i:1"><i>Task</i>performance testing on prototype components</div><div class="v-an__s v-grow v-an--i" style="--i:2"><i>Impact</i>and documented results for the engineering team</div></div>
+      <figcaption>The two model sentences from this slide, split into ACTION, TASK and IMPACT.</figcaption>
+    </figure>
     <div class="write mt" data-min="12" data-xp="20" data-label="Your turn">
       <p class="small muted">Take one real experience from your checklist (a project, lab, club or job). Write one résumé line using ACTION + TASK + IMPACT. Only use true facts.</p>
       <textarea placeholder="Designed … / Coordinated … / Analysed …"></textarea>
@@ -426,6 +581,12 @@
       <div class="card"><p class="muted">Organised a student programme.</p><p class="small muted mt">with:</p><div class="example">Coordinated a student programme involving 120 participants and 15 committee members.</div></div>
       <div class="card"><p class="muted">Improved the design.</p><p class="small muted mt">with:</p><div class="example">Redesigned the component, reducing material usage by 12%.</div></div>
     </div>
+    <div class="keystats v-anim v-ks mt">
+      <div class="keystat"><b data-count="300">300</b><span>participants registered (event example)</span></div>
+      <div class="keystat"><b data-count="120">120</b><span>participants in a student programme</span></div>
+      <div class="keystat"><b data-count="15">15</b><span>committee members coordinated</span></div>
+      <div class="keystat"><b data-count="12" data-suf="%">12%</b><span>less material after a redesign</span></div>
+    </div>
     <div class="callout callout--bad mt"><p><strong>But: NEVER INVENT NUMBERS.</strong> Evidence must be accurate and defensible.</p></div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">You helped at an event but do not know how many people attended. What should you do?</p>
@@ -465,6 +626,16 @@
     <h2>Meet the ATS: Applicant Tracking System</h2>
     <p>An ATS helps organisations manage and screen job applications. It may process the information in your résumé <strong>before a recruiter reviews it</strong>. Your résumé may need to communicate with:</p>
     <div class="example">MACHINE → HUMAN</div>
+    <figure class="chart-card mt v-anim">
+      <div class="v-flow">
+        <div class="v-step v-pop" style="--c:var(--cyan);--i:0"><span class="k">You</span><b>Your résumé</b><span class="d">Clear, simple, truthful.</span></div>
+        <span class="v-arrow" aria-hidden="true">→</span>
+        <div class="v-step v-pop" style="--c:var(--violet);--i:1"><span class="k">Machine</span><b>ATS</b><span class="d">May process your information before a recruiter reviews it. Likes headings, readable fonts, keywords.</span></div>
+        <span class="v-arrow" aria-hidden="true">→</span>
+        <div class="v-step v-pop" style="--c:var(--lime);--i:2"><span class="k">Human</span><b>Recruiter</b><span class="d">Needs a résumé that is easy to read.</span></div>
+      </div>
+      <figcaption>Simple does not mean boring: it means easy to process and easy to read.</figcaption>
+    </figure>
     <div class="sorter mt" data-xp="15" data-label="ATS-friendly or be careful?">
       <div class="sorter__pool">
         <button class="chip" data-bin="do">Clear section headings</button>
@@ -533,6 +704,10 @@
       <li>Personal website</li>
       <li>Publicly available online presence (check what a search for your name shows)</li>
     </ul>
+    <figure class="chart-card mt v-anim">
+      <div class="v-hub"><span class="v-core">You</span><ul class="v-spokes"><li class="v-pop" style="--i:0;--c:var(--cyan)">Résumé</li><li class="v-pop" style="--i:1;--c:var(--violet)">LinkedIn</li><li class="v-pop" style="--i:2;--c:var(--pink)">Online portfolio</li><li class="v-pop" style="--i:3;--c:var(--lime)">GitHub / technical repositories</li><li class="v-pop" style="--i:4;--c:var(--amber)">Professional networking</li><li class="v-pop" style="--i:5;--c:var(--cyan)">Personal website</li><li class="v-pop" style="--i:6;--c:var(--violet)">Public online presence</li></ul></div>
+      <figcaption>Everything an employer may find, together: your professional digital footprint.</figcaption>
+    </figure>
     <div class="callout mt"><p>Think of these together as your <strong>PROFESSIONAL DIGITAL FOOTPRINT</strong>.</p></div>
   </section>
 
@@ -540,6 +715,7 @@
   <section class="slide" data-title="LinkedIn: more than an online résumé">
     <div class="slide__kicker">Part 4 · Digital presence</div>
     <h2>LinkedIn: more than an online résumé</h2>
+    <figure class="photo-fig"><img src="../assets/img/team-casual.jpg" alt="Colleagues leaning in to talk over documents at a table, networking" loading="lazy" width="1200" height="1043"><figcaption>Connect. Follow. Engage: LinkedIn is a professional network.</figcaption></figure>
     <div class="grid grid-2">
       <div class="card">
         <h3>A useful profile communicates</h3>
@@ -593,6 +769,13 @@
       <li><div><h3>Prove</h3><p>Give brief evidence.</p></div></li>
       <li><div><h3>Close</h3><p>Express interest in discussing your suitability further and thank the reader.</p></div></li>
     </ol>
+    <figure class="chart-card mt v-anim" style="max-width:440px;margin-left:auto;margin-right:auto">
+      <svg viewBox="0 0 360 470" role="img" aria-label="Wireframe of a cover letter with four blocks: Open, Connect, Prove and Close">
+        <rect x="8" y="6" width="344" height="458" rx="16" fill="#fff" stroke="var(--line-strong)" stroke-width="1.5"/>
+        <g class="v-pop" style="--i:0"><rect x="28" y="30" width="6" height="71" rx="3" fill="var(--cyan)"/><text x="48" y="48" class="t4 lbl-strong" style="font-size:18px">1 · Open</text><text x="48" y="70" class="t1" style="font-size:14px">State the role and your interest.</text><rect x="48" y="83" width="250" height="5" rx="2.5" fill="var(--line)"/><rect x="48" y="94" width="200" height="5" rx="2.5" fill="var(--line)"/></g><g class="v-pop" style="--i:1"><rect x="28" y="121" width="6" height="105" rx="3" fill="var(--violet)"/><text x="48" y="139" class="t4 lbl-strong" style="font-size:18px">2 · Connect</text><text x="48" y="161" class="t1" style="font-size:14px">Connect your strongest skills and</text><text x="48" y="178" class="t1" style="font-size:14px">experience to what the employer</text><text x="48" y="195" class="t1" style="font-size:14px">needs.</text><rect x="48" y="208" width="250" height="5" rx="2.5" fill="var(--line)"/><rect x="48" y="219" width="200" height="5" rx="2.5" fill="var(--line)"/></g><g class="v-pop" style="--i:2"><rect x="28" y="246" width="6" height="71" rx="3" fill="var(--pink)"/><text x="48" y="264" class="t4 lbl-strong" style="font-size:18px">3 · Prove</text><text x="48" y="286" class="t1" style="font-size:14px">Give brief evidence.</text><rect x="48" y="299" width="250" height="5" rx="2.5" fill="var(--line)"/><rect x="48" y="310" width="200" height="5" rx="2.5" fill="var(--line)"/></g><g class="v-pop" style="--i:3"><rect x="28" y="337" width="6" height="105" rx="3" fill="var(--lime)"/><text x="48" y="355" class="t4 lbl-strong" style="font-size:18px">4 · Close</text><text x="48" y="377" class="t1" style="font-size:14px">Express interest in discussing</text><text x="48" y="394" class="t1" style="font-size:14px">your suitability; thank the</text><text x="48" y="411" class="t1" style="font-size:14px">reader.</text><rect x="48" y="424" width="250" height="5" rx="2.5" fill="var(--line)"/><rect x="48" y="435" width="200" height="5" rx="2.5" fill="var(--line)"/></g>
+      </svg>
+      <figcaption>A cover letter in four moves. Do not repeat your résumé: interpret it for the employer.</figcaption>
+    </figure>
     <div class="callout mt"><p>Don't repeat your résumé. <strong>Interpret it</strong> for the employer.</p></div>
     <div class="gapfill mt" data-xp="15">
       <p class="small muted">Recall the four moves in order.</p>
@@ -630,6 +813,7 @@
     <div class="slide__kicker">Part 6 · AI</div>
     <h2>Can I use AI? <span class="grad-text">Yes, responsibly.</span></h2>
     <p class="small">Recruiters themselves are increasingly using AI, so understanding AI-assisted recruitment is part of contemporary workplace preparation.</p>
+    <figure class="photo-fig mt"><img src="../assets/img/chart-screen.jpg" alt="A screen full of data charts: tools can analyse text and numbers, but you stay responsible for what you submit" loading="lazy" width="1200" height="1043"><figcaption>Use AI as a coach beside your own notes, not as a ghostwriter.</figcaption></figure>
     <div class="sorter mt" data-xp="15" data-label="Good use of AI, or not allowed?">
       <div class="sorter__pool">
         <button class="chip" data-bin="ok">Analyse a job advertisement</button>
@@ -660,6 +844,20 @@
     <p>Before you submit anything AI has helped you write, ask yourself:</p>
     <div class="example">“If an interviewer asks me about this sentence, can I explain and defend it?”</div>
     <p class="mt">If the answer is <strong>NO</strong>, don't submit it.</p>
+    <figure class="chart-card mt v-anim" style="max-width:520px;margin-left:auto;margin-right:auto">
+      <svg viewBox="0 0 420 330" role="img" aria-label="Decision diagram: a sentence AI helped you write. Can you explain and defend it? If yes, you can submit it. If no, do not submit it.">
+        <g class="v-pop" style="--i:0"><rect x="70" y="6" width="280" height="44" rx="22" fill="var(--text)"/><text x="210" y="34" text-anchor="middle" class="t2 w">A sentence AI helped you write</text></g>
+        <path d="M210 52 V78" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round"/>
+        <g class="v-pop" style="--i:1"><path d="M210 80 L350 136 L210 192 L70 136 Z" fill="color-mix(in srgb, var(--violet) 10%, #fff)" stroke="var(--violet)" stroke-width="2.5" stroke-linejoin="round"/><text x="210" y="130" text-anchor="middle" class="t2 lbl-strong">Can I explain</text><text x="210" y="150" text-anchor="middle" class="t2 lbl-strong">and defend it?</text></g>
+        <path d="M120 164 L84 214 V238" fill="none" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M300 164 L336 214 V238" fill="none" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="86" y="200" text-anchor="end" class="t1" style="font-weight:700;font-size:16px;fill:var(--red)">NO</text>
+        <text x="334" y="200" class="t1" style="font-weight:700;font-size:16px;fill:var(--lime)">YES</text>
+        <g class="v-pop" style="--i:3"><rect x="14" y="240" width="140" height="60" rx="18" fill="var(--red)"/><text x="84" y="266" text-anchor="middle" class="t2 w">✗ Don't submit</text><text x="84" y="286" text-anchor="middle" class="t3 w" style="font-weight:500;font-size:13.5px">delete or rewrite it</text></g>
+        <g class="v-pop" style="--i:4"><rect x="266" y="240" width="140" height="60" rx="18" fill="var(--lime)"/><text x="336" y="266" text-anchor="middle" class="t2 w">✓ Submit</text><text x="336" y="286" text-anchor="middle" class="t3 w" style="font-weight:500;font-size:13.5px">you can defend it</text></g>
+      </svg>
+      <figcaption>The Interview Test as a decision.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">An AI tool adds “Reduced energy costs by 20%” to your internship bullet. You did not measure this. What do you do?</p>
       <div class="quiz__opts">
@@ -710,6 +908,7 @@
       <div class="card"><p>Case / task-based</p></div>
       <div class="card"><p>Recorded / asynchronous</p></div>
     </div>
+    <figure class="photo-fig mt"><img src="../assets/img/handshake.jpg" alt="Two people shaking hands at the start of a job interview" loading="lazy" width="1200" height="1043"><figcaption>Whatever the format, the purpose is the same.</figcaption></figure>
     <p class="mt">Different format. Same purpose:</p>
     <div class="example">Can you demonstrate that you are suitable for the role?</div>
     <div class="quiz mt" data-xp="10">
@@ -752,6 +951,7 @@
       <div class="flip"><div class="flip__front"><span class="tag">A</span><h4 class="mt">Action</h4></div><div class="flip__back"><p>What did you do?</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">R</span><h4 class="mt">Result</h4></div><div class="flip__back"><p>What happened?</p></div></div>
     </div>
+    <figure class="photo-fig"><img src="../assets/img/team-table.jpg" alt="Colleagues working together around a table, the kind of team situation a STAR answer describes" loading="lazy" width="1200" height="521"><figcaption>A real team situation is the raw material for a STAR answer.</figcaption></figure>
     <p class="small muted">STAR remains a widely used framework for structuring evidence-based interview responses.</p>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">“What did <em>you</em> do?” belongs to which STAR element?</p>
@@ -768,6 +968,14 @@
   <section class="slide" data-title="STAR challenge">
     <div class="slide__kicker"><span class="tag tag--pink">Challenge</span> Part 7 · Interview</div>
     <h2>“Tell me about a time you worked successfully in a team.”</h2>
+    <figure class="chart-card v-anim">
+      <p class="v-title">Your three minutes</p>
+      <div class="v-co" role="img" aria-label="Timeline bar: 2 minutes to prepare, then 60 seconds to speak">
+        <div class="v-grow" style="flex:2;background:var(--cyan);--i:0"><span class="n">Prepare</span><b>2 min</b><span class="t">Note S, T, A and R in a few words each.</span></div>
+        <div class="v-grow" style="flex:1;background:var(--lime);--i:1"><span class="n">Speak</span><b>60 s</b><span class="t">Tell your answer aloud.</span></div>
+      </div>
+      <figcaption>The two phases of the timer below.</figcaption>
+    </figure>
     <div class="grid grid-2">
       <div>
         <div class="write" data-min="40" data-xp="20" data-label="Prepare your STAR answer">
@@ -797,6 +1005,13 @@
       <div class="flip"><div class="flip__front"><h4>Match</h4></div><div class="flip__back"><p>Identify your relevant skills and experiences.</p></div></div>
       <div class="flip"><div class="flip__front"><h4>Prove</h4></div><div class="flip__back"><p>Use evidence, not empty claims.</p></div></div>
       <div class="flip"><div class="flip__front"><h4>Communicate</h4></div><div class="flip__back"><p>Present your value clearly in your résumé, digital presence, cover letter and interview.</p></div></div>
+    </div>
+    <p class="pull">Use evidence, not empty claims.<cite>Prove · the one thing to remember</cite></p>
+    <div class="keystats v-anim v-ks">
+      <div class="keystat"><b data-count="4">4</b><span>steps: find, match, prove, communicate</span></div>
+      <div class="keystat"><b data-count="7">7</b><span>stages in the recruitment process</span></div>
+      <div class="keystat"><b data-count="4">4</b><span>STAR elements for an interview answer</span></div>
+      <div class="keystat"><b data-count="3">3</b><span>questions a cover letter answers</span></div>
     </div>
     <p class="mt">Your qualification may get you into the applicant pool. Your ability to communicate your value can help you stand out.</p>
     <div class="write mt" data-min="15" data-xp="15" data-label="Final reflection">
@@ -895,5 +1110,25 @@
 
 </main>
 <script src="../assets/js/deck.js"></script>
+<script>
+/* visual pass: draw charts / count numbers when scrolled into view (reduced-motion safe) */
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.v-anim'));
+  var st=/[?&]static\b/.test(location.search);
+  var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(st||rm||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+  document.documentElement.classList.add('v-js');
+  function count(root){
+    [].forEach.call(root.querySelectorAll('[data-count]'),function(n){
+      var to=parseFloat(n.getAttribute('data-count')),suf=n.getAttribute('data-suf')||'',t0=null,dur=1100;
+      function f(t){if(t0===null)t0=t;var p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);n.textContent=Math.round(to*e)+suf;if(p<1)requestAnimationFrame(f);}
+      n.textContent='0'+suf;requestAnimationFrame(f);
+    });
+  }
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');count(e.target);io.unobserve(e.target);}});},{threshold:.2});
+  els.forEach(function(e){io.observe(e);});
+})();
+</script>
+
 </body>
 </html>

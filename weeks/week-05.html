@@ -15,12 +15,14 @@
 .vz-svg--wide{max-width:760px}
 .chart-card .vz-h{font:700 1.05rem/1.25 var(--display);letter-spacing:-.01em;margin:0 0 .15rem;color:var(--text)}
 .chart-card .vz-sub{font-size:.88rem;color:var(--muted);margin:0 0 .9rem}
+.chart-card svg.vz-svg text{font-size:15px}
 .chart-card svg text.t-b{font-weight:700}
 .chart-card svg text.t-w{fill:#fff}
 .chart-card svg text.t-cy{fill:var(--cyan)}.chart-card svg text.t-vi{fill:var(--violet)}.chart-card svg text.t-pk{fill:var(--pink)}
 .chart-card svg text.t-gn{fill:var(--lime)}.chart-card svg text.t-am{fill:var(--amber)}.chart-card svg text.t-rd{fill:var(--red)}
 .chart-card svg text.t-tx{fill:var(--text)}
 .chart-card svg text.t-s{font-size:15px}.chart-card svg text.t-m{font-size:17px}.chart-card svg text.t-l{font-size:22px}
+@media (max-width:560px){.chart-card{padding:1.1rem .85rem .95rem}}
 [data-tip]{cursor:help;outline:none}
 svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
 [data-tip]:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
@@ -43,7 +45,7 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
 .vz-stack-l{display:flex;gap:4px;font-size:.8rem;color:var(--muted)}
 .vz-stack-l span{text-align:center}
 /* chips / sentence breakdown */
-.vz-sent{font:500 1.05rem/2.6 var(--font);margin:.2rem 0 1rem}
+.vz-sent{font:500 1.05rem/3.2 var(--font);margin:.2rem 0 .6rem}
 .vz-p{display:inline-block;position:relative;padding:0 .35em;border-radius:8px;margin:0 .05em;border-bottom:3px solid}
 .vz-p small{position:absolute;left:0;top:100%;margin-top:.1rem;font:700 .62rem/1 var(--font);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .vz-p--cy{background:rgba(0,113,227,.1);border-color:var(--cyan)}.vz-p--cy small{color:var(--cyan)}
@@ -54,7 +56,7 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
 .vz-sentbox{padding:.2rem 0 1.3rem;border-bottom:1px solid var(--line);margin-bottom:1rem}
 .vz-sentbox:last-of-type{border-bottom:0;margin-bottom:0}
 .vz-sentbox h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .2rem}
-@media (max-width:560px){.vz-sent{font-size:.95rem;line-height:2.5}}
+@media (max-width:560px){.vz-sent{font-size:.95rem;line-height:3.1}}
 /* timeline */
 .vz-tl{display:grid;grid-template-columns:repeat(10,1fr);gap:.5rem;position:relative;margin:.8rem 0 .4rem}
 .vz-tl::before{content:"";position:absolute;left:4%;right:4%;top:19px;height:3px;background:var(--line);border-radius:2px}
@@ -445,20 +447,20 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
           <rect class="vz-grow" style="fill:var(--cyan);--d:.25s" fill-opacity=".55" x="60" y="176" width="75" height="26" rx="6" data-tip="Landscaping: 22 to 27, up 5 thousand m³ (+22.7%). A big percentage from a small start."/>
           <text class="t-b t-cy t-m" x="145" y="195">▲ +5</text>
           <text class="t-b t-tx t-m" x="10" y="234">Cleaning</text>
-          <rect class="vz-grow" style="fill:var(--pink);transform-origin:right center;--d:.35s" x="45" y="244" width="15" height="12" rx="3" data-tip="Cleaning: 34 to 33, down 1 thousand m³ (−2.9%). The only department to fall."/>
-          <text class="t-b t-pk t-m" x="75" y="255">▼ −1</text>
+          <rect class="vz-grow" style="fill:var(--pink);transform-origin:right center;--d:.35s" x="45" y="244" width="15" height="26" rx="4" data-tip="Cleaning: 34 to 33, down 1 thousand m³ (−2.9%). The only department to fall."/>
+          <text class="t-b t-pk t-m" x="75" y="263">▼ −1</text>
         </svg>
         <figcaption>Figure C. Landscaping rose 22.7% but only by 5; the cooling tower rose 22.9% by 22.</figcaption>
       </figure>
       <figure class="chart-card">
         <p class="vz-h">Who drove the rise?</p>
         <p class="vz-sub">Share of the +39 thousand m³ total increase.</p>
-        <svg class="vz-svg" style="max-width:340px" viewBox="0 0 240 240" role="img" aria-label="Donut chart. The cooling tower accounts for 56 percent of the total increase in water use. All other changes together make up 44 percent.">
+        <svg class="vz-svg" style="max-width:340px" viewBox="0 0 240 262" role="img" aria-label="Donut chart. The cooling tower accounts for 56 percent of the total increase in water use. All other changes together make up 44 percent.">
           <circle cx="120" cy="120" r="82" fill="none" style="stroke:var(--bg-2)" stroke-width="30"/>
           <circle class="vz-draw" cx="120" cy="120" r="82" fill="none" style="stroke:var(--cyan);--len:515" stroke-width="30" stroke-linecap="round" stroke-dasharray="515" stroke-dashoffset="225" transform="rotate(-90 120 120)" data-tip="Cooling tower: 22 of the 39 thousand m³ increase, 56%"/>
           <text class="t-b t-tx" x="120" y="122" text-anchor="middle" style="font-size:44px;letter-spacing:-.03em">56%</text>
           <text x="120" y="146" text-anchor="middle" style="font-size:15px">cooling tower</text>
-          <text x="120" y="224" text-anchor="middle" style="font-size:14px">everything else: 44%</text>
+          <text x="120" y="254" text-anchor="middle" style="font-size:14px">everything else: 44%</text>
         </svg>
         <figcaption>Figure D. “Accounted for over half of the total rise”: this is the sentence the recommendation rests on.</figcaption>
       </figure>
@@ -569,17 +571,16 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
     <figure class="chart-card">
       <p class="vz-h">A map of the language of change</p>
       <p class="vz-sub">Follow the line: every stretch has its own verbs.</p>
-      <svg class="vz-svg" viewBox="0 0 480 300" role="img" aria-label="A line that rises, peaks, falls, bottoms out and then plateaus, labelled with vocabulary. Rising: rise, increase, grow, climb, surge, escalate. Peak: peak at, reach a high of. Falling: fall, decrease, decline, drop, contract, plummet. Trough: bottom out at, reach a low of. Plateau: remain stable, stay level, plateau, hold steady.">
-        <line class="grid-l" x1="10" y1="250" x2="470" y2="250"/>
-        <polyline class="vz-draw" style="stroke:var(--text);--len:700" points="20,232 190,52 310,214 345,172 466,172" fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="700"/>
-        <g data-tip="Up: rise, increase, grow, climb, surge, escalate. Adverbs: sharply, steadily, slightly, marginally."><path d="M26 226 L186 58" style="stroke:var(--cyan)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
-          <text class="t-b t-cy t-m" x="10" y="108">▲ Up</text><text x="10" y="128">rise · increase</text><text x="10" y="146">grow · climb</text><text x="10" y="164">surge · escalate</text></g>
-        <g data-tip="Highest: peak at, reach a high of. Noun: a peak, a high. 'the highest recorded'."><circle class="vz-fade" cx="190" cy="52" r="9" style="fill:var(--amber)"/>
-          <text class="t-b t-am t-m" x="190" y="26" text-anchor="middle">Peak</text><text x="206" y="30">peak at · a high of</text></g>
-        <g data-tip="Down: fall, decrease, decline, drop, contract, plummet. Adverbs: sharply, gradually, slightly."><path d="M196 62 L306 208" style="stroke:var(--pink)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
+      <svg class="vz-svg" viewBox="0 0 480 280" role="img" aria-label="A line that rises, peaks, falls, bottoms out and then plateaus, labelled with vocabulary. Rising: rise, increase, grow, climb, surge, escalate. Peak: peak at, reach a high of. Falling: fall, decrease, decline, drop, contract, plummet. Trough: bottom out at, reach a low of. Plateau: remain stable, stay level, plateau, hold steady.">
+                <polyline class="vz-draw" style="stroke:var(--text);--len:700" points="20,240 190,62 310,214 345,172 466,172" fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="700"/>
+        <g data-tip="Up: rise, increase, grow, climb, surge, escalate. Adverbs: sharply, steadily, slightly, marginally."><path d="M26 234 L186 68" style="stroke:var(--cyan)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
+          <text class="t-b t-cy t-m" x="104" y="170">▲ Up</text><text x="104" y="190">rise · increase</text><text x="104" y="208">grow · climb</text><text x="104" y="226">surge · escalate</text></g>
+        <g data-tip="Highest: peak at, reach a high of. Noun: a peak, a high. 'the highest recorded'."><circle class="vz-fade" cx="190" cy="62" r="9" style="fill:var(--amber)"/>
+          <text class="t-b t-am t-m" x="190" y="20" text-anchor="middle">Peak</text><text x="190" y="38" text-anchor="middle">peak at · a high of</text></g>
+        <g data-tip="Down: fall, decrease, decline, drop, contract, plummet. Adverbs: sharply, gradually, slightly."><path d="M196 72 L306 208" style="stroke:var(--pink)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
           <text class="t-b t-pk t-m" x="262" y="92">▼ Down</text><text x="262" y="112">fall · decline</text><text x="262" y="130">drop · contract</text><text x="262" y="148">plummet</text></g>
         <g data-tip="Lowest: bottom out at, reach a low of. Noun: a trough, a low."><circle class="vz-fade" cx="310" cy="214" r="9" style="fill:var(--violet)"/>
-          <text class="t-b t-vi t-m" x="296" y="240" text-anchor="end">Trough</text><text x="296" y="270" text-anchor="end">bottom out at · a low of</text></g>
+          <text class="t-b t-vi t-m" x="300" y="246" text-anchor="middle">Trough</text><text x="300" y="266" text-anchor="middle">bottom out at · a low of</text></g>
         <g data-tip="No change: remain stable, stay level, plateau, hold steady. Adverbs: broadly, largely, roughly."><path d="M352 172 H462" style="stroke:var(--lime)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
           <text class="t-b t-gn t-m" x="352" y="200">▬ Level</text><text x="352" y="220">plateau · stay level</text><text x="352" y="238">hold steady</text></g>
       </svg>
@@ -882,14 +883,14 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
         <rect x="4" y="4" width="472" height="422" rx="16" style="fill:var(--bg-2);stroke:var(--line-strong)" stroke-width="1.5"/>
         <g data-tip="01 Title and group: names the goal and the system. Group members and matric numbers."><rect x="14" y="14" width="452" height="52" rx="10" style="fill:var(--text)"/>
           <text class="t-w t-b" x="30" y="46" style="font-size:18px;fill:#fff">01 · Title and group</text><rect x="330" y="32" width="120" height="7" rx="3.5" style="fill:#fff" fill-opacity=".5"/><rect x="360" y="46" width="90" height="7" rx="3.5" style="fill:#fff" fill-opacity=".3"/></g>
-        <g data-tip="02 Introduction: how big is the problem, for whom? One cited statistic. Why this SDG."><rect x="14" y="76" width="144" height="104" rx="10" style="fill:var(--cyan)" fill-opacity=".12"/><text class="t-b t-cy" x="26" y="100" style="font-size:15px">02 · Introduction</text><rect x="26" y="114" width="112" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="129" width="96" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="144" width="104" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="159" width="70" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/></g>
-        <g data-tip="03 Three problems: each with evidence, a figure, a photograph or a cited source."><rect x="14" y="190" width="144" height="226" rx="10" style="fill:var(--violet)" fill-opacity=".1"/><text class="t-b t-vi" x="26" y="214" style="font-size:15px">03 · Three problems</text>
+        <g data-tip="02 Introduction: how big is the problem, for whom? One cited statistic. Why this SDG."><rect x="14" y="76" width="144" height="104" rx="10" style="fill:var(--cyan)" fill-opacity=".12"/><text class="t-b t-cy" x="26" y="100" style="font-size:13px">02 · Introduction</text><rect x="26" y="114" width="112" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="129" width="96" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="144" width="104" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="159" width="70" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/></g>
+        <g data-tip="03 Three problems: each with evidence, a figure, a photograph or a cited source."><rect x="14" y="190" width="144" height="226" rx="10" style="fill:var(--violet)" fill-opacity=".1"/><text class="t-b t-vi" x="26" y="214" style="font-size:13px">03 · Three problems</text>
           <rect x="24" y="224" width="124" height="56" rx="9" style="fill:#fff;stroke:var(--violet)" stroke-width="1.5"/><text class="t-b t-tx" x="34" y="246" style="font-size:14px">Problem 1</text><text x="34" y="264" style="font-size:12.5px">with evidence</text><rect x="24" y="288" width="124" height="56" rx="9" style="fill:#fff;stroke:var(--violet)" stroke-width="1.5"/><text class="t-b t-tx" x="34" y="310" style="font-size:14px">Problem 2</text><text x="34" y="328" style="font-size:12.5px">with evidence</text><rect x="24" y="352" width="124" height="56" rx="9" style="fill:#fff;stroke:var(--violet)" stroke-width="1.5"/><text class="t-b t-tx" x="34" y="374" style="font-size:14px">Problem 3</text><text x="34" y="392" style="font-size:12.5px">with evidence</text></g>
-        <g data-tip="04 Three solutions: each compared on cost, effect and time. A verbal table works well here."><rect x="168" y="76" width="144" height="340" rx="10" style="fill:var(--amber)" fill-opacity=".1"/><text class="t-b t-am" x="180" y="100" style="font-size:15px">04 · Three solutions</text>
+        <g data-tip="04 Three solutions: each compared on cost, effect and time. A verbal table works well here."><rect x="168" y="76" width="144" height="340" rx="10" style="fill:var(--amber)" fill-opacity=".1"/><text class="t-b t-am" x="180" y="100" style="font-size:13px">04 · Three solutions</text>
           <rect x="178" y="112" width="124" height="88" rx="9" style="fill:#fff;stroke:var(--amber)" stroke-width="1.5"/><text class="t-b t-tx" x="188" y="134" style="font-size:14px">Solution 1</text><text x="188" y="152" style="font-size:12.5px">cost · effect · time</text><rect x="178" y="208" width="124" height="88" rx="9" style="fill:#fff;stroke:var(--amber)" stroke-width="1.5"/><text class="t-b t-tx" x="188" y="230" style="font-size:14px">Solution 2</text><text x="188" y="248" style="font-size:12.5px">cost · effect · time</text><rect x="178" y="304" width="124" height="88" rx="9" style="fill:#fff;stroke:var(--amber)" stroke-width="1.5"/><text class="t-b t-tx" x="188" y="326" style="font-size:14px">Solution 3</text><text x="188" y="344" style="font-size:12.5px">cost · effect · time</text></g>
-        <g data-tip="05 Conclusion and recommendation: which solution first, and why. One large number the reader will remember."><rect x="322" y="76" width="144" height="236" rx="10" style="fill:var(--lime)" fill-opacity=".12"/><text class="t-b t-gn" x="334" y="100" style="font-size:15px">05 · Conclusion</text><text class="t-b t-gn" x="334" y="118" style="font-size:15px">+ recommendation</text>
+        <g data-tip="05 Conclusion and recommendation: which solution first, and why. One large number the reader will remember."><rect x="322" y="76" width="144" height="236" rx="10" style="fill:var(--lime)" fill-opacity=".12"/><text class="t-b t-gn" x="334" y="100" style="font-size:13px">05 · Conclusion</text><text class="t-b t-gn" x="334" y="118" style="font-size:13px">+ recommendation</text>
           <text class="t-b t-gn" x="394" y="196" text-anchor="middle" style="font-size:54px;letter-spacing:-.04em">00%</text><text x="394" y="220" text-anchor="middle" style="font-size:13px">one large number</text><rect x="334" y="246" width="116" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/><rect x="334" y="261" width="100" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/><rect x="334" y="276" width="108" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/></g>
-        <g data-tip="06 References: APA 7 or IEEE, consistent. Every figure and every fact traced to a source."><rect x="322" y="322" width="144" height="94" rx="10" style="fill:var(--pink)" fill-opacity=".1"/><text class="t-b t-pk" x="334" y="346" style="font-size:15px">06 · References</text><rect x="334" y="360" width="116" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/><rect x="334" y="374" width="100" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/><rect x="334" y="388" width="108" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/></g>
+        <g data-tip="06 References: APA 7 or IEEE, consistent. Every figure and every fact traced to a source."><rect x="322" y="322" width="144" height="94" rx="10" style="fill:var(--pink)" fill-opacity=".1"/><text class="t-b t-pk" x="334" y="346" style="font-size:13px">06 · References</text><rect x="334" y="360" width="116" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/><rect x="334" y="374" width="100" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/><rect x="334" y="388" width="108" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/></g>
       </svg>
       <figcaption>Figure I. Same logic as the report: context, evidence, action.</figcaption>
     </figure>
