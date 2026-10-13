@@ -340,6 +340,7 @@ details.reveal > .reveal__body > :last-child { margin-bottom: 0; }
 }
 .flip__front { background: linear-gradient(160deg, rgba(62, 230, 255, 0.12), rgba(155, 123, 255, 0.1)); }
 .flip__front h4 { font-size: 1.15rem; margin: 0; }
+.flip__front .tag, .flip__back .tag { align-self: flex-start; }
 .flip__front::after { content: "tap to flip ↻"; position: absolute; bottom: 0.6rem; right: 0.9rem; font: 0.68rem var(--mono); color: var(--dim); }
 .flip__back { background: var(--panel-solid); transform: rotateY(180deg); font-size: 0.93rem; }
 .flip__back > :last-child { margin-bottom: 0; }
