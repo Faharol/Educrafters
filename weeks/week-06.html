@@ -45,8 +45,8 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
 .vz-stack-l{display:flex;gap:4px;font-size:.8rem;color:var(--muted)}
 .vz-stack-l span{text-align:center}
 /* chips / sentence breakdown */
-.vz-sent{font:500 1.05rem/3.2 var(--font);margin:.2rem 0 .6rem}
-.vz-p{display:inline-block;position:relative;padding:0 .35em;border-radius:8px;margin:0 .22em;min-width:3.2em;text-align:center;border-bottom:3px solid}
+.vz-sent{font:500 1.05rem/2.8 var(--font);margin:.2rem 0 .6rem}
+.vz-p{display:inline-block;position:relative;padding:.1em .4em;line-height:1.45;vertical-align:middle;border-radius:8px;margin:0 .22em;min-width:3.2em;text-align:center;border-bottom:3px solid}
 .vz-p small{position:absolute;left:0;top:100%;margin-top:.1rem;font:700 .62rem/1 var(--font);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .vz-p--cy{background:rgba(0,113,227,.1);border-color:var(--cyan)}.vz-p--cy small{color:var(--cyan)}
 .vz-p--vi{background:rgba(110,79,246,.1);border-color:var(--violet)}.vz-p--vi small{color:var(--violet)}
@@ -56,7 +56,7 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
 .vz-sentbox{padding:.2rem 0 1.3rem;border-bottom:1px solid var(--line);margin-bottom:1rem}
 .vz-sentbox:last-of-type{border-bottom:0;margin-bottom:0}
 .vz-sentbox h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .2rem}
-@media (max-width:560px){.vz-sent{font-size:.95rem;line-height:3.1}}
+@media (max-width:560px){.vz-sent{font-size:.95rem;line-height:2.8}}
 /* extra chips, ladders, scope rows */
 .vz-p--gy{background:rgba(110,110,115,.12);border-color:var(--muted)}.vz-p--gy small{color:var(--muted)}
 .vz-hl-bad{background:rgba(215,0,21,.12);color:var(--red);border-radius:4px;padding:0 .12em;font-weight:700}
@@ -564,7 +564,7 @@ svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
     <figure class="chart-card">
       <p class="vz-h">Inside a strong recommendation</p>
       <p class="vz-sub">The weak version has none of the five slots filled.</p>
-      <p class="vz-sent" style="margin-bottom:.2rem"><span style="color:var(--red);font-weight:700;font-size:.85rem;letter-spacing:.05em">WEAK &nbsp;</span> <span style="text-decoration:line-through;text-decoration-color:var(--red)">“The company should use less water.”</span></p>
+      <p class="vz-sent" style="margin-bottom:.2rem;line-height:1.8"><span style="color:var(--red);font-weight:700;font-size:.85rem;letter-spacing:.05em">WEAK &nbsp;</span> <span style="text-decoration:line-through;text-decoration-color:var(--red)">“The company should use less water.”</span></p>
       <p class="vz-sent">“The <span class="vz-p vz-p--cy">Facilities Department<small>who</small></span> <span class="vz-p vz-p--am">should<small>urgency</small></span> <span class="vz-p vz-p--vi">install a closed-loop cooling system<small>what</small></span> <span class="vz-p vz-p--gn">by the third quarter<small>when</small></span>, <span class="vz-p vz-p--pk">to cut cooling water use by 20%<small>target</small></span>.”</p>
       <figcaption>Figure F. Who, what exactly, by when, a measurable target. Colour shows the slot, the label names it.</figcaption>
     </figure>
