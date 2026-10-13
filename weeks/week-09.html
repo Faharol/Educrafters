@@ -9,6 +9,71 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
+<style>
+/* visual-pass additions (scoped to vz-* classes) */
+.vz-pipe{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:.6rem;align-items:stretch}
+.vz-node{background:var(--bg-2);border-radius:20px;padding:1.2rem 1.2rem 1.1rem;position:relative}
+.vz-node .n{font:700 .72rem var(--font);letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)}
+.vz-node h4{font-size:1.35rem;margin:.25rem 0 .4rem}
+.vz-node p{font-size:.88rem;margin:0;color:var(--muted)}
+.vz-node .eg{font:italic 500 .9rem var(--serif);color:var(--text);margin-top:.6rem}
+.vz-arrow{align-self:center;font-size:1.6rem;color:var(--line-strong)}
+@media(max-width:760px){.vz-pipe{grid-template-columns:1fr}.vz-arrow{transform:rotate(90deg);justify-self:center}}
+.vz-diff{display:grid;gap:.8rem}
+.vz-diff .row{border-radius:16px;padding:1rem 1.1rem;font:500 1rem/1.55 var(--serif)}
+.vz-diff .row small{display:block;font:700 .7rem var(--font);letter-spacing:.09em;text-transform:uppercase;margin-bottom:.35rem}
+.vz-diff .raw{background:var(--bg-2)}.vz-diff .raw small{color:var(--muted)}
+.vz-diff .weak{background:rgba(215,0,21,.06)}.vz-diff .weak small{color:var(--red)}
+.vz-diff .strong{background:rgba(26,143,60,.08)}.vz-diff .strong small{color:var(--lime)}
+.vz-diff mark{background:none;border-radius:5px;padding:0 .18em;margin:0 -.05em}
+.vz-diff .weak mark{background:rgba(215,0,21,.16);text-decoration:line-through;text-decoration-color:rgba(215,0,21,.5)}
+.vz-diff .strong mark{background:rgba(26,143,60,.2);font-weight:650}
+.vz-barwrap{margin:.4rem 0 .2rem}
+.vz-bar{display:flex;gap:4px;height:4rem;border-radius:18px;overflow:hidden}
+.vz-seg{display:flex;flex-direction:column;justify-content:center;padding:0 .7rem;color:#fff;min-width:0;white-space:nowrap;overflow:hidden}
+.vz-seg b{font:800 1.15rem var(--display);letter-spacing:-.02em;color:#fff;line-height:1.1}
+.vz-seg span{font:600 .72rem var(--font);opacity:.92}
+.vz-seg.c1{background:var(--cyan)}.vz-seg.c2{background:var(--violet)}.vz-seg.c3{background:var(--pink)}.vz-seg.c4{background:var(--lime)}.vz-seg.c5{background:var(--amber)}.vz-seg.cg{background:#c9c9d1;color:var(--text)}
+.vz-seg.cg b,.vz-seg.cg span{color:var(--text)}
+.vz-ticks{display:flex;justify-content:space-between;font:600 .72rem var(--font);color:var(--muted);margin-top:.4rem}
+.vz-tl{display:flex;justify-content:space-between;font:500 .78rem var(--font);color:var(--muted);margin-top:.5rem}
+.vz-ladder{display:grid;gap:.55rem}
+.vz-ladder .r{display:grid;grid-template-columns:1fr 2.2rem 1.3fr;gap:.5rem;align-items:center}
+.vz-ladder .lo{background:var(--bg-2);border-radius:12px;padding:.6rem .9rem;color:var(--muted);font-weight:500;text-decoration:line-through;text-decoration-color:var(--line-strong)}
+.vz-ladder .hi{background:rgba(0,113,227,.09);border-radius:12px;padding:.6rem .9rem;color:var(--cyan);font-weight:650}
+.vz-ladder .ar{text-align:center;color:var(--line-strong);font-size:1.2rem}
+.vz-ladder .hd{font:700 .7rem var(--font);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.vz-two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:640px){.vz-two{grid-template-columns:1fr}}
+.vz-col{border-radius:18px;padding:1.1rem 1.2rem}
+.vz-col h4{font-size:1rem;margin:0 0 .5rem}
+.vz-col.bad{background:rgba(215,0,21,.06)}.vz-col.good{background:rgba(26,143,60,.08)}
+.vz-col p{margin:.15rem 0;font-size:.92rem}
+.vz-col .tagline{font:700 .7rem var(--font);letter-spacing:.09em;text-transform:uppercase;margin-bottom:.4rem}
+.vz-col.bad .tagline{color:var(--red)}.vz-col.good .tagline{color:var(--lime)}
+.vz-tip{position:fixed;z-index:200;pointer-events:none;background:#1d1d1f;color:#fff;font:500 .8rem/1.35 var(--font);padding:.5rem .75rem;border-radius:10px;max-width:240px;opacity:0;transition:opacity .15s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.vz-tip.on{opacity:1}
+[data-tip]{cursor:help;outline-offset:3px}
+.vz-icons{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.vz-ic{background:var(--bg-2);border-radius:20px;padding:1.1rem 1.2rem}
+.sec--alt .vz-ic{background:#fff}
+.vz-ic svg{width:44px;height:44px;display:block;margin-bottom:.5rem}
+.vz-ic h4{font-size:1rem;margin:0 0 .25rem}
+.vz-ic p{font-size:.85rem;margin:0;color:var(--muted)}
+.vz-ic .crit{display:inline-block;margin-top:.5rem;font:600 .7rem var(--font);padding:.2em .65em;border-radius:980px;background:rgba(0,113,227,.1);color:var(--cyan)}
+html.vz-on .vz-reveal{clip-path:inset(0 100% 0 0 round 18px);transition:clip-path 1.2s cubic-bezier(.2,.8,.2,1)}
+html.vz-on .vz.in .vz-reveal{clip-path:inset(0 0 0 0 round 18px)}
+html.vz-on .vz .vz-grow{transform-box:fill-box;transform-origin:left center;transform:scaleX(0);transition:transform 1.1s cubic-bezier(.2,.8,.2,1)}
+html.vz-on .vz .vz-growy{transform-box:fill-box;transform-origin:center bottom;transform:scaleY(0);transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+html.vz-on .vz.in .vz-grow,html.vz-on .vz.in .vz-growy{transform:none}
+html.vz-on .vz .vz-fade{opacity:0;transition:opacity .6s .5s}
+html.vz-on .vz.in .vz-fade{opacity:1}
+@media(prefers-reduced-motion:reduce){html.vz-on .vz-reveal,html.vz-on .vz .vz-grow,html.vz-on .vz .vz-growy,html.vz-on .vz .vz-fade{clip-path:none!important;transform:none!important;opacity:1!important;transition:none!important}}
+.vz-ring{display:grid;grid-template-columns:auto 1fr;gap:1.4rem;align-items:center}
+.vz-ring svg{width:150px;height:150px}
+@media(max-width:520px){.vz-ring{grid-template-columns:1fr;justify-items:center;text-align:center}}
+</style>
+
 </head>
 <body data-week="09" data-title="Language Skills Consolidation">
 <main class="deck">
@@ -47,6 +112,26 @@
       <p><strong>Introduction → Findings → Recommendations.</strong> You write as an engineer reporting directly to management. You interpret <strong>one chart and one table</strong> to justify sustainable measures.</p>
     </div>
     <div class="callout callout--warn"><p><strong>45 minutes is tight.</strong> Read the visuals, plan your ideas and manage the word count efficiently. Writing outside 220–260 words is penalised under Task Fulfilment.</p></div>
+<figure class="photo-fig"><img src="../assets/img/exam-hall.jpg" alt="Students sitting at wooden desks in a tiered classroom, taking notes and talking" loading="lazy" width="1200" height="1043"><figcaption>Next week: a timed, face-to-face Writing Test, 45 minutes, 220–260 words.</figcaption></figure>
+    <figure class="chart-card vz mt" role="img" aria-label="Word-count scale from 180 to 300 words. The safe range is 220 to 260 words. A report of 285 words falls outside the range and loses marks.">
+      <h4>Where your word count has to land</h4>
+      <svg viewBox="0 28 600 112" aria-hidden="true">
+        <rect x="20" y="62" width="560" height="22" rx="11" fill="#f5f5f7"/>
+        <rect class="vz-grow" x="206.7" y="62" width="186.7" height="22" rx="11" fill="#1a8f3c" data-tip="Safe range: 220 to 260 words."/>
+        <text x="300.0" y="48" text-anchor="middle" class="lbl-strong" style="fill:#1a8f3c;font-size:14px">220–260 words</text>
+        <line x1="206.7" y1="54" x2="206.7" y2="92" stroke="#1a8f3c" stroke-width="2"/>
+        <line x1="393.3" y1="54" x2="393.3" y2="92" stroke="#1a8f3c" stroke-width="2"/>
+        <text x="206.7" y="108" text-anchor="middle">220</text>
+        <text x="393.3" y="108" text-anchor="middle">260</text>
+        <g class="vz-fade" data-tip="285 words is outside the range. It costs marks under Task Fulfilment." >
+          <circle cx="510.0" cy="73" r="12" fill="#d70015"/>
+          <text x="510.0" y="78" text-anchor="middle" style="fill:#fff;font-weight:700;font-size:15px">×</text>
+          <text x="510.0" y="128" text-anchor="middle" class="lbl-strong" style="fill:#d70015;font-size:13px">285: too long</text>
+        </g>
+        <text x="20" y="108">180</text><text x="580" y="108" text-anchor="end">300</text><text x="113" y="78" text-anchor="middle" style="font-size:12px">too short</text>
+      </svg>
+      <figcaption>The quiz below uses 285 words as its example. Colour is backed up by the “×” mark and the label.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10" data-label="Quick check">
       <p class="quiz__q">Your finished report is 285 words. What happens?</p>
       <div class="quiz__opts">
@@ -68,6 +153,17 @@
       <div class="flip"><div class="flip__front"><span class="tag">5 marks</span><h4 class="mt">Language Accuracy &amp; Register</h4></div><div class="flip__back"><p>Solid grammar control; academic and professional sentence structures; appropriate hedging language.</p></div></div>
     </div>
     <p class="small muted">Tap every card to earn the XP.</p>
+    <figure class="chart-card vz mt" role="img" aria-label="Stacked bar of the 20 marks: four criteria worth 5 marks each: Content and Task Fulfilment, Organisation and Coherence, Use and Interpretation of Visual Data, Language Accuracy and Register.">
+      <h4>20 marks, four equal slices</h4>
+      <div class="vz-barwrap"><div class="vz-bar vz-reveal">
+        <div class="vz-seg c1" style="flex:1" data-tip="Content &amp; Task Fulfilment: all prompts, 220–260 words, engineering persona"><b>5</b><span>Content</span></div>
+        <div class="vz-seg c2" style="flex:1" data-tip="Organisation &amp; Coherence: paragraph flow, natural transitions"><b>5</b><span>Organisation</span></div>
+        <div class="vz-seg c3" style="flex:1" data-tip="Use &amp; Interpretation of Visual Data: key numbers from BOTH chart and table"><b>5</b><span>Visual data</span></div>
+        <div class="vz-seg c4" style="flex:1" data-tip="Language Accuracy &amp; Register: grammar, academic structures, hedging"><b>5</b><span>Language</span></div>
+      </div></div>
+      <div class="vz-ticks"><span>0</span><span>5</span><span>10</span><span>15</span><span>20 marks</span></div>
+      <figcaption>Hover or tap a slice for what that criterion rewards.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">A report uses numbers from the chart only and ignores the table. Which criterion suffers most?</p>
       <div class="quiz__opts">
@@ -83,6 +179,24 @@
     <div class="part-letter">A</div>
     <h2>Paraphrasing, synthesis and referencing</h2>
     <p class="slide__lead">A quick consolidation of the Week 3 paraphrasing session and the Week 6 citation lecture.</p>
+  </section>
+
+  <!-- 5b · Pipeline -->
+  <section class="slide" data-title="From source to sentence">
+    <div class="slide__kicker">The big picture</div>
+    <h2>Three skills, one pipeline</h2>
+    <p class="slide__lead">Every sentence in your report travels the same road: your own words, then a fluent sentence, then credit to the source.</p>
+    <figure class="chart-card" role="group" aria-label="Pipeline: paraphrase, then synthesise, then reference.">
+      <div class="vz-pipe">
+        <div class="vz-node"><div class="n">Step 1 · Week 3</div><h4>Paraphrase</h4><p>Replace common phrases with specialised engineering and business terms. Keep the technical rigour.</p><div class="eg">“capital outlay”</div></div>
+        <div class="vz-arrow" aria-hidden="true">→</div>
+        <div class="vz-node"><div class="n">Step 2</div><h4>Synthesise</h4><p>Weave several facts into one fluent, balanced sentence instead of a list.</p><div class="eg">“Although … it offers …”</div></div>
+        <div class="vz-arrow" aria-hidden="true">→</div>
+        <div class="vz-node"><div class="n">Step 3 · Week 6</div><h4>Reference</h4><p>Credit every framework, dataset or regulation. Use APA or IEEE.</p><div class="eg">“According to the GreenTech Proposal (2026)…”</div></div>
+      </div>
+      <figcaption>The three consolidation skills of Part A.</figcaption>
+    </figure>
+    <p class="pull">“…copying exact phrases … will directly lower your language score.”<cite>Week 9 lesson · Why paraphrasing matters</cite></p>
   </section>
 
   <!-- 6 · Why they matter -->
@@ -128,6 +242,21 @@
       <li><div><h3>Weak paraphrase: plagiarised and flat</h3><div class="example">“We should do Solar Panel Installation because it costs RM 420,000, saves 25-30% energy, and takes 18 months for all departments.”</div><p class="small"><strong>Critique:</strong> conversational language; copies the table labels word for word; does not weave the data logically; lacks engineering register.</p></div></li>
       <li><div><h3>Strong paraphrase: synthesised and professional</h3><div class="example">“Although implementing a facility-wide photovoltaic system requires a substantial capital outlay of RM 420,000 and an 18-month timeline, it offers the highest potential energy reduction of up to 30% across all operations.”</div><p class="small"><strong>Strengths:</strong> synthesises the facts into one complex sentence; uses professional terms (<em>photovoltaic system, capital outlay</em>); paraphrases the timeline and impact smoothly.</p></div></li>
     </ol>
+<figure class="photo-fig"><img src="../assets/img/hardhat-solar.jpg" alt="A white safety helmet resting on a large blue solar panel" loading="lazy" width="1200" height="521"><figcaption>The solar proposal behind the raw text: RM 420,000, 18 months, up to 30% saving.</figcaption></figure>
+    <div class="keystats vz">
+      <div class="keystat"><b data-count="420000" data-prefix="RM ">RM 420,000</b><span>capital outlay</span></div>
+      <div class="keystat"><b data-count="18">18</b><span>months to install</span></div>
+      <div class="keystat"><b>up to 30%</b><span>energy reduction (25–30% in the raw text)</span></div>
+    </div>
+    <figure class="chart-card mt" role="group" aria-label="Three versions of the same facts: raw text, weak paraphrase with highlighted copied labels, and strong paraphrase with highlighted improvements.">
+      <h4>Same facts, three versions: what changed?</h4>
+      <div class="vz-diff">
+        <div class="row raw"><small>1 · Raw</small>“Solar Panel Installation: RM 420,000. 25-30% saving. Takes 18 months. Applies to all departments.”</div>
+        <div class="row weak"><small>2 · Weak: labels copied word for word</small>“We should do <mark>Solar Panel Installation</mark> because it costs <mark>RM 420,000</mark>, saves <mark>25-30%</mark> energy, and takes <mark>18 months</mark> for <mark>all departments</mark>.”</div>
+        <div class="row strong"><small>3 · Strong: synthesised, professional</small>“<mark>Although</mark> implementing a facility-wide <mark>photovoltaic system</mark> requires a substantial <mark>capital outlay</mark> of RM 420,000 and an 18-month timeline, it offers the highest potential energy reduction of <mark>up to 30%</mark> across all operations.”</div>
+      </div>
+      <figcaption>Red strike-through = copied labels (and the conversational “We should”). Green = synthesis words and professional terms.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Which word lets the strong version weigh the cost against the benefit in one fluent sentence?</p>
       <div class="quiz__opts">
@@ -150,12 +279,32 @@
   <section class="slide" data-title="4 steps: visual data to report">
     <div class="slide__kicker">Process non-linear information systematically</div>
     <h2>Four steps to translate visual data</h2>
+    <figure class="photo-fig"><img src="../assets/img/dashboard.jpg" alt="A tablet screen showing an analytics dashboard with histograms and summary figures" loading="lazy" width="1200" height="521"><figcaption>Step 01 is always the same: read the axes, titles and units before you write a word.</figcaption></figure>
     <div class="grid grid-4">
       <div class="card"><span class="num-badge">01</span><h3 class="mt">The big picture</h3><p>Analyse the overall trajectory. What does the chart show? Look at axes, titles, units and overall changes across quarters.</p></div>
       <div class="card"><span class="num-badge">02</span><h3 class="mt">Detect outliers</h3><p>Find extreme values: which department uses the most, which uses the least, and which shows the sharpest changes.</p></div>
       <div class="card"><span class="num-badge">03</span><h3 class="mt">Group the data</h3><p>Never list data line by line. Group departments that perform similarly. It shows critical analysis and saves words.</p></div>
       <div class="card"><span class="num-badge">04</span><h3 class="mt">Bridge to the table</h3><p>Connect problem to solution. Match the high-consumption areas in the chart with the most targeted sustainable measures.</p></div>
     </div>
+    <figure class="chart-card vz mt" role="group" aria-label="Comparison of a list sentence and a synthesis sentence, with the two example values: Cooling 800 and Packaging 120.">
+      <h4>List or synthesis?</h4>
+      <div class="vz-two">
+        <div class="vz-col bad"><div class="tagline">List: the reader does the work</div><p class="serif">“Packaging used 120, Cooling used 800…”</p><p class="small muted">Numbers one after another, no grouping.</p></div>
+        <div class="vz-col good"><div class="tagline">Synthesis: the writer does the work</div><p class="serif">“Overall consumption is heavily dominated by cooling, which…”</p><p class="small muted">Groups the data and names the dominant area first.</p></div>
+      </div>
+      <svg viewBox="0 0 600 112" class="mt" role="img" aria-label="Bar chart: Cooling 800, Packaging 120. Cooling dominates.">
+        <text x="0" y="30" class="lbl-strong">Cooling</text>
+        <rect x="80" y="14" width="470" height="24" rx="12" fill="#f5f5f7"/>
+        <rect class="vz-grow" x="80" y="14" width="470" height="24" rx="12" fill="#0071e3" data-tip="Cooling: 800, the dominant area"/>
+        <text x="540" y="31" text-anchor="end" style="fill:#fff;font-weight:700">800</text>
+        <text x="0" y="75" class="lbl-strong">Packaging</text>
+        <rect x="80" y="59" width="470" height="24" rx="12" fill="#f5f5f7"/>
+        <rect class="vz-grow" x="80" y="59" width="70.5" height="24" rx="12" fill="#86868b" data-tip="Packaging: 120"/>
+        <text x="160.5" y="76" class="lbl-strong">120</text>
+        <text x="80" y="106" style="font-size:11px">Values from the deck’s example sentences. Synthesis starts from the bigger bar.</text>
+      </svg>
+    </figure>
+    <p class="pull">“Never list data line by line. Group departments that perform similarly.”<cite>Week 9 lesson · Step 03, Group the data</cite></p>
     <div class="quiz mt" data-xp="10" data-label="List or synthesis?">
       <p class="quiz__q">Which sentence shows synthesis rather than a list?</p>
       <div class="quiz__opts">
@@ -232,6 +381,22 @@
         <p class="small"><strong>Why it works:</strong> synthesises trends instead of copying raw numbers; highlights the critical outlier with precise data; keeps interpretation separate from recommendations.</p>
       </div>
     </div>
+    <div class="split mt">
+      <figure class="photo-fig photo-fig--tall"><img src="../assets/img/cooling-towers.jpg" alt="Cooling towers releasing steam against a dark blue evening sky" loading="lazy" width="1200" height="521"><figcaption>The outlier in the model answer: the Cooling Towers.</figcaption></figure>
+      <figure class="chart-card vz" role="img" aria-label="Column chart: Cooling Towers water use rose from 800 cubic metres in Q1 to 950 cubic metres in Q2, an increase of 150 cubic metres.">
+        <h4>Cooling Towers: Q1 to Q2</h4>
+        <svg viewBox="0 0 320 230" aria-hidden="true">
+          <line class="axis-l" x1="20" y1="190" x2="300" y2="190"/>
+          <rect class="vz-growy" x="60" y="54.0" width="80" height="136.0" rx="12" fill="#86868b" data-tip="Q1: 800 m³"/>
+          <rect class="vz-growy" x="180" y="28.5" width="80" height="161.5" rx="12" fill="#0071e3" data-tip="Q2: 950 m³, a surge of 150 m³"/>
+          <text x="100" y="46.0" text-anchor="middle" class="lbl-strong">800 m³</text>
+          <text x="220" y="20.5" text-anchor="middle" class="lbl-strong" style="fill:#0071e3">950 m³</text>
+          <text x="100" y="210" text-anchor="middle">Q1</text><text x="220" y="210" text-anchor="middle">Q2</text>
+          <g class="vz-fade"><text x="160" y="52" text-anchor="middle" class="lbl-strong" style="fill:#d1307a">+150 m³ (about +19%)</text></g>
+        </svg>
+        <figcaption>Figures from the model answer. The percentage is calculated: 150 ÷ 800.</figcaption>
+      </figure>
+    </div>
     <div class="quiz mt" data-xp="10" data-label="Does it belong in Findings?">
       <p class="quiz__q">Which sentence does NOT belong in the Findings section?</p>
       <div class="quiz__opts">
@@ -262,7 +427,64 @@
         <p class="small"><strong>Why it works:</strong> uses the outlier to justify the choice; brings in table numbers (cost and timeline); includes a concession (“Despite…”) for a balanced argument.</p>
       </div>
     </div>
+    <figure class="chart-card vz" role="img" aria-label="Three measures compared. Cost: solar installation RM 420,000, closed-loop cooling RM 150,000, LED retrofit RM 45,000. Time: 18 months, 4 months, 2 months.">
+      <h4>Why one measure beats another: cost and time</h4>
+      <svg viewBox="0 0 600 190" aria-hidden="true">
+        <text x="0" y="12" style="font-weight:700;letter-spacing:.08em;font-size:11px">COST (RM)</text>
+        <text x="0" y="39" class="lbl-strong">Solar panels</text>
+<rect x="110" y="22" width="330" height="24" rx="12" fill="#f5f5f7"/>
+<rect class="vz-grow" x="110" y="22" width="330" height="24" rx="12" fill="#6e4ff6" data-tip="Solar panel installation: RM 420,000"/>
+<text x="448" y="39" class="lbl-strong">RM 420,000</text>
+        <text x="0" y="71" class="lbl-strong">Closed-loop</text>
+<rect x="110" y="54" width="330" height="24" rx="12" fill="#f5f5f7"/>
+<rect class="vz-grow" x="110" y="54" width="118" height="24" rx="12" fill="#0071e3" data-tip="Closed-loop cooling retrofit: RM 150,000"/>
+<text x="236" y="71" class="lbl-strong">RM 150,000</text>
+        <text x="0" y="103" class="lbl-strong">LED retrofit</text>
+<rect x="110" y="86" width="330" height="24" rx="12" fill="#f5f5f7"/>
+<rect class="vz-grow" x="110" y="86" width="35" height="24" rx="12" fill="#1a8f3c" data-tip="LED lighting retrofit: RM 45,000"/>
+<text x="153" y="103" class="lbl-strong">RM 45,000</text>
+        <text x="0" y="140" style="font-weight:700;letter-spacing:.08em;font-size:11px">TIME TO DEPLOY (MONTHS)</text>
+        <text x="0" y="167" class="lbl-strong">Solar panels</text>
+<rect x="110" y="150" width="330" height="24" rx="12" fill="#f5f5f7"/>
+<rect class="vz-grow" x="110" y="150" width="330" height="24" rx="12" fill="#6e4ff6" data-tip="Solar panel installation: 18 months"/>
+<text x="448" y="167" class="lbl-strong">18 months</text>
+      </svg>
+      <svg viewBox="0 0 600 70" aria-hidden="true">
+        <text x="0" y="17" class="lbl-strong">Closed-loop</text>
+<rect x="110" y="0" width="330" height="24" rx="12" fill="#f5f5f7"/>
+<rect class="vz-grow" x="110" y="0" width="73" height="24" rx="12" fill="#0071e3" data-tip="Closed-loop cooling retrofit: 4 months"/>
+<text x="191" y="17" class="lbl-strong">4 months</text>
+        <text x="0" y="51" class="lbl-strong">LED retrofit</text>
+<rect x="110" y="34" width="330" height="24" rx="12" fill="#f5f5f7"/>
+<rect class="vz-grow" x="110" y="34" width="37" height="24" rx="12" fill="#1a8f3c" data-tip="LED lighting retrofit: 2 months"/>
+<text x="155" y="51" class="lbl-strong">2 months</text>
+      </svg>
+      <figcaption>Measures and numbers come from this lesson’s examples (solar and LED from the synthesis and Activity 1 sources; closed-loop from the model recommendation). Savings: solar up to 30%, LED 8–12%.</figcaption>
+    </figure>
     <div class="callout"><p>This is the analytical climax. A strong recommendation explains <em>why the alternatives were set aside</em>: too expensive, too slow to deploy, or not aimed at the critical problem area.</p></div>
+  </section>
+
+  <!-- 13b · Report skeleton -->
+  <section class="slide" data-title="The shape of 220–260 words">
+    <div class="slide__kicker">Word budget</div>
+    <h2>Where the words go</h2>
+    <p class="slide__lead">The Introduction is brief: one or two sentences, about 30–40 words at most. The rest is shared between Findings and Recommendations.</p>
+    <figure class="chart-card vz" role="img" aria-label="Stacked bar of a 240-word report: Introduction about 35 words, Findings about 100 words, Recommendations about 105 words. The split of Findings and Recommendations is illustrative.">
+      <h4>A 240-word report, illustrated</h4>
+      <div class="vz-barwrap"><div class="vz-bar vz-reveal" style="height:4.6rem">
+        <div class="vz-seg c1" style="flex:35" data-tip="Introduction: 1–2 sentences, about 30–40 words maximum"><b>35</b><span>Intro</span></div>
+        <div class="vz-seg c2" style="flex:100" data-tip="Findings: trend, outlier with figures, comparison. Facts only."><b>~100</b><span>Findings</span></div>
+        <div class="vz-seg c3" style="flex:105" data-tip="Recommendations: one measure, justified with cost, savings and timeline, hedged."><b>~105</b><span>Recommendations</span></div>
+      </div></div>
+      <div class="vz-ticks"><span>0</span><span>Range: 220 – 260 words</span><span>240</span></div>
+      <figcaption>Illustrative split: only the Introduction limit (30–40 words) comes from the lesson. Adjust the other two, but stay inside 220–260 in total.</figcaption>
+    </figure>
+    <div class="grid grid-3">
+      <div class="card"><span class="tag">1 · Intro</span><p class="small mt">Context, purpose and scope in one fluent sentence. No “I” or “we”.</p></div>
+      <div class="card"><span class="tag tag--violet">2 · Findings</span><p class="small mt">Overall trend, primary outlier with exact values, comparative evidence. Zero recommendation.</p></div>
+      <div class="card"><span class="tag tag--pink">3 · Recommendations</span><p class="small mt">Exactly one measure, defended with the table, with a concession and cautious language.</p></div>
+    </div>
+    <figure class="photo-fig"><img src="../assets/img/laptop-notes-2.jpg" alt="Two people planning at a table with a laptop and a handwritten page, pencils in hand" loading="lazy" width="1200" height="521"><figcaption>Plan the three parts on paper first. The budget keeps the structure honest.</figcaption></figure>
   </section>
 
   <!-- 14 · Rec gap fill -->
@@ -326,6 +548,15 @@
         </tbody></table></div>
       </div>
     </div>
+    <figure class="chart-card vz mt" role="group" aria-label="Vocabulary ladder: six generic B1 to B2 phrases and their C1 replacements.">
+      <h4>The register ladder</h4>
+      <div class="vz-ladder">
+        <div class="r"><div class="hd">B1/B2 marker</div><div></div><div class="hd">C1 sound</div></div>
+        <div class="r"><div class="lo">went up</div><div class="ar" aria-hidden="true">→</div><div class="hi">escalated / surged</div></div><div class="r"><div class="lo">grew a lot</div><div class="ar" aria-hidden="true">→</div><div class="hi">recorded a sharp rise</div></div><div class="r"><div class="lo">went down</div><div class="ar" aria-hidden="true">→</div><div class="hi">plummeted / dropped</div></div><div class="r"><div class="lo">got smaller</div><div class="ar" aria-hidden="true">→</div><div class="hi">contracted slightly</div></div><div class="r"><div class="lo">but</div><div class="ar" aria-hidden="true">→</div><div class="hi">in contrast / conversely</div></div><div class="r"><div class="lo">so</div><div class="ar" aria-hidden="true">→</div><div class="hi">consequently / therefore</div></div>
+      </div>
+      <figcaption>Grey, struck through = generic. Blue, bold = the upgrade. Pairs taken from the three tables above.</figcaption>
+    </figure>
+    <p class="pull">“Escalated sharply” or “recorded a minor contraction” sound C1.<cite>Week 9 lesson · Vocabulary</cite></p>
     <div class="callout mt"><p>Write these terms down. “Went up” and “went down” are B1/B2 markers; “escalated sharply” or “recorded a minor contraction” sound C1.</p></div>
   </section>
 
@@ -363,6 +594,23 @@
   <section class="slide" data-title="The art of hedging">
     <div class="slide__kicker">Hedging</div>
     <h2>Express probability, not certainty</h2>
+    <figure class="chart-card vz mt" role="img" aria-label="Hedging scale from certainty to caution. Certain, overclaiming words: will save, solve completely. Cautious words: modals could, would, may; probability adverbs potentially, highly likely, presumably.">
+      <h4>From overclaim to professional caution</h4>
+      <svg viewBox="0 0 600 190" aria-hidden="true">
+        <defs><linearGradient id="hedg" x1="0" x2="1"><stop offset="0" stop-color="#d70015"/><stop offset=".5" stop-color="#b25e00"/><stop offset="1" stop-color="#1a8f3c"/></linearGradient></defs>
+        <rect x="20" y="70" width="560" height="16" rx="8" fill="url(#hedg)"/>
+        <text x="20" y="22" class="lbl-strong" style="fill:#d70015">Certainty</text>
+        <text x="580" y="22" text-anchor="end" class="lbl-strong" style="fill:#1a8f3c">Probability</text>
+        <g data-tip="Unhedged: claims a guaranteed result. This is the deck’s weak example."><circle cx="50" cy="78" r="12" fill="#fff" stroke="#d70015" stroke-width="3"/>
+          <text x="20" y="116" class="lbl-strong">will save</text><text x="20" y="134">solve … completely</text></g>
+        <g data-tip="Strategic modals soften assertions."><circle cx="320" cy="78" r="12" fill="#fff" stroke="#b25e00" stroke-width="3"/>
+          <text x="320" y="116" text-anchor="middle" class="lbl-strong">could · would · may</text><text x="320" y="134" text-anchor="middle">modals</text></g>
+        <g data-tip="Probability adverbs create a professional, analytical register."><circle cx="550" cy="78" r="12" fill="#fff" stroke="#1a8f3c" stroke-width="3"/>
+          <text x="580" y="116" text-anchor="end" class="lbl-strong">potentially · highly likely</text><text x="580" y="134" text-anchor="end">presumably</text></g>
+        <text x="300" y="176" text-anchor="middle" style="font-size:11px">Order along the scale is illustrative. Hover or tap a marker.</text>
+      </svg>
+      <figcaption>Left: “will save 20% … solve … completely”. Right: “could potentially reduce … by 15-20% … would likely mitigate”.</figcaption>
+    </figure>
     <div class="grid grid-2">
       <div class="card">
         <h3>The power of caution</h3>
@@ -404,6 +652,12 @@
   <section class="slide" data-title="Activity 1: one-sentence synthesis">
     <div class="slide__kicker"><span class="tag tag--pink">Activity 1</span> Quick academic writing</div>
     <h2>Four facts, one professional sentence</h2>
+    <div class="keystats vz">
+      <div class="keystat"><b data-count="45000" data-prefix="RM ">RM 45,000</b><span>cost</span></div>
+      <div class="keystat"><b>8–12%</b><span>energy saved</span></div>
+      <div class="keystat"><b data-count="2" data-suffix=" months">2 months</b><span>to complete</span></div>
+      <div class="keystat"><b>2 areas</b><span>warehouse and offices only</span></div>
+    </div>
     <div class="grid grid-2">
       <div>
         <div class="card">
@@ -439,6 +693,17 @@
   <section class="slide" data-title="Activity 2: mock writing practice">
     <div class="slide__kicker"><span class="tag tag--pink">Activity 2</span> Hands-on mock Writing Test</div>
     <h2>Findings and Recommendations in 15 minutes</h2>
+<figure class="photo-fig"><img src="../assets/img/hourglass.jpg" alt="A glass sand timer standing on a desk beside a plant and a computer mouse" loading="lazy" width="1200" height="521"><figcaption>A strict 15-minute time box, like the exam.</figcaption></figure>
+    <figure class="chart-card vz" role="img" aria-label="The 15-minute drafting plan as a proportional bar: Findings 7 minutes, Recommendations 7 minutes, Check 1 minute.">
+      <h4>Your 15 minutes</h4>
+      <div class="vz-barwrap"><div class="vz-bar vz-reveal">
+        <div class="vz-seg c1" style="flex:7" data-tip="Big trend, the cooling-tower outlier, exact figures. No recommendations."><b data-count="7" data-suffix=" min">7 min</b><span>Findings</span></div>
+        <div class="vz-seg c3" style="flex:7" data-tip="Closed-loop retrofit: cost, saving, timeline. Why it beats the others. Hedge."><b data-count="7" data-suffix=" min">7 min</b><span>Recommendations</span></div>
+        <div class="vz-seg c4" style="flex:1;padding:0 .2rem;align-items:center" data-tip="Pronouns out? Both visuals used? Hedging in?"><b>1</b></div>
+      </div></div>
+      <div class="vz-tl"><span>0</span><span>7</span><span>14</span><span>15 min</span></div>
+      <figcaption>The green sliver is the 1-minute check. Same phases as the timer below.</figcaption>
+    </figure>
     <div class="grid grid-2">
       <div class="card">
         <h3>Task instructions</h3>
@@ -504,5 +769,39 @@
 
 </main>
 <script src="../assets/js/deck.js"></script>
+<script>
+(function(){
+  var d=document,root=d.documentElement;
+  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var vz=[].slice.call(d.querySelectorAll(".vz"));
+  var counters=[].slice.call(d.querySelectorAll("[data-count]"));
+  function runCount(el){
+    var to=parseFloat(el.getAttribute("data-count")),suf=el.getAttribute("data-suffix")||"",pre=el.getAttribute("data-prefix")||"",t0=null;
+    if(reduce){el.textContent=pre+to.toLocaleString("en-US")+suf;return;}
+    function step(t){t0=t0||t;var p=Math.min((t-t0)/1100,1),e=1-Math.pow(1-p,3);el.textContent=pre+Math.round(to*e).toLocaleString("en-US")+suf;if(p<1)requestAnimationFrame(step);}
+    requestAnimationFrame(step);
+  }
+  if("IntersectionObserver" in window&&!/[?&]static\b/.test(location.search)){
+    root.classList.add("vz-on");
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{threshold:.25});
+    vz.forEach(function(el){io.observe(el);});
+    var io2=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){runCount(e.target);io2.unobserve(e.target);}});},{threshold:.5});
+    counters.forEach(function(el){io2.observe(el);});
+  }
+  /* tooltips on [data-tip] */
+  var tip=d.createElement("div");tip.className="vz-tip";tip.setAttribute("role","tooltip");d.body.appendChild(tip);
+  function show(el){tip.textContent=el.getAttribute("data-tip");tip.classList.add("on");var r=el.getBoundingClientRect(),w=tip.offsetWidth;
+    tip.style.left=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2))+"px";
+    var top=r.top-tip.offsetHeight-8;tip.style.top=(top<8?r.bottom+8:top)+"px";}
+  function hide(){tip.classList.remove("on");}
+  [].forEach.call(d.querySelectorAll("[data-tip]"),function(el){
+    if(!el.hasAttribute("tabindex"))el.setAttribute("tabindex","0");
+    el.addEventListener("mouseenter",function(){show(el);});el.addEventListener("mouseleave",hide);
+    el.addEventListener("focus",function(){show(el);});el.addEventListener("blur",hide);
+    el.addEventListener("click",function(ev){ev.stopPropagation();show(el);});
+  });
+  d.addEventListener("click",hide);window.addEventListener("scroll",hide,{passive:true});
+})();
+</script>
 </body>
 </html>

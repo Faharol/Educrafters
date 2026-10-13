@@ -9,6 +9,69 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
+
+<style id="vz-style">
+/* visual pass: charts, diagrams, tooltips (scoped to vz- classes) */
+.vz-svg{max-width:560px;margin:0 auto}
+.chart-card svg text{font-size:14px}
+.chart-card svg text.t12{font-size:12px}
+.chart-card svg text.t13{font-size:13px}
+.chart-card svg text.t16{font-size:16px}
+.chart-card svg text.t18{font-size:18px}
+.chart-card svg text.t22{font-size:22px}
+.chart-card svg text.k{fill:var(--text);font-weight:600}
+.chart-card svg text.w{fill:#fff;font-weight:600}
+.chart-card svg text.wl{fill:rgba(255,255,255,.88)}
+.chart-card svg text.mid{text-anchor:middle}
+.chart-card h3.vz-h{font-size:1.05rem;letter-spacing:-.01em;margin:0 0 .8rem}
+.vz-grow{transform-box:fill-box;transform-origin:left center}
+html.vz-js .vz-grow{transform:scaleX(0);transition:transform 1.1s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+html.vz-js .is-in .vz-grow{transform:none}
+html.vz-js .vz-fade{opacity:0;transition:opacity .8s ease var(--d,0s)}
+html.vz-js .is-in .vz-fade{opacity:1}
+html.vz-js .vz-rise{opacity:0;transform:translateY(14px);transition:opacity .7s ease var(--d,0s),transform .7s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+html.vz-js .is-in .vz-rise{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html.vz-js .vz-grow,html.vz-js .vz-fade,html.vz-js .vz-rise{transform:none;opacity:1;transition:none}}
+[data-tip]{cursor:help}
+[data-tip]:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.vz-tip{position:fixed;z-index:300;background:#1d1d1f;color:#fff;font:500 .8rem/1.4 var(--font);padding:.5rem .75rem;border-radius:10px;max-width:250px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.vz-tip.on{opacity:1}
+.vz-legend{display:flex;flex-wrap:wrap;gap:.5rem .6rem;margin:.9rem 0 0;justify-content:center}
+.vz-chip{display:inline-flex;align-items:center;gap:.4rem;font:600 .85rem var(--font);color:var(--text);background:var(--bg-2);border-radius:999px;padding:.3rem .8rem}
+.vz-chip i{display:inline-block;width:1.3rem;height:0;border-top:3px solid var(--c,var(--cyan));border-radius:2px}
+.vz-chip i.dash{border-top-style:dashed}
+.vz-chip i.dot{width:.7rem;height:.7rem;border:0;border-radius:50%;background:var(--c,var(--cyan))}
+.vz-tok{display:inline-block;padding:.1rem .45rem;border-radius:8px;margin:.14rem .06rem;background:var(--bg-2);line-height:1.5;color:var(--text)}
+.vz-tok sup{font-weight:800;font-size:.62rem;margin-left:.25rem}
+.vz-tok.m1{background:rgba(0,113,227,.12);box-shadow:inset 0 -3px 0 var(--cyan)}
+.vz-tok.m2{background:rgba(110,79,246,.13);box-shadow:inset 0 -3px 0 var(--violet)}
+.vz-tok.m3{background:rgba(178,94,0,.13);box-shadow:inset 0 -3px 0 var(--amber)}
+.vz-tok.m4{background:rgba(26,143,60,.13);box-shadow:inset 0 -3px 0 var(--lime)}
+.vz-tok.x{background:rgba(209,48,122,.13);box-shadow:inset 0 -3px 0 var(--pink)}
+.vz-sent{font:500 1.05rem/2 var(--font);margin:.2rem 0 .9rem}
+.vz-sent small{display:block;font:700 .72rem var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);line-height:1.2;margin-bottom:.15rem}
+.vz-flow{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));counter-reset:vzf}
+.vz-flow > div{position:relative;background:var(--bg-2);border-radius:18px;padding:1rem 1.1rem 1.1rem;border-top:4px solid var(--c,var(--cyan))}
+.vz-flow b{display:block;font:800 2.1rem/1 var(--display);letter-spacing:-.04em;color:var(--c,var(--cyan));margin-bottom:.35rem}
+.vz-flow span{font-size:.88rem;color:var(--muted);display:block;line-height:1.4}
+.vz-flow > div + div::before{content:"→";position:absolute;left:-.68rem;top:1.2rem;font-weight:700;color:var(--dim);background:#fff;border-radius:50%;width:1.2rem;height:1.2rem;line-height:1.15rem;text-align:center;font-size:.8rem;z-index:1}
+@media(max-width:560px){.vz-flow > div + div::before{content:"↓";left:50%;top:-.75rem;margin-left:-.6rem}}
+.vz-moves{display:grid;gap:.5rem;grid-template-columns:repeat(5,1fr)}
+.vz-move{position:relative;background:var(--bg-2);border-radius:16px;padding:1.5rem .8rem .9rem;border-top:5px solid var(--c)}
+.vz-move b{display:block;font:700 1rem var(--display);color:var(--c);margin-bottom:.25rem}
+.vz-move span{font-size:.8rem;line-height:1.35;color:var(--muted);display:block}
+.vz-move em{position:absolute;top:-.8rem;left:.6rem;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--text);color:#fff;font:700 .8rem/1.7rem var(--font);text-align:center;font-style:normal;box-shadow:0 0 0 3px #fff}
+@media(max-width:700px){.vz-moves{grid-template-columns:1fr}.vz-move{padding:1rem 1rem .9rem 1rem;border-top:0;border-left:5px solid var(--c)}.vz-move em{top:.7rem;left:auto;right:.8rem}}
+.vz-rec{border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.vz-rec > div{display:grid;grid-template-columns:2rem 1fr 1.1fr;gap:.2rem .9rem;align-items:start;padding:.8rem 1rem;border-top:1px solid var(--line)}
+.vz-rec > div:first-child{border-top:0}
+.vz-rec i{font:700 .8rem/1.7rem var(--font);width:1.7rem;height:1.7rem;border-radius:50%;text-align:center;color:#fff;background:var(--c);font-style:normal}
+.vz-rec p{margin:0;font-size:.95rem}
+.vz-rec .v{font-weight:600;color:var(--text)}
+.vz-rec .w{font-size:.82rem;color:var(--muted)}
+@media(max-width:560px){.vz-rec > div{grid-template-columns:2rem 1fr}.vz-rec .w{grid-column:2}}
+.vz-note{font:600 .7rem var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 .6rem}
+</style>
 </head>
 <body data-week="03" data-title="Research Skills &amp; Paraphrasing">
 <main class="deck">
@@ -30,6 +93,12 @@
       <div class="card"><span class="tag tag--violet">Last week</span><p class="mt">You wrote about your own experience: résumé, cover letter, interview.</p></div>
       <div class="card card--accent"><span class="tag">This week</span><p class="mt">You start working with other people's findings: locating them, judging them, and rewriting them in your own words without losing the meaning.</p></div>
       <div class="card"><span class="tag tag--amber">Why now</span><p class="mt">Your poster (20%) needs <strong>three credible sources by Week 6</strong>. Everything today feeds that.</p></div>
+    </div>
+    <div class="keystats mt">
+      <div class="keystat"><b><span class="vz-count" data-to="3">3</span></b><span>credible sources needed for the poster</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="20">20</span>%</b><span>of your course mark is the poster</span></div>
+      <div class="keystat"><b>Week <span class="vz-count" data-to="6">6</span></b><span>the deadline for your three sources</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="4">4</span></b><span>paraphrasing moves to learn today</span></div>
     </div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">What does your group poster need by Week 6?</p>
@@ -66,6 +135,7 @@
     <div class="slide__kicker">Part A · Why research?</div>
     <h2>A technical document is only as strong as what stands behind it</h2>
     <p class="slide__lead">Before a recommendation is written, a good engineer has already asked: <strong>what do we know, who measured it, and how sure are they?</strong></p>
+    <figure class="photo-fig"><img src="../assets/img/hardhat-solar.jpg" alt="A hard hat resting on a solar panel array, a symbol of engineering evidence gathered on site" loading="lazy" width="1200" height="521"><figcaption>Site data, supplier specifications and incident reports: evidence starts before the writing does.</figcaption></figure>
     <div class="grid grid-3">
       <div class="card"><h3>In the workplace</h3><p>Site data, supplier specifications, standards, incident reports.</p></div>
       <div class="card"><h3>In this course</h3><p>Journal articles, government reports, and reliable datasets on an SDG-related engineering problem.</p></div>
@@ -86,6 +156,21 @@
       <div class="card card--accent"><span class="tag">Primary</span><h3 class="mt">You collect the data yourself</h3><p>Experiments, surveys, observation, measurement.</p></div>
       <div class="card"><span class="tag tag--violet">Secondary</span><h3 class="mt">Someone else collected it</h3><p>You use their published findings: journal articles, reports, textbooks, datasets.</p></div>
     </div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 330" role="img" aria-label="Two lanes. Primary research: you collect your own data and get your own findings. Secondary research: someone else collects and publishes the data, and you use and cite their findings.">
+        <rect x="0" y="0" width="460" height="156" rx="20" fill="var(--bg-2)"/>
+        <text class="k t16" x="14" y="30">Primary</text><text class="t13" x="86" y="30">you collect the data yourself</text>
+        <text class="t12" x="14" y="52" >experiment · survey · observation · measurement</text>
+        <g class="vz-rise" style="--d:0s" data-tip="You do the work yourself."><rect x="10" y="66" width="124" height="64" rx="14" fill="var(--cyan)"/><text class="w mid t14" x="72.0" y="95.0">You</text><text class="wl mid t12" x="72.0" y="113.0">the researcher</text></g><path class="vz-fade" d="M138 98 H166 M160 92 L168 98 L160 104" stroke="var(--dim)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g class="vz-rise" style="--d:0.15s" data-tip="Experiments, surveys, observation, measurement."><rect x="168" y="66" width="124" height="64" rx="14" fill="var(--cyan)"/><text class="w mid t14" x="230.0" y="95.0">Collect data</text><text class="wl mid t12" x="230.0" y="113.0">your own</text></g><path class="vz-fade" d="M296 98 H324 M318 92 L326 98 L318 104" stroke="var(--dim)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g class="vz-rise" style="--d:0.3s" data-tip="The data is yours, so you know exactly how it was collected."><rect x="326" y="66" width="124" height="64" rx="14" fill="var(--cyan)"/><text class="w mid t14" x="388.0" y="95.0">Your findings</text><text class="wl mid t12" x="388.0" y="113.0">first-hand</text></g>
+        <text class="t12" x="14" y="146">Strongest evidence, hardest to set up.</text>
+        <rect x="0" y="162" width="460" height="168" rx="20" fill="var(--bg-2)"/>
+        <text class="k t16" x="14" y="190" style="fill:var(--violet)">Secondary</text><text class="t13" x="106" y="190">someone else collected it</text>
+        <text class="t12" x="14" y="210">journal articles · reports · textbooks · datasets</text>
+        <g class="vz-rise" style="--d:0s" data-tip="Another researcher or organisation collected it."><rect x="10" y="224" width="124" height="64" rx="14" fill="var(--violet)"/><text class="w mid t14" x="72.0" y="253.0">Someone else</text><text class="wl mid t12" x="72.0" y="271.0">collects the data</text></g><path class="vz-fade" d="M138 256 H166 M160 250 L168 256 L160 262" stroke="var(--dim)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g class="vz-rise" style="--d:0.15s" data-tip="Journal articles, reports, textbooks, datasets."><rect x="168" y="224" width="124" height="64" rx="14" fill="var(--violet)"/><text class="w mid t14" x="230.0" y="253.0">Publishes</text><text class="wl mid t12" x="230.0" y="271.0">article, report, dataset</text></g><path class="vz-fade" d="M296 256 H324 M318 250 L326 256 L318 262" stroke="var(--dim)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g class="vz-rise" style="--d:0.3s" data-tip="You rewrite and cite their findings. This is what your poster mainly needs."><rect x="326" y="224" width="124" height="64" rx="14" fill="var(--violet)"/><text class="w mid t14" x="388.0" y="253.0">You use + cite</text><text class="wl mid t12" x="388.0" y="271.0">their findings</text></g>
+        <text class="t12" x="14" y="314">Your poster will rely mainly on this lane.</text>
+      </svg>
+      <figcaption>The only difference is <strong>who collected the data</strong>. Hover or tap a box for detail.</figcaption>
+    </figure>
     <div class="sorter mt" data-xp="15" data-label="Primary or secondary?">
       <div class="sorter__pool">
         <button class="chip" data-bin="p">Testing three sealants in the lab</button>
@@ -106,6 +191,7 @@
   <section class="slide" data-title="Four primary research methods">
     <div class="slide__kicker">Part A · Primary research</div>
     <h2>Four primary research methods engineers use</h2>
+    <figure class="photo-fig"><img src="../assets/img/engineer-lab.jpg" alt="An engineer in an industrial laboratory setting up a test" loading="lazy" width="1200" height="1043"><figcaption>Experiment or test: change one variable, hold the rest, measure the result.</figcaption></figure>
     <div class="flip-grid" data-xp="10">
       <div class="flip"><div class="flip__front"><span class="tag">01</span><h4 class="mt">Experiment or test</h4></div><div class="flip__back"><p>Change one variable, hold the rest, measure the result. The strongest evidence, and the hardest to set up.</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">02</span><h4 class="mt">Survey or interview</h4></div><div class="flip__back"><p>Ask people. Good for opinions, habits and needs. Weak for facts people cannot remember accurately.</p></div></div>
@@ -126,6 +212,7 @@
   <section class="slide" data-title="Four secondary sources">
     <div class="slide__kicker">Part A · Secondary research</div>
     <h2>Four secondary sources you will use for the poster</h2>
+    <figure class="photo-fig"><img src="../assets/img/books-desk.jpg" alt="Stacks of reference books and handbooks on a desk" loading="lazy" width="1200" height="1043"><figcaption>Handbooks give stable fundamentals; journals and datasets give the newest figures.</figcaption></figure>
     <div class="grid grid-2">
       <div class="card card--accent"><span class="num-badge">01</span><h3 class="mt">Peer-reviewed journal articles</h3><p>Checked by other experts before publication. The gold standard for claims and figures.</p></div>
       <div class="card"><span class="num-badge">02</span><h3 class="mt">Reports and standards</h3><p>Government, industry and standards bodies. Excellent for regulations, baselines and definitions.</p></div>
@@ -179,6 +266,20 @@
       <li><div><h3>Scopus</h3><p>Journals and conference papers that pass an editorial review. <strong>Quality filter: yes.</strong></p></div></li>
       <li><div><h3>Web of Science</h3><p>A more selective set of journals. <strong>Quality filter: stricter.</strong></p></div></li>
     </ol>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 318" role="img" aria-label="A funnel with three levels. Top, widest: Google Scholar, no quality filter, free. Middle: Scopus, quality filter yes, run by Elsevier. Bottom, narrowest: Web of Science, stricter filter, run by Clarivate.">
+        <polygon class="vz-fade" points="14,8 446,8 408,100 52,100" fill="var(--cyan)" data-tip="Anything that looks scholarly: articles, theses, reports, preprints, slides. Free, but predatory journals appear next to real ones."/>
+        <text class="w mid t18" x="230" y="46">Google Scholar</text>
+        <text class="wl mid t13" x="230" y="68">no quality filter · free</text>
+        <polygon class="vz-fade" style="--d:.25s" points="56,108 404,108 366,200 94,200" fill="var(--violet)" data-tip="Journals and conference papers that pass an editorial review. Run by Elsevier; subscription via UniMAP Library."/>
+        <text class="w mid t18" x="230" y="146">Scopus</text>
+        <text class="wl mid t13" x="230" y="168">quality filter: yes · Elsevier</text>
+        <polygon class="vz-fade" style="--d:.5s" points="98,208 362,208 328,300 132,300" fill="var(--pink)" data-tip="A more selective set of journals; the source of the Journal Impact Factor. Run by Clarivate."/>
+        <text class="w mid t18" x="230" y="246">Web of Science</text>
+        <text class="wl mid t13" x="230" y="268">stricter filter · Clarivate</text>
+      </svg>
+      <figcaption>Illustrative: the funnel narrows as the quality filter gets stricter (not drawn to scale). Hover or tap a level for detail.</figcaption>
+    </figure>
     <p class="small muted">The funnel order follows the quality filters compared on the next slide.</p>
   </section>
 
@@ -232,6 +333,13 @@
       <div class="flip"><div class="flip__front"><span class="tag">04</span><h4 class="mt">Journal</h4></div><div class="flip__back"><p>Where was it published? Is that journal indexed in Scopus or WoS?</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">05</span><h4 class="mt">DOI</h4></div><div class="flip__back"><p>The permanent link another engineer uses to follow it back and check it.</p></div></div>
     </div>
+      <figure class="chart-card mt">
+      <p class="vz-note">Illustrative record (teaching example)</p>
+      <div class="vz-rec" role="img" aria-label="A database record with its five details numbered: 1 title, 2 authors, 3 year, 4 journal, 5 DOI.">
+        <div class="vz-rise" style="--c:var(--cyan);--d:0.08s" data-tip="Check the title against your own question first."><i>1</i><p class="v">Tropical temperature and battery cycle life</p><p class="w"><strong>Title.</strong> What is the study about? Does it match your question?</p></div><div class="vz-rise" style="--c:var(--violet);--d:0.16s" data-tip="The authors are what you cite."><i>2</i><p class="v">Rahman et al.</p><p class="w"><strong>Authors.</strong> Who did the work? This is what you cite.</p></div><div class="vz-rise" style="--c:var(--lime);--d:0.24s" data-tip="Currency: is it recent enough for your topic?"><i>3</i><p class="v">2024</p><p class="w"><strong>Year.</strong> How current is it?</p></div><div class="vz-rise" style="--c:var(--amber);--d:0.32s" data-tip="Search the journal name in Scopus."><i>4</i><p class="v">Journal title, indexed in Scopus or WoS?</p><p class="w"><strong>Journal.</strong> Where was it published? Is that journal indexed?</p></div><div class="vz-rise" style="--c:var(--pink);--d:0.40s" data-tip="The test of a source: could another engineer follow it back and check it?"><i>5</i><p class="v">https://doi.org/10.xxxx/xxxxx</p><p class="w"><strong>DOI.</strong> The permanent link another engineer uses to follow it back and check it.</p></div>
+      </div>
+      <figcaption>The five details you record for every source. Hover or tap a row for the quick check.</figcaption>
+    </figure>
   </section>
 
   <!-- 13 · Five checks -->
@@ -254,6 +362,11 @@
     <div class="slide__kicker"><span class="tag tag--red">Warning</span> Part A</div>
     <h2>Warning signs of a predatory journal</h2>
     <p class="slide__lead">They publish anything for a fee. Reviewers do not exist. Your citation inherits their reputation.</p>
+    <div class="keystats">
+      <div class="keystat"><b><span class="vz-count" data-to="72">72</span> h</b><span>the “rapid publication” promise that means no review happened</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="5">5</span></b><span>checks to run on any source, in under two minutes</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="4">4</span></b><span>warning signs of a predatory journal</span></div>
+    </div>
     <div class="grid grid-2">
       <div class="card"><span class="num-badge">01</span><h3 class="mt">The invitation came to you</h3><p>Flattering emails asking you to submit or join the editorial board. Real journals rarely recruit undergraduates.</p></div>
       <div class="card"><span class="num-badge">02</span><h3 class="mt">Publication in days</h3><p>Peer review takes weeks or months. A promise of “rapid publication within 72 hours” means no review happened.</p></div>
@@ -298,6 +411,13 @@
         <div class="bin" data-bin="no"><span class="bin__label">Do not cite it alone</span></div>
       </div>
     </div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 350" role="img" aria-label="Radar chart of the five checks for three sources. Source C, the DOSM report, scores full marks on every check. Source A, the 2019 article, is slightly lower on currency. Source B, the retailer blog, is very low on purpose and low on authority.">
+        <polygon points="230.0,153.6 251.3,169.1 243.2,194.1 216.8,194.1 208.7,169.1" fill="none" class="grid-l"/><polygon points="230.0,131.2 272.6,162.2 256.3,212.2 203.7,212.2 187.4,162.2" fill="none" class="grid-l"/><polygon points="230.0,108.8 293.9,155.2 269.5,230.4 190.5,230.4 166.1,155.2" fill="none" class="grid-l"/><polygon points="230.0,86.4 315.2,148.3 282.7,248.5 177.3,248.5 144.8,148.3" fill="none" class="grid-l"/><polygon points="230.0,64.0 336.5,141.4 295.8,266.6 164.2,266.6 123.5,141.4" fill="none" class="grid-l"/><line x1="230" y1="176" x2="230.0" y2="64.0" class="grid-l"/><line x1="230" y1="176" x2="336.5" y2="141.4" class="grid-l"/><line x1="230" y1="176" x2="295.8" y2="266.6" class="grid-l"/><line x1="230" y1="176" x2="164.2" y2="266.6" class="grid-l"/><line x1="230" y1="176" x2="123.5" y2="141.4" class="grid-l"/><text class="k t14" text-anchor="middle" x="230.0" y="46.0">Currency</text><text class="k t14" text-anchor="start" x="351.7" y="144.4">Authority</text><text class="k t14" text-anchor="start" x="305.2" y="293.6">Accuracy</text><text class="k t14" text-anchor="end" x="154.8" y="293.6">Purpose</text><text class="k t14" text-anchor="end" x="108.3" y="144.4">Relevance</text><polygon class="vz-fade" style="--d:0s" points="230.0,64.0 336.5,141.4 295.8,266.6 164.2,266.6 123.5,141.4" fill="var(--cyan)" fill-opacity="0.1" stroke="var(--cyan)" stroke-width="2.5"  stroke-linejoin="round" data-tip="Source C (DOSM 2023 report): strong on all five checks."/><polygon class="vz-fade" style="--d:0.25s" points="230.0,108.8 315.2,148.3 282.7,248.5 177.3,248.5 144.8,148.3" fill="var(--violet)" fill-opacity="0.1" stroke="var(--violet)" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round" data-tip="Source A (2019 Scopus article): usable, but check currency for a 2026 poster."/><polygon class="vz-fade" style="--d:0.5s" points="230.0,64.0 272.6,162.2 269.5,230.4 216.8,194.1 144.8,148.3" fill="var(--pink)" fill-opacity="0.12" stroke="var(--pink)" stroke-width="2.5" stroke-dasharray="2 5" stroke-linejoin="round" data-tip="Source B (retailer blog): fails purpose and authority."/>
+      </svg>
+      <div class="vz-legend"><span class="vz-chip" style="--c:var(--cyan)"><i></i>C · DOSM report (strong)</span><span class="vz-chip" style="--c:var(--violet)"><i class="dash"></i>A · 2019 article (check currency)</span><span class="vz-chip" style="--c:var(--pink)"><i class="dash"></i>B · retailer blog (weak)</span></div>
+      <figcaption>Illustrative scores out of 5, drawn from the Practice 1 answers: C is strong on all five checks, A needs a currency check, B fails purpose and authority. Other B scores are illustrative.</figcaption>
+    </figure>
     <details class="reveal" data-xp="5"><summary>Check your answer</summary><div class="reveal__body">
       <p><strong>A</strong> is usable, but check <strong>currency</strong> for a 2026 poster.</p>
       <p><strong>B</strong> fails <strong>purpose</strong> and <strong>authority</strong>.</p>
@@ -325,6 +445,12 @@
       <li><div><h3>Results</h3><p>What was found, usually with numbers and comparisons.</p></div></li>
       <li><div><h3>Conclusion</h3><p>What the results mean and what should happen next.</p></div></li>
     </ol>
+    <figure class="chart-card mt">
+      <div class="vz-moves" role="img" aria-label="The five moves of an abstract in order: background, gap, method, results, conclusion. Numbered circles show the order an engineer reads them: results first, then method, then gap, then the conclusion of the full paper.">
+        <div class="vz-move vz-rise" style="--c:var(--cyan);--d:0.0s" data-tip="The topic and why it matters."><b>Background</b><span>The topic and why it matters.</span></div><div class="vz-move vz-rise" style="--c:var(--violet);--d:0.1s" data-tip="What is not yet known: the question the study asks."><em title="Read order">3</em><b>Gap</b><span>What is not yet known: the question the study asks.</span></div><div class="vz-move vz-rise" style="--c:var(--amber);--d:0.2s" data-tip="How the study was done: samples, period, conditions."><em title="Read order">2</em><b>Method</b><span>How the study was done: samples, period, conditions.</span></div><div class="vz-move vz-rise" style="--c:var(--lime);--d:0.3s" data-tip="What was found, usually with numbers and comparisons."><em title="Read order">1</em><b>Results</b><span>What was found, usually with numbers and comparisons.</span></div><div class="vz-move vz-rise" style="--c:var(--pink);--d:0.4s" data-tip="What the results mean and what should happen next."><em title="Read order">4</em><b>Conclusion</b><span>What the results mean and what should happen next.</span></div>
+      </div>
+      <figcaption>The five moves, in the order they are written. The numbered circles show the order an engineer <em>reads</em> them (next slide): results, method, gap, then the conclusion of the full paper.</figcaption>
+    </figure>
     <div class="callout mt"><p><strong>Genre note:</strong> this is a “move” structure. The same five moves reappear in the introduction and conclusion of the full paper.</p></div>
   </section>
 
@@ -332,12 +458,31 @@
   <section class="slide" data-title="Read the abstract like an engineer">
     <div class="slide__kicker">Part B · Abstracts</div>
     <h2>Read the abstract like an engineer</h2>
+    <figure class="photo-fig"><img src="../assets/img/laptop-notes-2.jpg" alt="Hands taking notes beside a laptop while reading a paper" loading="lazy" width="1200" height="521"><figcaption>Read for the claim, not for every word.</figcaption></figure>
     <ol class="steps" data-build>
       <li><div><h3>Read the results move first</h3><p>Is there a number? Is there a comparison? If not, the paper may be an opinion piece.</p></div></li>
       <li><div><h3>Then the method</h3><p>How many samples, over what period, in what conditions? 120 cells for 18 months is evidence. 3 cells for a week is a pilot.</p></div></li>
       <li><div><h3>Then the gap</h3><p>Does their question match yours? A perfect study of the wrong question wastes your time.</p></div></li>
       <li><div><h3>Only then download</h3><p>If all three pass, open the full paper and go straight to the conclusion.</p></div></li>
     </ol>
+    <p class="pull">A perfect study of the wrong question wastes your time.<cite>Read the abstract like an engineer</cite></p>
+    <figure class="chart-card mt">
+      <h3 class="vz-h">How big is the evidence?</h3>
+      <svg class="vz-svg" viewBox="0 0 460 236" role="img" aria-label="Two bar comparisons drawn to scale. Samples: 120 cells is evidence, 3 cells is a pilot. Period: 18 months is evidence, 1 week is a pilot.">
+        <text class="k t14" x="0" y="16">Samples (battery cells)</text>
+        <rect class="vz-grow" x="0" y="26" width="260" height="24" rx="8" fill="var(--lime)" data-tip="120 cells is evidence."/>
+        <text class="k t14" x="272" y="43">120 cells · evidence</text>
+        <rect class="vz-grow" style="--d:.2s" x="0" y="58" width="6.5" height="24" rx="3" fill="var(--pink)" data-tip="3 cells is a pilot."/>
+        <text class="k t14" x="18" y="75" style="fill:var(--pink)">3 cells · a pilot</text>
+        <text class="k t14" x="0" y="130">Period of the study</text>
+        <rect class="vz-grow" style="--d:.3s" x="0" y="140" width="260" height="24" rx="8" fill="var(--lime)" data-tip="18 months is evidence."/>
+        <text class="k t14" x="272" y="157">18 months · evidence</text>
+        <rect class="vz-grow" style="--d:.5s" x="0" y="172" width="4" height="24" rx="2" fill="var(--pink)" data-tip="1 week is a pilot."/>
+        <text class="k t14" x="16" y="189" style="fill:var(--pink)">1 week · a pilot</text>
+        <text class="t12" x="0" y="226">Bars are drawn to scale.</text>
+      </svg>
+      <figcaption>“120 cells for 18 months is evidence. 3 cells for a week is a pilot.”</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">A study tested 3 battery cells for one week. How should you treat it?</p>
       <div class="quiz__opts">
@@ -413,6 +558,10 @@
       <div class="card"><span class="num-badge">02</span><h3 class="mt">It fits your document</h3><p>The source was written for its readers. Your poster has different readers, a different purpose and 40 words of space.</p></div>
       <div class="card card--accent"><span class="num-badge">03</span><h3 class="mt">It keeps you honest</h3><p>Copying without quotation marks is plagiarism even with a citation. Paraphrasing with a citation is scholarship.</p></div>
     </div>
+    <div class="split mt">
+      <figure class="photo-fig" style="margin:0"><img src="../assets/img/writing-hand.jpg" alt="A hand writing notes by hand on paper" loading="lazy" width="1200" height="1043"><figcaption>Rewriting forces you to understand.</figcaption></figure>
+      <p class="pull" style="margin:0">Copying without quotation marks is plagiarism even with a citation. Paraphrasing with a citation is scholarship.<cite>Why paraphrase at all</cite></p>
+    </div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">You copy a sentence word for word, with no quotation marks, but you add a citation. Is that acceptable?</p>
       <div class="quiz__opts">
@@ -433,6 +582,12 @@
       <div class="card card--accent"><span class="tag">Paraphrase</span><p class="mt">One idea in your own words, about the same length, with the meaning kept.</p></div>
       <div class="card"><span class="tag tag--violet">Summary</span><p class="mt">The main points only, in your own words, much shorter than the source.</p></div>
     </div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 262" role="img" aria-label="Bar lengths compare the source with a quote, a paraphrase and a summary. The quote and paraphrase are as long as the source. The summary is much shorter. Only the quote uses the source's words. All three carry a citation.">
+        <text class="k t14" x="0" y="20">Source<tspan class="t13" style="font-weight:400;fill:var(--muted)"> the original text</tspan></text><rect class="vz-grow" style="--d:0.00s" x="0" y="28" width="340" height="28" rx="9" fill="#d8d8de" data-tip="The original text, written for its own readers."/><text class="k t13" x="12" y="47" style="pointer-events:none">the source, in full</text><text class="k t14" x="0" y="88">Quote<tspan class="t13" style="font-weight:400;fill:var(--muted)"> exact words in quotation marks</tspan></text><rect class="vz-grow" style="--d:0.15s" x="0" y="96" width="340" height="28" rx="9" fill="var(--amber)" data-tip="Only a quote uses the source’s words."/><text class="w t13" x="12" y="115" style="pointer-events:none">“ the source’s exact words ”</text><g class="vz-fade" style="--d:0.65s"><rect x="348" y="98" width="70" height="24" rx="12" fill="none" stroke="var(--text)" stroke-width="1.5"/><text class="k t12" x="383" y="114" text-anchor="middle">+ citation</text></g><text class="k t14" x="0" y="156">Paraphrase<tspan class="t13" style="font-weight:400;fill:var(--muted)"> same length, meaning kept</tspan></text><rect class="vz-grow" style="--d:0.30s" x="0" y="164" width="340" height="28" rx="9" fill="var(--cyan)" data-tip="One idea in your own words, about the same length."/><text class="w t13" x="12" y="183" style="pointer-events:none">one idea, your own words</text><g class="vz-fade" style="--d:0.80s"><rect x="348" y="166" width="70" height="24" rx="12" fill="none" stroke="var(--text)" stroke-width="1.5"/><text class="k t12" x="383" y="182" text-anchor="middle">+ citation</text></g><text class="k t14" x="0" y="224">Summary<tspan class="t13" style="font-weight:400;fill:var(--muted)"> much shorter, your words</tspan></text><rect class="vz-grow" style="--d:0.45s" x="0" y="232" width="130" height="28" rx="9" fill="var(--violet)" data-tip="The main points only, in your own words."/><text class="w t13" x="12" y="251" style="pointer-events:none">main points only</text><g class="vz-fade" style="--d:0.95s"><rect x="138" y="234" width="70" height="24" rx="12" fill="none" stroke="var(--text)" stroke-width="1.5"/><text class="k t12" x="173" y="250" text-anchor="middle">+ citation</text></g>
+      </svg>
+      <figcaption>Illustrative lengths. Only the quote uses the source’s words; <strong>all three need a citation</strong>.</figcaption>
+    </figure>
     <div class="grid grid-2 mt">
       <div class="quiz" data-xp="10" data-label="Quick check 1">
         <p class="quiz__q">Which of the three uses the source's own words?</p>
@@ -535,6 +690,7 @@
         </tbody>
       </table>
     </div>
+    <p class="pull mt">Synonyms alone never make a paraphrase.<cite>Move 3 · Synonyms, with care</cite></p>
     <div class="callout callout--bad mt"><p>Synonyms alone never make a paraphrase. Swapping every third word for a thesaurus entry produces <strong>patchwriting</strong>, which is still plagiarism.</p></div>
     <div class="sorter mt" data-xp="15" data-label="Safe to replace or keep as it is?">
       <div class="sorter__pool">
@@ -585,6 +741,17 @@
       <li><div><h3>Move 3 · Synonyms, with care</h3><p>The general verb “check” → “review”. The technical term “peer-reviewed” stays.</p></div></li>
       <li><div><h3>Move 4 · Reorder</h3><p>The timing now arrives first.</p><div class="example">Before peer-reviewed journal articles are published, other experts review them.</div></div></li>
     </ol>
+    <figure class="chart-card mt">
+      <div class="vz-sent"><small>Source</small><span class="vz-tok">Peer-reviewed journal articles</span><span class="vz-tok m2">are checked by<sup>2</sup></span><span class="vz-tok">other experts</span><span class="vz-tok m1">before publication<sup>1</sup></span></div>
+      <div class="vz-sent"><small>Paraphrase</small><span class="vz-tok m4">Before<sup>4</sup></span><span class="vz-tok">peer-reviewed journal articles</span><span class="vz-tok m1">are published<sup>1</sup></span><span class="vz-tok">, other experts</span><span class="vz-tok m3">review<sup>3</sup></span><span class="vz-tok m2">them<sup>2</sup></span></div>
+      <div class="vz-legend" style="justify-content:flex-start;margin:0">
+        <span class="vz-chip" style="--c:var(--cyan)"><i class="dot"></i>1 Word class</span>
+        <span class="vz-chip" style="--c:var(--violet)"><i class="dot"></i>2 Structure</span>
+        <span class="vz-chip" style="--c:var(--amber)"><i class="dot"></i>3 Synonym</span>
+        <span class="vz-chip" style="--c:var(--lime)"><i class="dot"></i>4 Reorder</span>
+      </div>
+      <figcaption>The changed words are highlighted and numbered by move. The plain words are kept: every fact survives.</figcaption>
+    </figure>
     <p class="small muted">Every fact kept: who checks (other experts), what (peer-reviewed journal articles), when (before publication).</p>
   </section>
 
@@ -596,6 +763,15 @@
     <div class="grid grid-2">
       <div class="card"><h3>Source</h3><div class="example">Peer review takes weeks or months.</div></div>
       <div class="card"><h3>Lay it over the source…</h3><div class="example">Peer checking needs weeks or months.</div><p class="small muted">Same shape, two words swapped.</p></div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 184" role="img" aria-label="The source sentence laid over the patchwritten sentence, word by word. Four of the six words are identical; only 'review' became 'checking' and 'takes' became 'needs'.">
+        <text class="t12" x="2" y="8">SOURCE</text>
+        <g class="vz-rise" style="--d:0.00s"><rect x="2" y="14" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="36" y="38" text-anchor="middle">Peer</text></g><g class="vz-rise" style="--d:0.50s"><rect x="2" y="88" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="36" y="112" text-anchor="middle">Peer</text></g><path d="M36 58 V84" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 4"/><g class="vz-rise" style="--d:0.07s"><rect x="76" y="14" width="68" height="40" rx="10" fill="var(--pink)" fill-opacity="0.16" stroke="var(--pink)" stroke-width="2"/><text class="k t13" x="110" y="38" text-anchor="middle">review</text></g><g class="vz-rise" style="--d:0.57s"><rect x="76" y="88" width="68" height="40" rx="10" fill="var(--pink)" fill-opacity="0.16" stroke="var(--pink)" stroke-width="2"/><text class="k t13" x="110" y="112" text-anchor="middle">checking</text></g><path d="M110 58 V84" stroke="var(--pink)" stroke-width="2" /><g class="vz-rise" style="--d:0.14s"><rect x="150" y="14" width="68" height="40" rx="10" fill="var(--pink)" fill-opacity="0.16" stroke="var(--pink)" stroke-width="2"/><text class="k t13" x="184" y="38" text-anchor="middle">takes</text></g><g class="vz-rise" style="--d:0.64s"><rect x="150" y="88" width="68" height="40" rx="10" fill="var(--pink)" fill-opacity="0.16" stroke="var(--pink)" stroke-width="2"/><text class="k t13" x="184" y="112" text-anchor="middle">needs</text></g><path d="M184 58 V84" stroke="var(--pink)" stroke-width="2" /><g class="vz-rise" style="--d:0.21s"><rect x="224" y="14" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="258" y="38" text-anchor="middle">weeks</text></g><g class="vz-rise" style="--d:0.71s"><rect x="224" y="88" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="258" y="112" text-anchor="middle">weeks</text></g><path d="M258 58 V84" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 4"/><g class="vz-rise" style="--d:0.28s"><rect x="298" y="14" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="332" y="38" text-anchor="middle">or</text></g><g class="vz-rise" style="--d:0.78s"><rect x="298" y="88" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="332" y="112" text-anchor="middle">or</text></g><path d="M332 58 V84" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 4"/><g class="vz-rise" style="--d:0.35s"><rect x="372" y="14" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="406" y="38" text-anchor="middle">months</text></g><g class="vz-rise" style="--d:0.85s"><rect x="372" y="88" width="68" height="40" rx="10" fill="#d8d8de" fill-opacity="1" /><text class="k t13" x="406" y="112" text-anchor="middle">months</text></g><path d="M406 58 V84" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 4"/>
+        <text class="t12" x="2" y="146">YOUR “PARAPHRASE”</text>
+        <text class="k t16" x="2" y="174"><tspan class="vz-count" data-to="4" style="fill:var(--pink)">4</tspan> of 6 words are unchanged. Same shape, same sentence.</text>
+      </svg>
+      <figcaption>Lay it over the source and the shape matches: patchwriting, still plagiarism. Pink boxes are the only words swapped.</figcaption>
+    </figure>
     </div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Is “Peer checking needs weeks or months” a paraphrase?</p>
@@ -686,12 +862,23 @@
   <section class="slide" data-title="Source evaluation activity">
     <div class="slide__kicker"><span class="tag tag--amber">Group task</span> Groups of four · bring to Supervision 1 in Week 6</div>
     <h2>Source evaluation activity</h2>
+    <figure class="photo-fig"><img src="../assets/img/team-table.jpg" alt="A group of students discussing around a table with notes and laptops" loading="lazy" width="1200" height="521"><figcaption>Groups of four: pick a topic, find five sources, judge them together.</figcaption></figure>
     <ol class="steps" data-build>
       <li><div><h3>Choose your SDG topic</h3><p>One engineering problem linked to an SDG. Narrow it to a place and a system: not “water”, but “cooling water use in a Kulim electronics plant”.</p></div></li>
       <li><div><h3>Find five candidate sources</h3><p>At least two from Scopus or Web of Science. Record title, authors, year, journal, DOI.</p></div></li>
       <li><div><h3>Run the five checks on each</h3><p>Fill in the grid from Practice 1. Reject at least one source and write one sentence saying why.</p></div></li>
       <li><div><h3>Paraphrase one claim from each keeper</h3><p>One sentence each, with an APA citation. This becomes the first draft of your poster's evidence.</p></div></li>
     </ol>
+    <figure class="chart-card mt">
+      <h3 class="vz-h">From five candidates to the poster</h3>
+      <div class="vz-flow">
+        <div style="--c:var(--cyan)"><b><span class="vz-count" data-to="5">5</span></b><span>candidate sources, at least two from Scopus or Web of Science</span></div>
+        <div style="--c:var(--pink)"><b>&minus;<span class="vz-count" data-to="1">1</span>+</b><span>reject at least one and write one sentence saying why</span></div>
+        <div style="--c:var(--violet)"><b>1</b><span>claim paraphrased from each keeper, with an APA citation</span></div>
+        <div style="--c:var(--lime)"><b>&ge;<span class="vz-count" data-to="3">3</span></b><span>credible sources your poster needs by Week 6</span></div>
+      </div>
+      <figcaption>The group task as a pipeline. Numbers come from this activity and the poster requirement.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Which topic is narrow enough?</p>
       <div class="quiz__opts">
@@ -741,5 +928,60 @@
 
 </main>
 <script src="../assets/js/deck.js"></script>
+<script>
+/* visual pass: draw charts and count up numbers when scrolled into view */
+(function () {
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var stat = /[?&]static\b/.test(location.search);
+  var figs = [].slice.call(document.querySelectorAll(".chart-card, .keystats, .vz-flow"));
+  function counters(el, animate) {
+    [].forEach.call(el.querySelectorAll(".vz-count"), function (c) {
+      var to = parseFloat(c.getAttribute("data-to")), dec = (c.getAttribute("data-dec") | 0);
+      if (!animate) { c.textContent = to.toFixed(dec); return; }
+      var t0 = null;
+      (function step(t) {
+        if (t0 === null) t0 = t;
+        var p = Math.min(1, (t - t0) / 1100), e = 1 - Math.pow(1 - p, 3);
+        c.textContent = (to * e).toFixed(dec);
+        if (p < 1) requestAnimationFrame(step); else c.textContent = to.toFixed(dec);
+      })(performance.now());
+    });
+  }
+  if (!("IntersectionObserver" in window) || reduce || stat) {
+    figs.forEach(function (f) { f.classList.add("is-in"); counters(f, false); });
+  } else {
+    document.documentElement.classList.add("vz-js");
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("is-in"); counters(e.target, true); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.2 });
+    figs.forEach(function (f) { io.observe(f); [].forEach.call(f.querySelectorAll(".vz-count"), function (c) { c.textContent = "0"; }); });
+  }
+  /* hover / tap tooltips on [data-tip] parts */
+  var tip = document.createElement("div");
+  tip.className = "vz-tip"; tip.setAttribute("role", "tooltip"); document.body.appendChild(tip);
+  var cur = null;
+  function show(el) {
+    cur = el; tip.textContent = el.getAttribute("data-tip"); tip.classList.add("on");
+    var r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+    var y = r.top - h - 10; if (y < 8) y = r.bottom + 10;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  }
+  function hide() { cur = null; tip.classList.remove("on"); }
+  [].forEach.call(document.querySelectorAll("[data-tip]"), function (el) {
+    el.setAttribute("tabindex", "0");
+    el.addEventListener("mouseenter", function () { show(el); });
+    el.addEventListener("mouseleave", hide);
+    el.addEventListener("focus", function () { show(el); });
+    el.addEventListener("blur", hide);
+    el.addEventListener("click", function (ev) { ev.stopPropagation(); cur === el ? hide() : show(el); });
+  });
+  document.addEventListener("click", hide);
+  addEventListener("scroll", hide, { passive: true });
+})();
+</script>
+
 </body>
 </html>

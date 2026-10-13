@@ -9,6 +9,90 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
+<style id="vz-style">
+/* Visual-pass components (scoped to .vz / vz-*) */
+.vz h4{margin:0 0 .25rem;font-size:1.05rem}
+.vz .vz-sub{margin:0 0 1rem;font-size:.88rem;color:var(--muted)}
+.vz-two{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;align-items:center}
+.vz-two--wide{grid-template-columns:1.25fr 1fr}
+@media(max-width:760px){.vz-two,.vz-two--wide{grid-template-columns:1fr;gap:1rem}}
+.vz-ill{display:inline-block;font:600 .68rem var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--amber);background:rgba(178,94,0,.1);border-radius:99px;padding:.15rem .55rem;margin-left:.4rem;vertical-align:middle}
+/* reveal states, only when JS observer is active */
+html.vz-js .vz-wipe{clip-path:inset(0 100% 0 0 round 14px);transition:clip-path 1.2s cubic-bezier(.2,.8,.2,1)}
+html.vz-js .vz.in .vz-wipe{clip-path:inset(0 0 0 0 round 14px)}
+html.vz-js .vz-pop{opacity:0;transform:translateY(10px) scale(.96);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i,0)*.14s)}
+html.vz-js .vz.in .vz-pop{opacity:1;transform:none}
+html.vz-js .vz-draw{stroke-dasharray:var(--len) 100;stroke-dashoffset:var(--len);transition:stroke-dashoffset 1.3s cubic-bezier(.3,.7,.2,1);transition-delay:calc(var(--i,0)*.35s)}
+html.vz-js .vz.in .vz-draw{stroke-dashoffset:0}
+html.vz-js .vz-scalex{transform:scaleX(0);transform-origin:left center;transform-box:fill-box;transition:transform 1.1s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i,0)*.12s)}
+html.vz-js .vz.in .vz-scalex{transform:scaleX(1)}
+html.vz-js .vz-fillw{width:0!important;transition:width 1.2s cubic-bezier(.2,.8,.2,1);transition-delay:calc(var(--i,0)*.12s)}
+html.vz-js .vz.in .vz-fillw{width:var(--w)!important}
+@media(prefers-reduced-motion:reduce){html.vz-js .vz *{transition:none!important}}
+/* tooltip */
+[data-tip]{cursor:help}
+.vz-tip{position:fixed;z-index:9999;max-width:240px;background:#1d1d1f;color:#fff;font:500 .8rem/1.35 var(--font);padding:.5rem .7rem;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s}
+.vz-tip.on{opacity:1;transform:none}
+[data-tip]:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:6px}
+/* segmented bar */
+.vz-seg__bar{display:flex;gap:3px;height:4.4rem;border-radius:14px;overflow:hidden}
+.vz-seg__p{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 .8rem;color:#fff;min-width:0}
+.vz-seg__p b{font:700 1.05rem var(--display);letter-spacing:-.02em;white-space:nowrap}
+.vz-seg__p span{font-size:.78rem;opacity:.92;line-height:1.2}
+.vz-seg__scale{position:relative;height:1.3rem;margin-top:.45rem;font-size:.75rem;color:var(--muted)}
+.vz-seg__scale span{position:absolute;transform:translateX(-50%)}
+.vz-seg__scale span:first-child{transform:none}
+.vz-seg__scale span:last-child{transform:translateX(-100%)}
+.vz-seg__p--light{color:var(--text)}
+.vz-stripe{background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.55) 0 5px,transparent 5px 10px)}
+/* horizontal bars with budget tick */
+.vz-bars{display:grid;gap:.9rem}
+.vz-brow__top{display:flex;justify-content:space-between;gap:1rem;font-size:.92rem;margin-bottom:.3rem}
+.vz-brow__top b{font-weight:650}
+.vz-brow__top em{font-style:normal;font-variant-numeric:tabular-nums;color:var(--muted)}
+.vz-track{position:relative;height:1.7rem;background:var(--bg-2);border-radius:10px}
+.vz-fill{height:100%;border-radius:10px;width:var(--w)}
+.vz-limit{position:absolute;top:-.35rem;bottom:-.35rem;left:var(--at);border-left:2px dashed var(--text)}
+.vz-limit::after{content:attr(data-l);position:absolute;top:-1.15rem;left:4px;font-size:.7rem;font-weight:600;white-space:nowrap;color:var(--text)}
+.vz-flag{font-size:.74rem;font-weight:600;border-radius:99px;padding:.1rem .5rem;margin-left:.4rem}
+.vz-flag--ok{background:rgba(26,143,60,.12);color:var(--lime)}
+.vz-flag--bad{background:rgba(215,0,21,.09);color:var(--red)}
+/* spectrum */
+.vz-spec__bar{height:.9rem;border-radius:99px;background:linear-gradient(90deg,#cfe3fb,#0071e3 55%,#6e4ff6)}
+.vz-spec__cols{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-top:1rem}
+.vz-spec__col h5{margin:0 0 .5rem;font:700 .95rem var(--display)}
+.vz-spec__col span{display:block;background:var(--bg-2);border-radius:12px;padding:.55rem .7rem;font-family:var(--serif);font-style:italic;font-size:.95rem;margin-bottom:.45rem;line-height:1.3}
+.vz-spec__axis{display:flex;justify-content:space-between;font-size:.74rem;color:var(--muted);margin-top:.4rem}
+@media(max-width:520px){.vz-spec__col span{font-size:.82rem;padding:.45rem .5rem}.vz-spec__cols{gap:.45rem}}
+/* journey */
+.vz-journey{list-style:none;margin:0;padding:0;display:grid;gap:1.1rem}
+.vz-journey li{position:relative;padding-left:3.2rem;min-height:2.4rem}
+.vz-journey li::before{content:attr(data-n);position:absolute;left:0;top:0;width:2.3rem;height:2.3rem;border-radius:50%;background:var(--c,var(--cyan));color:#fff;font:700 .95rem var(--font);display:grid;place-items:center;z-index:1}
+.vz-journey li::after{content:"";position:absolute;left:1.1rem;top:2.4rem;bottom:-1rem;width:2px;background:var(--line)}
+.vz-journey li:last-child::after{display:none}
+.vz-journey h4{margin:0 0 .15rem;font-size:1.02rem}
+.vz-journey p{margin:0;font-size:.88rem;color:var(--muted);line-height:1.35}
+.vz-journey .t{display:inline-block;margin-top:.3rem;font:600 .72rem var(--font);color:var(--c,var(--cyan))}
+@media(min-width:760px){.vz-journey{grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:.9rem}.vz-journey li{padding:3.1rem 0 0}.vz-journey li::after{left:2.5rem;right:-.9rem;top:1.1rem;bottom:auto;width:auto;height:2px}}
+/* minute cells */
+.vz-cells{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.vz-cells i{display:grid;place-items:center;height:2.2rem;border-radius:7px;font:700 .8rem var(--font);color:#fff;font-style:normal}
+.vz-cells .a{background:var(--cyan)}.vz-cells .b{background:var(--violet)}.vz-cells .c{background:var(--pink)}.vz-cells .d{background:var(--amber)}
+.vz-cells__lbl{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem;margin:1rem 0 .4rem;font-size:.92rem}
+.vz-cells__lbl b{font-weight:650}.vz-cells__lbl span{font-size:.8rem;color:var(--muted);text-align:right}
+.vz-axis12{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:.3rem}
+/* tiles (criteria) */
+.vz-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+@media(max-width:760px){.vz-tiles{grid-template-columns:repeat(2,1fr)}}
+.vz-tile{background:var(--bg-2);border-radius:20px;padding:1.2rem 1rem 1rem;text-align:center}
+.vz-tile svg{width:3.2rem!important;height:3.2rem!important;margin:0 auto .6rem}
+.vz-tile h4{font-size:.98rem;margin:0 0 .5rem}
+.vz-tile .dots{display:flex;justify-content:center;gap:.28rem}
+.vz-tile .dots i{width:.7rem;height:.7rem;border-radius:50%;background:var(--c)}
+.vz-tile small{display:block;margin-top:.45rem;color:var(--muted);font-size:.78rem}
+.vz-note{font-size:.8rem;color:var(--muted);margin:.8rem 0 0}
+</style>
+
 </head>
 <body data-week="12" data-title="Speaking Practice & Final Consultations">
 <main class="deck">
@@ -31,6 +115,32 @@
       <li><div><h3>Speaking assessment brief</h3><p>Break down the exact structure, timing and expectations of the Week 13–14 Speaking Assessment (30%).</p></div></li>
       <li><div><h3>Active simulation drills</h3><p>Timed practice for Task 1 (individual presentation) and Task 2 (group discussion), using exam-style prompts.</p></div></li>
     </ol>
+  </section>
+
+  <!-- visual spread · Week 12 in numbers -->
+  <section class="slide" data-title="Week 12 in numbers">
+    <div class="slide__kicker">This week at a glance</div>
+    <h2>The numbers to remember</h2>
+    <p class="pull">Speaking at work is a physical, spontaneous skill. You learn it by doing, not by reading essays off a page.<cite>Week 12 opening</cite></p>
+    <div class="keystats vz">
+      <div class="keystat"><b data-count="30" data-suffix="%">30%</b><span>Speaking Assessment, Weeks 13–14</span></div>
+      <div class="keystat"><b data-count="20" data-suffix="%">20%</b><span>Group Poster, due this week</span></div>
+      <div class="keystat"><b data-count="12" data-suffix=" min">12 min</b><span>Task 2 group discussion</span></div>
+      <div class="keystat"><b data-count="3" data-suffix=" min">3 min</b><span>Peer feedback after each run</span></div>
+    </div>
+    <div class="vz-two vz-two--wide">
+      <figure class="chart-card vz">
+        <h4>How the 30% is split</h4>
+        <div class="vz-seg" role="img" aria-label="The 30 percent speaking mark is split into Task 1 individual pitch, 10 percent, and Task 2 group negotiation, 20 percent.">
+          <div class="vz-seg__bar vz-wipe">
+            <div class="vz-seg__p" style="flex:10;background:var(--cyan)" data-tip="Task 1: individual pitch. 2 minutes to prepare, then a 2–3 minute presentation."><b>10%</b><span>Task 1 · pitch</span></div>
+            <div class="vz-seg__p" style="flex:20;background:var(--violet)" data-tip="Task 2: group negotiation. A 12-minute discussion that must end in consensus."><b>20%</b><span>Task 2 · group negotiation</span></div>
+          </div>
+        </div>
+        <figcaption>Task 2 is worth twice as much as Task 1, so how you interact matters. Tap a block for details.</figcaption>
+      </figure>
+      <figure class="photo-fig photo-fig--tall"><img src="../assets/img/team-table.jpg" alt="Four colleagues discussing documents around a table" loading="lazy" width="1200" height="521"><figcaption>Task 2 is a conversation, not four speeches.</figcaption></figure>
+    </div>
   </section>
 
   <!-- 3 · Poster submission -->
@@ -111,6 +221,32 @@
     </div>
   </section>
 
+  <!-- visual spread · Task 1 on the clock -->
+  <section class="slide" data-title="Task 1 on the clock">
+    <div class="slide__kicker">Task 1 · Individual presentation</div>
+    <h2>Where the 150 seconds go</h2>
+    <div class="vz-two">
+      <figure class="chart-card vz">
+        <h4>Task 1 in 150 seconds</h4>
+        <svg viewBox="0 0 220 220" style="max-width:300px;margin:0 auto" role="img" aria-label="Ring chart of the Task 1 pitch: 30 seconds context and hook, 90 seconds core proposal, 30 seconds call to action.">
+          <circle cx="110" cy="110" r="76" fill="none" stroke="#f5f5f7" stroke-width="26"/>
+          <circle class="vz-draw" style="--len:19;--i:0" data-tip="Context and hook: 30 seconds" cx="110" cy="110" r="76" fill="none" stroke="#0071e3" stroke-width="26" pathLength="100" stroke-dasharray="19 81" transform="rotate(-90 110 110)"/>
+          <circle class="vz-draw" style="--len:59;--i:1" data-tip="Core proposal: 90 seconds, the longest phase" cx="110" cy="110" r="76" fill="none" stroke="#6e4ff6" stroke-width="26" pathLength="100" stroke-dasharray="59 41" transform="rotate(-18 110 110)" />
+          <circle class="vz-draw" style="--len:19;--i:2" data-tip="Call to action: 30 seconds" cx="110" cy="110" r="76" fill="none" stroke="#d1307a" stroke-width="26" pathLength="100" stroke-dasharray="19 81" transform="rotate(198 110 110)"/>
+          <text x="110" y="112" text-anchor="middle" class="lbl-strong" style="font-size:36px;font-weight:800;letter-spacing:-1px">150 s</text>
+          <text x="110" y="136" text-anchor="middle" style="font-size:13px">of speaking</text>
+        </svg>
+        <figcaption>30 + 90 + 30 seconds, inside the 2–3 minute window. You also get 2 minutes of preparation first.</figcaption>
+      </figure>
+      <div class="vz-bars vz">
+        <div class="vz-brow"><div class="vz-brow__top"><b>① Context &amp; hook</b><em>30 s</em></div><div class="vz-track"><div class="vz-fill vz-fillw" style="--w:20%;background:var(--cyan)"></div></div></div>
+        <div class="vz-brow"><div class="vz-brow__top"><b>② Core proposal</b><em>90 s</em></div><div class="vz-track"><div class="vz-fill vz-fillw" style="--w:60%;background:var(--violet);--i:1"></div></div></div>
+        <div class="vz-brow"><div class="vz-brow__top"><b>③ Call to action</b><em>30 s</em></div><div class="vz-track"><div class="vz-fill vz-fillw" style="--w:20%;background:var(--pink);--i:2"></div></div></div>
+        <p class="small muted">The proposal gets three times as long as the hook. Spend your preparation time on it.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- 6 · Task 2 dynamics -->
   <section class="slide" data-title="Task 2 discussion dynamics">
     <div class="slide__kicker">Task 2 · Group discussion · 12 minutes</div>
@@ -121,6 +257,28 @@
       <li><div><h3>Minutes 8–12 · Negotiation &amp; consensus</h3><p>Reach a compromise. Agree on one practical strategy to present to the board of directors.</p></div></li>
     </ol>
     <div class="callout callout--warn"><p><strong>The trap:</strong> spending all 12 minutes arguing for your own option. The task is marked on whether the group <em>reaches a decision together</em>.</p></div>
+  </section>
+
+  <!-- visual spread · Task 2 on the clock -->
+  <section class="slide" data-title="Task 2 on the clock">
+    <div class="slide__kicker">Task 2 · Group discussion</div>
+    <h2>Three stages, one deadline</h2>
+    <figure class="chart-card vz">
+      <h4>The 12-minute discussion, to scale</h4>
+      <div class="vz-seg" role="img" aria-label="Timeline of the 12-minute Task 2 discussion: minutes 0 to 3 initial pitches, 3 to 8 comparative analysis, 8 to 12 negotiation and consensus.">
+        <div class="vz-seg__bar vz-wipe">
+          <div class="vz-seg__p" style="flex:3;background:var(--cyan)" data-tip="Each candidate briefly presents their assigned option."><b>3 min</b><span>Pitches</span></div>
+          <div class="vz-seg__p" style="flex:5;background:var(--violet)" data-tip="Challenge options on cost, installation timeline and SDG alignment."><b>5 min</b><span>Comparative analysis</span></div>
+          <div class="vz-seg__p" style="flex:4;background:var(--pink)" data-tip="Reach a compromise and agree on one strategy for the board."><b>4 min</b><span>Negotiate &amp; decide</span></div>
+        </div>
+        <div class="vz-seg__scale"><span style="left:0">0</span><span style="left:25%">3</span><span style="left:66.67%">8</span><span style="left:100%">12</span></div>
+      </div>
+      <figcaption>The decision has the last 4 minutes. Do not leave it to the final seconds.</figcaption>
+    </figure>
+    <div class="vz-two">
+      <figure class="photo-fig"><img src="../assets/img/hourglass.jpg" alt="A sand timer running down on a desk" loading="lazy" width="1200" height="521"><figcaption>Twelve minutes sound long until the sand runs out.</figcaption></figure>
+      <p class="pull" style="max-width:none">The task is marked on whether the group reaches a decision together.<cite>The trap, Task 2</cite></p>
+    </div>
   </section>
 
   <!-- 7 · Grading -->
@@ -136,6 +294,17 @@
     <p class="small muted">Tap every card to earn the XP. Each criterion is marked out of 5 on the CEFR-aligned (ELHAM) rubric.</p>
   </section>
 
+  <!-- visual spread · Four criteria at a glance -->
+  <section class="slide" data-title="Four criteria at a glance">
+    <div class="slide__kicker">Marking criteria</div>
+    <h2>Four things, five points each</h2>
+    <figure class="chart-card vz">
+      <div class="vz-tiles" role="img" aria-label="Four marking criteria, each scored out of 5: grammatical accuracy, lexical range and register, fluency and pronunciation, interactive effectiveness."><div class="vz-tile vz-pop" style="--c:var(--cyan);--i:0" data-tip="Complex structures such as passives and conditionals, with very few errors."><svg viewBox="0 0 48 48" fill="none" stroke="#0071e3" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 38 L20 10 L32 38"/><path d="M12 29h16"/><path d="M38 20v18"/><path d="M34 24h8"/></svg><h4>Grammatical accuracy</h4><div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><small>marked out of 5</small></div><div class="vz-tile vz-pop" style="--c:var(--violet);--i:1" data-tip="Formal technical terms and precise verbs. Avoid repeating the same phrases."><svg viewBox="0 0 48 48" fill="none" stroke="#6e4ff6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10h14a4 4 0 0 1 4 4v24a4 4 0 0 0-4-4H8z"/><path d="M40 10H26v28a4 4 0 0 1 4-4h10z"/></svg><h4>Lexical range &amp; register</h4><div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><small>marked out of 5</small></div><div class="vz-tile vz-pop" style="--c:var(--pink);--i:2" data-tip="A steady, structured pace with clear pronunciation and little hesitation."><svg viewBox="0 0 48 48" fill="none" stroke="#d1307a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 24h5M14 16v16M21 10v28M28 16v16M35 20v8M42 24h-2"/></svg><h4>Fluency &amp; pronunciation</h4><div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><small>marked out of 5</small></div><div class="vz-tile vz-pop" style="--c:var(--lime);--i:3" data-tip="Turn-taking, active listening and moving the group towards a compromise."><svg viewBox="0 0 48 48" fill="none" stroke="#1a8f3c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 10h22a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H16l-7 6v-6H6z"/><path d="M36 20h3a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-1v5l-6-5H22a3 3 0 0 1-3-3v-1"/></svg><h4>Interactive effectiveness</h4><div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><small>marked out of 5</small></div></div>
+      <figcaption>Each criterion is marked out of 5 on the CEFR-aligned (ELHAM) rubric. Tap a tile for what the examiner listens for.</figcaption>
+    </figure>
+    <figure class="photo-fig"><img src="../assets/img/exam-hall.jpg" alt="Rows of desks in an examination hall" loading="lazy" width="1200" height="521"><figcaption>The examiner listens for all four at once.</figcaption></figure>
+  </section>
+
   <!-- 8 · Set up the drill -->
   <section class="slide" data-title="Set up your practice squad">
     <div class="slide__kicker">Practice setup</div>
@@ -146,6 +315,24 @@
       <div class="card"><span class="num-badge">03</span><h3 class="mt">Give feedback</h3><p>After each 12-minute run, the peer examiner spends 3 minutes giving direct, constructive feedback using the checklist.</p></div>
     </div>
     <div class="picker mt" data-label="Who is the examiner first? Spin for it" data-items='["Candidate A","Candidate B","Candidate C","Candidate D","The person whose birthday is next"]'></div>
+  </section>
+
+  <!-- visual spread · Mock session flow -->
+  <section class="slide" data-title="Mock session flow">
+    <div class="slide__kicker">Practice setup</div>
+    <h2>From squad to feedback</h2>
+    <figure class="chart-card vz">
+      <h4>One practice round, start to finish</h4>
+      <ol class="vz-journey" style="--n:5">
+        <li data-n="1" style="--c:var(--cyan);--i:0" class="vz-pop"><h4>Form squads</h4><p>Candidates A, B, C, D in a tight semicircle.</p></li>
+        <li data-n="2" style="--c:var(--violet);--i:1" class="vz-pop"><h4>Pick an examiner</h4><p>One non-speaking peer keeps time.</p></li>
+        <li data-n="3" style="--c:var(--amber);--i:2" class="vz-pop"><h4>Prepare</h4><p>Know your option by heart.</p><span class="t">3 min</span></li>
+        <li data-n="4" style="--c:var(--pink);--i:3" class="vz-pop"><h4>Run the task</h4><p>Pitch, compare, decide.</p><span class="t">12 min</span></li>
+        <li data-n="5" style="--c:var(--lime);--i:4" class="vz-pop"><h4>Feedback</h4><p>Use the checklist, then swap roles.</p><span class="t">3 min</span></li>
+      </ol>
+      <figcaption>Prep and feedback times come from the timer and the squad instructions. One round adds up to about 18 minutes.</figcaption>
+    </figure>
+    <figure class="photo-fig"><img src="../assets/img/whiteboard.jpg" alt="Two women planning together at a whiteboard" loading="lazy" width="1200" height="521"><figcaption>Plan together, then practise out loud.</figcaption></figure>
   </section>
 
   <!-- 9 · Task 1 mock -->
@@ -167,6 +354,31 @@
       </div>
       <div class="timer" data-xp="15" data-label="Task 1 exam timer" data-phases='[{"label":"Prepare","sec":120,"hint":"Plan: hook → proposal → call to action. Jot 3 key numbers."},{"label":"Hook","sec":30,"hint":"State the problem and why it matters now."},{"label":"Proposal","sec":90,"hint":"Your solution + evidence: cost, time, impact."},{"label":"Call to action","sec":30,"hint":"Summarise the benefits. Ask for a decision."}]'></div>
     </div>
+  </section>
+
+  <!-- visual spread · The maintenance numbers -->
+  <section class="slide" data-title="The maintenance numbers">
+    <div class="slide__kicker">Mock · Task 1</div>
+    <h2>Know your numbers before you speak</h2>
+    <div class="vz-two">
+      <div>
+        <div class="keystats vz" style="grid-template-columns:1fr 1fr">
+          <div class="keystat"><b data-count="15" data-suffix="%">15%</b><span>rise in unplanned downtime</span></div>
+          <div class="keystat"><b data-count="50000" data-prefix="RM ">RM 50,000</b><span>penalty costs a month</span></div>
+          <div class="keystat"><b data-count="90" data-suffix="%">90%</b><span>fewer breakdowns with sensors (A)</span></div>
+          <div class="keystat"><b data-count="4" data-suffix=" h">4 h</b><span>stopped every fortnight (B)</span></div>
+        </div>
+      </div>
+      <figure class="photo-fig photo-fig--tall"><img src="../assets/img/machinery.jpg" alt="Industrial machinery in a manufacturing plant" loading="lazy" width="1200" height="521"><figcaption>Unplanned downtime is the plant’s problem to solve.</figcaption></figure>
+    </div>
+    <figure class="chart-card vz">
+      <h4>The trade-off: pay once, or stop often</h4>
+      <div class="vz-bars">
+        <div class="vz-brow"><div class="vz-brow__top"><b>A · IoT sensors</b><em>RM 120,000 set-up</em></div><div class="vz-track"><div class="vz-fill vz-fillw" style="--w:100%;background:var(--cyan)" data-tip="High setup cost, but 90% fewer unexpected breakdowns within one month."></div></div></div>
+        <div class="vz-brow"><div class="vz-brow__top"><b>B · Manual maintenance</b><em>RM 15,000 a year</em></div><div class="vz-track"><div class="vz-fill vz-fillw" style="--w:12.5%;background:var(--violet);--i:1" data-tip="Low cost, but production stops for 4 hours every fortnight."></div></div></div>
+      </div>
+      <figcaption>Bars show cost only (RM 120,000 against RM 15,000 a year). B’s price is paid in 4-hour stoppages.</figcaption>
+    </figure>
   </section>
 
   <!-- 10 · Task 2 mock -->
@@ -202,6 +414,44 @@
         <button data-correct data-why="HVAC is the only single option under budget that clears 10% (15%). A strong group might still discuss pairing B with something cheaper later.">C · Smart HVAC controls</button>
       </div>
     </div>
+  </section>
+
+  <!-- visual spread · Which option wins? -->
+  <section class="slide" data-title="Which option wins?">
+    <div class="slide__kicker">Mock · Task 2 · The verdict</div>
+    <h2>The board’s two limits, on one chart</h2>
+    <figure class="chart-card vz">
+      <h4>Cost against saving <span class="small muted" style="font-weight:400">· bubble size = time to install</span></h4>
+      <svg viewBox="0 0 520 390" role="img" aria-label="Bubble chart of three upgrade options. Rooftop solar PV costs RM 150,000, saves 30 percent, takes 12 months, and is over the RM 100,000 budget. Smart LED costs RM 45,000, saves 8 percent, takes 2 months, and is below the 10 percent target. Smart HVAC costs RM 85,000, saves 15 percent, takes 4 months, and meets both limits.">
+        <rect x="60" y="20" width="244" height="214" rx="10" fill="rgba(26,143,60,.09)"/>
+        <text x="70" y="40" class="t1" style="fill:var(--lime);font-weight:700;font-size:13px">Meets both limits</text>
+        <g class="grid-l"><line x1="60" y1="320" x2="500" y2="320" class="axis-l"/><line x1="60" y1="20" x2="60" y2="320" class="axis-l"/>
+          <line x1="60" y1="148" x2="500" y2="148"/><line x1="60" y1="62" x2="500" y2="62"/></g>
+        <line x1="60" y1="234" x2="500" y2="234" stroke="#1d1d1f" stroke-width="1.6" stroke-dasharray="6 5"/>
+        <line x1="304" y1="20" x2="304" y2="320" stroke="#1d1d1f" stroke-width="1.6" stroke-dasharray="6 5"/>
+        <text x="496" y="226" text-anchor="end" class="t1 lbl-strong">10% target</text>
+        <text x="310" y="34" class="t1 lbl-strong">RM 100,000 budget</text>
+        <g class="t1" style="font-size:12px"><text x="52" y="324" text-anchor="end">0%</text><text x="52" y="238" text-anchor="end">10%</text><text x="52" y="152" text-anchor="end">20%</text><text x="52" y="66" text-anchor="end">30%</text>
+        <text x="60" y="340" text-anchor="middle">0</text><text x="182" y="340" text-anchor="middle">RM 50k</text><text x="304" y="340" text-anchor="middle">100k</text><text x="427" y="340" text-anchor="middle">RM 150k</text>
+        <text x="280" y="372" text-anchor="middle" style="font-size:13px">Cost →</text></g>
+        <g class="vz-pop" style="--i:0"><circle cx="427" cy="63" r="31" fill="#d1307a" fill-opacity=".85" data-tip="A · Rooftop solar PV: RM 150,000, 30% saving, 12 months. Over budget."/>
+          <text x="427" y="67" text-anchor="middle" class="t1" style="fill:#fff;font-weight:800;font-size:15px;pointer-events:none">A</text>
+          <text x="388" y="100" text-anchor="end" class="t1 lbl-strong" style="font-size:13px">Solar PV · over budget</text></g>
+        <g class="vz-pop" style="--i:1"><circle cx="170" cy="251" r="13" fill="#b25e00" fill-opacity=".9" data-tip="B · Smart LED retrofit: RM 45,000, 8% saving, 2 months. Below the 10% target."/>
+          <text x="170" y="255" text-anchor="middle" class="t1" style="fill:#fff;font-weight:800;font-size:13px;pointer-events:none">B</text>
+          <text x="190" y="274" class="t1 lbl-strong" style="font-size:13px">LED · below target</text></g>
+        <g class="vz-pop" style="--i:2"><circle cx="268" cy="191" r="18" fill="#1a8f3c" fill-opacity=".92" data-tip="C · Smart HVAC controls: RM 85,000, 15% saving, 4 months. The only single option that meets both limits."/>
+          <text x="268" y="196" text-anchor="middle" class="t1" style="fill:#fff;font-weight:800;font-size:15px;pointer-events:none">C</text>
+          <text x="268" y="161" text-anchor="middle" class="t1 lbl-strong" style="font-size:13px">HVAC · meets both</text></g>
+      </svg>
+      <figcaption>Table 1 plotted: only Smart HVAC controls (C) lands in the green zone. Bubble size shows months to install (12, 2 and 4). Tap a bubble for the numbers.</figcaption>
+    </figure>
+    <div class="keystats vz">
+      <div class="keystat"><b data-count="100000" data-prefix="RM ">RM 100,000</b><span>capital budget cap</span></div>
+      <div class="keystat"><b data-count="10" data-suffix="%">10%</b><span>target cut in utility use</span></div>
+      <div class="keystat"><b data-count="15" data-suffix="%">15%</b><span>saved by Smart HVAC (C)</span></div>
+    </div>
+    <figure class="photo-fig"><img src="../assets/img/hardhat-solar.jpg" alt="A hard hat resting on a solar panel" loading="lazy" width="1200" height="521"><figcaption>Solar saves the most, but RM 150,000 breaks the budget.</figcaption></figure>
   </section>
 
   <!-- 11 · Phrase bank -->
@@ -276,6 +526,17 @@
       <li><strong>Meet as a mock study group.</strong> Practise with your candidates, face to face or online, to build a natural rhythm.</li>
       <li><strong>Act professionally.</strong> Prepare formal clothes, bring your matric card, and arrive 15 minutes early.</li>
     </ul>
+  
+    <figure class="chart-card vz mt">
+      <h4>The road to the assessment</h4>
+      <ol class="vz-journey" style="--n:3">
+        <li data-n="11" style="--c:var(--cyan);--i:0" class="vz-pop"><h4>Week 11 · Online</h4><p>Language of group discussion and the assessment briefing.</p></li>
+        <li data-n="12" style="--c:var(--violet);--i:1" class="vz-pop"><h4>Week 12 · Today</h4><p>Mock session, final consultations, poster (20%) due.</p></li>
+        <li data-n="13" style="--c:var(--pink);--i:2" class="vz-pop"><h4>Weeks 13–14</h4><p>Speaking Assessment (30%): Task 1 and Task 2.</p></li>
+      </ol>
+    </figure>
+    <p class="pull">Practise, practise, practise.<cite>See you at the Speaking Assessment</cite></p>
+  
   </section>
 
   <!-- 14 · Finale -->
@@ -292,5 +553,64 @@
 
 </main>
 <script src="../assets/js/deck.js"></script>
+<script>
+/* Visual-pass behaviour: draw-on-scroll, counters, tooltips (after deck.js) */
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var stat = /[?&]static/.test(location.search);
+  var figs = [].slice.call(document.querySelectorAll(".vz"));
+  function fmt(n) { return n.toLocaleString("en-US"); }
+  function fin(el) { return (el.dataset.prefix || "") + fmt(+el.dataset.count) + (el.dataset.suffix || ""); }
+  function count(el) {
+    var to = +el.dataset.count, t0 = performance.now(), d = 1300;
+    (function f(t) {
+      var p = Math.min(1, (t - t0) / d); p = 1 - Math.pow(1 - p, 3);
+      el.textContent = (el.dataset.prefix || "") + fmt(Math.round(to * p)) + (el.dataset.suffix || "");
+      if (p < 1) requestAnimationFrame(f);
+    })(t0);
+  }
+  function show(f) {
+    if (f.classList.contains("in")) return;
+    f.classList.add("in");
+    if (!reduce && !stat) [].forEach.call(f.querySelectorAll("[data-count]"), count);
+  }
+  [].forEach.call(document.querySelectorAll("[data-count]"), function (e) { e.textContent = fin(e); });
+  if (!reduce && !stat && "IntersectionObserver" in window) {
+    document.documentElement.classList.add("vz-js");
+    [].forEach.call(document.querySelectorAll("[data-count]"), function (e) {
+      e.textContent = (e.dataset.prefix || "") + "0" + (e.dataset.suffix || "");
+    });
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } });
+    }, { threshold: 0.25 });
+    figs.forEach(function (f) { io.observe(f); });
+  } else { figs.forEach(show); }
+
+  /* tooltips */
+  var tip = document.createElement("div");
+  tip.className = "vz-tip"; tip.setAttribute("role", "tooltip");
+  document.body.appendChild(tip);
+  var cur = null;
+  [].forEach.call(document.querySelectorAll(".vz [data-tip]"), function (e) {
+    if (!e.hasAttribute("tabindex")) e.setAttribute("tabindex", "0");
+  });
+  function on(t) {
+    cur = t; tip.textContent = t.getAttribute("data-tip");
+    var r = t.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8);
+    var y = r.top - h - 10; if (y < 8) y = r.bottom + 10;
+    tip.style.left = x + "px"; tip.style.top = y + "px"; tip.classList.add("on");
+  }
+  function off() { cur = null; tip.classList.remove("on"); }
+  function find(e) { return e.target.closest ? e.target.closest(".vz [data-tip]") : null; }
+  document.addEventListener("mouseover", function (e) { var t = find(e); if (t) on(t); else if (cur) off(); });
+  document.addEventListener("focusin", function (e) { var t = find(e); if (t) on(t); });
+  document.addEventListener("focusout", off);
+  document.addEventListener("click", function (e) { var t = find(e); if (t && t !== cur) on(t); else off(); });
+  window.addEventListener("scroll", off, { passive: true });
+})();
+</script>
+
 </body>
 </html>
