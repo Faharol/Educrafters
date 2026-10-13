@@ -9,6 +9,89 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
+
+<style id="vz-style">
+/* visual pass: charts, diagrams, tooltips (scoped to vz- classes) */
+.vz-svg{max-width:560px;margin:0 auto}
+.chart-card svg text{font-size:15px}
+.chart-card svg text.t12{font-size:13px}
+.chart-card svg text.t13{font-size:14px}
+.chart-card svg text.t16{font-size:17px}
+.chart-card svg text.t18{font-size:18px}
+.chart-card svg text.t22{font-size:22px}
+.chart-card svg text.k{fill:var(--text);font-weight:600}
+.chart-card svg text.w{fill:#fff;font-weight:600}
+.chart-card svg text.wl{fill:rgba(255,255,255,.88)}
+.chart-card svg text.mid{text-anchor:middle}
+.chart-card h3.vz-h{font-size:1.05rem;letter-spacing:-.01em;margin:0 0 .8rem}
+.vz-grow{transform-box:fill-box;transform-origin:left center}
+html.vz-js .vz-grow{transform:scaleX(0);transition:transform 1.1s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+html.vz-js .is-in .vz-grow{transform:none}
+html.vz-js .vz-fade{opacity:0;transition:opacity .8s ease var(--d,0s)}
+html.vz-js .is-in .vz-fade{opacity:1}
+html.vz-js .vz-rise{opacity:0;transform:translateY(14px);transition:opacity .7s ease var(--d,0s),transform .7s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+html.vz-js .is-in .vz-rise{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html.vz-js .vz-grow,html.vz-js .vz-fade,html.vz-js .vz-rise{transform:none;opacity:1;transition:none}}
+[data-tip]{cursor:help}
+[data-tip]:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.vz-tip{position:fixed;z-index:300;background:#1d1d1f;color:#fff;font:500 .8rem/1.4 var(--font);padding:.5rem .75rem;border-radius:10px;max-width:250px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.vz-tip.on{opacity:1}
+.vz-legend{display:flex;flex-wrap:wrap;gap:.5rem .6rem;margin:.9rem 0 0;justify-content:center}
+.vz-chip{display:inline-flex;align-items:center;gap:.4rem;font:600 .85rem var(--font);color:var(--text);background:var(--bg-2);border-radius:999px;padding:.3rem .8rem}
+.vz-chip i{display:inline-block;width:1.3rem;height:0;border-top:3px solid var(--c,var(--cyan));border-radius:2px}
+.vz-chip i.dash{border-top-style:dashed}
+.vz-chip i.dot{width:.7rem;height:.7rem;border:0;border-radius:50%;background:var(--c,var(--cyan))}
+.vz-tok{display:inline-block;padding:.1rem .45rem;border-radius:8px;margin:.14rem .06rem;background:var(--bg-2);line-height:1.5;color:var(--text)}
+.vz-tok sup{font-weight:800;font-size:.62rem;margin-left:.25rem}
+.vz-tok.m1{background:rgba(0,113,227,.12);box-shadow:inset 0 -3px 0 var(--cyan)}
+.vz-tok.m2{background:rgba(110,79,246,.13);box-shadow:inset 0 -3px 0 var(--violet)}
+.vz-tok.m3{background:rgba(178,94,0,.13);box-shadow:inset 0 -3px 0 var(--amber)}
+.vz-tok.m4{background:rgba(26,143,60,.13);box-shadow:inset 0 -3px 0 var(--lime)}
+.vz-tok.x{background:rgba(209,48,122,.13);box-shadow:inset 0 -3px 0 var(--pink)}
+.vz-sent{font:500 1.05rem/2 var(--font);margin:.2rem 0 .9rem}
+.vz-sent small{display:block;font:700 .72rem var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);line-height:1.2;margin-bottom:.15rem}
+.vz-flow{display:grid;gap:.7rem;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));counter-reset:vzf}
+.vz-flow > div{position:relative;background:var(--bg-2);border-radius:18px;padding:1rem 1.1rem 1.1rem;border-top:4px solid var(--c,var(--cyan))}
+.vz-flow b{display:block;font:800 2.1rem/1 var(--display);letter-spacing:-.04em;color:var(--c,var(--cyan));margin-bottom:.35rem}
+.vz-flow span{font-size:.88rem;color:var(--muted);display:block;line-height:1.4}
+.vz-flow > div + div::before{content:"→";position:absolute;left:-.68rem;top:1.2rem;font-weight:700;color:var(--dim);background:#fff;border-radius:50%;width:1.2rem;height:1.2rem;line-height:1.15rem;text-align:center;font-size:.8rem;z-index:1}
+@media(max-width:560px){.vz-flow > div + div::before{content:"↓";left:50%;top:-.75rem;margin-left:-.6rem}}
+.vz-moves{display:grid;gap:.5rem;grid-template-columns:repeat(5,1fr)}
+.vz-move{position:relative;background:var(--bg-2);border-radius:16px;padding:1.5rem .8rem .9rem;border-top:5px solid var(--c)}
+.vz-move b{display:block;font:700 1rem var(--display);color:var(--c);margin-bottom:.25rem}
+.vz-move span{font-size:.8rem;line-height:1.35;color:var(--muted);display:block}
+.vz-move em{position:absolute;top:-.8rem;left:.6rem;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--text);color:#fff;font:700 .8rem/1.7rem var(--font);text-align:center;font-style:normal;box-shadow:0 0 0 3px #fff}
+@media(max-width:700px){.vz-moves{grid-template-columns:1fr}.vz-move{padding:1rem 1rem .9rem 1rem;border-top:0;border-left:5px solid var(--c)}.vz-move em{top:.7rem;left:auto;right:.8rem}}
+.vz-rec{border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.vz-rec > div{display:grid;grid-template-columns:2rem 1fr 1.1fr;gap:.2rem .9rem;align-items:start;padding:.8rem 1rem;border-top:1px solid var(--line)}
+.vz-rec > div:first-child{border-top:0}
+.vz-rec i{font:700 .8rem/1.7rem var(--font);width:1.7rem;height:1.7rem;border-radius:50%;text-align:center;color:#fff;background:var(--c);font-style:normal}
+.vz-rec p{margin:0;font-size:.95rem}
+.vz-rec .v{font-weight:600;color:var(--text)}
+.vz-rec .w{font-size:.82rem;color:var(--muted)}
+@media(max-width:560px){.vz-rec > div{grid-template-columns:2rem 1fr}.vz-rec .w{grid-column:2}}
+.keystat b span,.vz-flow b span{display:inline;margin:0;font:inherit;color:inherit;letter-spacing:inherit}
+.chart-card.mt,.keystats.mt,.pull.mt,.vz-flow.mt{margin-top:1.5rem}
+.vz-flow--plain{margin-bottom:1.1rem}
+.vz-note{font:600 .7rem var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 .6rem}
+</style>
+<style id="vz-style4">
+.vz-line{border-left:5px solid var(--c);background:var(--bg-2);border-radius:0 14px 14px 0;padding:.7rem 1rem;margin:0 0 .6rem}
+.vz-line small{display:block;font:700 .72rem var(--font);letter-spacing:.08em;text-transform:uppercase;color:var(--c);margin-bottom:.15rem}
+.vz-line p{margin:0;font-size:1.02rem}
+.vz-flow--plain > div + div::before{display:none}
+.vz-wc{display:grid;gap:.5rem;margin:.3rem 0 .8rem}
+.vz-wc > div{display:block}
+.vz-wc .bar{height:12px;border-radius:6px;background:var(--c);margin-top:.25rem}
+.vz-wc span{font-size:.85rem;color:var(--muted)}
+.vz-chain{display:grid;gap:.15rem}
+.vz-chain > div{display:grid;grid-template-columns:2rem 1fr;gap:.2rem .8rem;align-items:start;background:var(--bg-2);border-radius:14px;padding:.7rem 1rem}
+.vz-chain > div + div{margin-top:1.1rem;position:relative}
+.vz-chain > div + div::before{content:attr(data-rel);position:absolute;top:-1.15rem;left:2.8rem;font:700 .72rem var(--font);letter-spacing:.06em;text-transform:uppercase;color:var(--c,var(--muted))}
+.vz-chain > div + div::after{content:"↓";position:absolute;top:-1.15rem;left:1rem;font-weight:700;color:var(--dim);font-size:.9rem}
+.vz-chain i{font:700 .75rem/1.6rem var(--font);width:1.6rem;height:1.6rem;border-radius:50%;background:var(--text);color:#fff;text-align:center;font-style:normal}
+.vz-chain p{margin:0;font-size:.98rem}
+</style>
 </head>
 <body data-week="04" data-title="Reading Skills for Technical Communication">
 <main class="deck">
@@ -35,6 +118,12 @@
       <li>Evaluate whether a technical text is clear, accurate, concise, and useful.</li>
       <li>Apply these skills when reading academic and professional engineering texts.</li>
     </ul>
+    <div class="keystats mt">
+      <div class="keystat"><b><span class="vz-count" data-to="7">7</span></b><span>learning objectives to tick off</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="30">30</span>%</b><span>of your mark is the Week 8 Reading Test</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="4">4</span></b><span>reading-test question types trained today</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="5">5</span></b><span>questions in the A-P-O-E-C framework</span></div>
+    </div>
     <p class="small muted">Tick each one at the end of the lesson when you feel ready.</p>
   </section>
 
@@ -77,6 +166,7 @@
   <section class="slide" data-title="Technical communication in engineering">
     <div class="slide__kicker">In engineering</div>
     <h2>Engineering professionals communicate technical information every day</h2>
+    <figure class="photo-fig"><img src="../assets/img/robots.jpg" alt="Orange industrial robot arms working along a factory production line" loading="lazy" width="1200" height="521"><figcaption>Engineers explain systems, report results and recommend solutions every day.</figcaption></figure>
     <div class="grid grid-2">
       <ul class="checklist">
         <li>Explaining how a system works.</li>
@@ -93,6 +183,7 @@
         <p class="small muted mt">Tick the tasks you have already done in your studies or internship.</p>
       </div>
     </div>
+    <p class="pull mt">A technically correct idea can still fail if the reader cannot understand or use the information.<cite>Key idea · Technical communication in engineering</cite></p>
   </section>
 
   <!-- 5 · Academic vs professional -->
@@ -166,6 +257,15 @@
       <div class="card"><span class="tag">For experts</span><div class="example mt">The sensor operates using a piezoelectric transducer.</div></div>
       <div class="card"><span class="tag tag--violet">For non-experts</span><div class="example mt">The sensor detects pressure by converting mechanical movement into an electrical signal.</div></div>
     </div>
+    <figure class="chart-card mt">
+      <div class="vz-sent"><small>For experts</small>The sensor operates using a <span class="vz-tok m1" data-tip="Expert shorthand: the writer assumes the reader already knows this term.">piezoelectric transducer<sup>1</sup></span>.</div>
+      <div class="vz-sent"><small>For non-experts</small>The sensor detects pressure by <span class="vz-tok m2" data-tip="The same idea, unpacked: more background for a reader who does not know the term.">converting mechanical movement into an electrical signal<sup>2</sup></span>.</div>
+      <div class="vz-wc">
+        <div><span><strong>7 words</strong> · expert version</span><div class="bar vz-grow" style="--c:var(--cyan);width:58%"></div></div>
+        <div><span><strong>12 words</strong> · non-expert version, more background</span><div class="bar vz-grow" style="--c:var(--violet);width:100%;--d:.2s"></div></div>
+      </div>
+      <figcaption>Same information, different amount of explanation. The word counts are for the two example sentences. Hover or tap a highlighted phrase.</figcaption>
+    </figure>
     <p>The information is similar, but the second explanation provides more background.</p>
     <div class="quiz mt" data-xp="10" data-label="Reading question">
       <p class="quiz__q">The first sentence uses “piezoelectric transducer” with no explanation. What does the writer assume?</p>
@@ -186,6 +286,20 @@
       <div class="card card--accent"><h3>Primary audience</h3><p>The main reader: usually the person who needs to understand or use the information.</p></div>
       <div class="card"><h3>Secondary audience</h3><p>Other people who may read or use the document. They may have different levels of knowledge.</p></div>
     </div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 330" role="img" aria-label="Concentric circles for an engineering project report. In the centre, the primary audience: the project supervisor. In the outer ring, the secondary audience: company manager, client and technical staff.">
+        <circle class="vz-fade" cx="230" cy="165" r="156" fill="var(--violet)" fill-opacity=".10" stroke="var(--violet)" stroke-width="2" stroke-dasharray="6 6" data-tip="Secondary audience: other people who may read or use the document, with different levels of knowledge."/>
+        <circle class="vz-fade" style="--d:.3s" cx="230" cy="165" r="70" fill="var(--cyan)" data-tip="Primary audience: the main reader, usually the person who needs to understand or use the information."/>
+        <text class="w mid t13" x="230" y="150" style="font-weight:500;opacity:.85">PRIMARY</text>
+        <text class="w mid t16" x="230" y="172">Project</text>
+        <text class="w mid t16" x="230" y="192">supervisor</text>
+        <text class="mid t13" x="230" y="44" style="fill:var(--violet);font-weight:700">SECONDARY</text>
+        <text class="k mid t16" x="230" y="86">Company manager</text>
+        <text class="k mid t14" x="316" y="248">Client</text>
+        <text class="k mid t14" x="150" y="248">Technical staff</text>
+      </svg>
+      <figcaption>Example: an engineering project report. One main reader in the centre, other readers around them.</figcaption>
+    </figure>
     <div class="sorter mt" data-xp="15" data-label="Example: an engineering project report">
       <div class="sorter__pool">
         <button class="chip" data-bin="pri">Project supervisor</button>
@@ -205,6 +319,7 @@
   <section class="slide" data-title="Purpose of technical communication">
     <div class="slide__kicker">Purpose</div>
     <h2>Technical documents normally have a clear purpose</h2>
+    <figure class="photo-fig"><img src="../assets/img/cooling-towers.jpg" alt="Industrial cooling towers releasing steam against a pale sky" loading="lazy" width="1200" height="521"><figcaption>A report that evaluates three cooling systems for a manufacturing facility: purpose = to evaluate.</figcaption></figure>
     <div class="grid grid-3">
       <div class="card"><p>To inform · To explain · To describe</p></div>
       <div class="card"><p>To instruct · To analyse · To compare</p></div>
@@ -277,11 +392,21 @@
   <section class="slide" data-title="Document structure">
     <div class="slide__kicker">Structure</div>
     <h2>Technical documents are usually organised into sections</h2>
+    <figure class="photo-fig"><img src="../assets/img/laptop-notes.jpg" alt="A laptop and notebook on a desk with handwritten notes" loading="lazy" width="1200" height="1043"><figcaption>Sections let a reader find information quickly.</figcaption></figure>
     <div class="tabs">
       <div class="tabs__bar"><button data-tab="ra">Research article</button><button data-tab="tr">Technical report</button></div>
       <div class="tabs__panel" data-panel="ra"><ol><li>Introduction</li><li>Literature review</li><li>Methodology</li><li>Results</li><li>Discussion</li><li>Conclusion</li></ol></div>
       <div class="tabs__panel" data-panel="tr"><ol><li>Introduction</li><li>Background</li><li>Method</li><li>Findings</li><li>Discussion</li><li>Recommendations</li><li>Conclusion</li></ol></div>
     </div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 366" role="img" aria-label="Two stacks of section blocks side by side. Research article: introduction, literature review, methodology, results, discussion, conclusion. Technical report: introduction, background, method, findings, discussion, recommendations, conclusion. Introduction, discussion and conclusion appear in both and are joined by dashed lines; recommendations appears only in the report.">
+        <text class="k t16" x="0" y="22">Research article</text>
+        <text class="k t16" x="250" y="22">Technical report</text>
+<g class="vz-rise" style="--d:0.00s" data-tip="Introduction: appears in both lists."><rect x="0" y="38" width="210" height="38" rx="12" fill="var(--cyan)"/><text class="w t14" x="14" y="62">1</text><text class="w t14" x="40" y="62">Introduction</text></g><g class="vz-rise" style="--d:0.07s" data-tip="Literature review: appears in this list only."><rect x="0" y="84" width="210" height="38" rx="12" fill="var(--violet)"/><text class="w t14" x="14" y="108">2</text><text class="w t14" x="40" y="108">Literature review</text></g><g class="vz-rise" style="--d:0.14s" data-tip="Methodology: appears in this list only."><rect x="0" y="130" width="210" height="38" rx="12" fill="var(--violet)"/><text class="w t14" x="14" y="154">3</text><text class="w t14" x="40" y="154">Methodology</text></g><g class="vz-rise" style="--d:0.21s" data-tip="Results: appears in this list only."><rect x="0" y="176" width="210" height="38" rx="12" fill="var(--violet)"/><text class="w t14" x="14" y="200">4</text><text class="w t14" x="40" y="200">Results</text></g><g class="vz-rise" style="--d:0.28s" data-tip="Discussion: appears in both lists."><rect x="0" y="222" width="210" height="38" rx="12" fill="var(--cyan)"/><text class="w t14" x="14" y="246">5</text><text class="w t14" x="40" y="246">Discussion</text></g><g class="vz-rise" style="--d:0.35s" data-tip="Conclusion: appears in both lists."><rect x="0" y="268" width="210" height="38" rx="12" fill="var(--cyan)"/><text class="w t14" x="14" y="292">6</text><text class="w t14" x="40" y="292">Conclusion</text></g><g class="vz-rise" style="--d:0.00s" data-tip="Introduction: appears in both lists."><rect x="250" y="38" width="210" height="38" rx="12" fill="var(--cyan)"/><text class="w t14" x="264" y="62">1</text><text class="w t14" x="290" y="62">Introduction</text></g><g class="vz-rise" style="--d:0.07s" data-tip="Background: appears in this list only."><rect x="250" y="84" width="210" height="38" rx="12" fill="var(--violet)"/><text class="w t14" x="264" y="108">2</text><text class="w t14" x="290" y="108">Background</text></g><g class="vz-rise" style="--d:0.14s" data-tip="Method: appears in this list only."><rect x="250" y="130" width="210" height="38" rx="12" fill="var(--violet)"/><text class="w t14" x="264" y="154">3</text><text class="w t14" x="290" y="154">Method</text></g><g class="vz-rise" style="--d:0.21s" data-tip="Findings: appears in this list only."><rect x="250" y="176" width="210" height="38" rx="12" fill="var(--violet)"/><text class="w t14" x="264" y="200">4</text><text class="w t14" x="290" y="200">Findings</text></g><g class="vz-rise" style="--d:0.28s" data-tip="Discussion: appears in both lists."><rect x="250" y="222" width="210" height="38" rx="12" fill="var(--cyan)"/><text class="w t14" x="264" y="246">5</text><text class="w t14" x="290" y="246">Discussion</text></g><g class="vz-rise" style="--d:0.35s" data-tip="Recommendations: in the technical report list, not in the research article list."><rect x="250" y="268" width="210" height="38" rx="12" fill="var(--pink)"/><text class="w t14" x="264" y="292">6</text><text class="w t14" x="290" y="292">Recommendations</text></g><g class="vz-rise" style="--d:0.42s" data-tip="Conclusion: appears in both lists."><rect x="250" y="314" width="210" height="38" rx="12" fill="var(--cyan)"/><text class="w t14" x="264" y="338">7</text><text class="w t14" x="290" y="338">Conclusion</text></g><path d="M212 57 L248 57" stroke="var(--cyan)" stroke-width="2" stroke-dasharray="3 4" fill="none"/><path d="M212 241 L248 241" stroke="var(--cyan)" stroke-width="2" stroke-dasharray="3 4" fill="none"/><path d="M212 287 L248 333" stroke="var(--cyan)" stroke-width="2" stroke-dasharray="3 4" fill="none"/>
+      </svg>
+      <div class="vz-legend"><span class="vz-chip" style="--c:var(--cyan)"><i class="dot"></i>in both lists</span><span class="vz-chip" style="--c:var(--violet)"><i class="dot"></i>one list only</span><span class="vz-chip" style="--c:var(--pink)"><i class="dot"></i>report only: Recommendations</span></div>
+      <figcaption>The two section lists side by side. Dashed lines join sections with the same name.</figcaption>
+    </figure>
     <div class="callout mt"><p><strong>Important:</strong> structure helps readers locate information quickly. UniMAP technical publication guidance, for example, specifies organised sections such as abstracts, contents, executive summaries, body text, references, and appendices where appropriate.</p></div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Which section is in the technical report list but NOT in the research article list?</p>
@@ -339,6 +464,21 @@
     <h2>Supporting details explain, prove, or develop the main idea</h2>
     <p>They may include: examples · facts · statistics · explanations · research findings · comparisons · reasons.</p>
     <div class="callout"><p><strong>Reading strategy:</strong> do not treat every sentence as equally important. Identify <strong>main idea → supporting details → examples</strong>. This is particularly useful for multiple-choice and short-answer questions.</p></div>
+    <p class="pull mt">Do not treat every sentence as equally important.<cite>Reading strategy · Supporting details</cite></p>
+    <figure class="chart-card">
+      <svg class="vz-svg" viewBox="0 0 460 236" role="img" aria-label="A tree. Main idea: solar panel electricity production depends on several factors. Three supporting details: temperature, sunlight intensity, panel orientation.">
+        <g class="vz-rise" data-tip="The main idea: the most important point in the paragraph."><rect x="30" y="8" width="400" height="68" rx="16" fill="var(--cyan)"/>
+        <text class="wl mid t13" x="230" y="30">MAIN IDEA</text>
+        <text class="w mid t16" x="230" y="50">Solar panel electricity production</text>
+        <text class="w mid t16" x="230" y="68">depends on several factors.</text></g>
+
+        <path class="vz-fade" d="M230 76 C230 112 80 104 80 146" stroke="var(--dim)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="vz-fade" d="M230 76 V146" stroke="var(--dim)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path class="vz-fade" d="M230 76 C230 112 380 104 380 146" stroke="var(--dim)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><g class="vz-rise" style="--d:0.2s"><rect x="10" y="148" width="140" height="48" rx="14" fill="var(--violet)"/><text class="w mid t14" x="80" y="177">temperature</text></g><g class="vz-rise" style="--d:0.3s"><rect x="160" y="148" width="140" height="48" rx="14" fill="var(--violet)"/><text class="w mid t14" x="230" y="177">sunlight intensity</text></g><g class="vz-rise" style="--d:0.4s"><rect x="310" y="148" width="140" height="48" rx="14" fill="var(--violet)"/><text class="w mid t14" x="380" y="177">panel orientation</text></g>
+        <text class="mid t13" x="230" y="224" style="fill:var(--violet);font-weight:700">SUPPORTING DETAILS</text>
+      </svg>
+      <figcaption>Main idea → supporting details. The details all support the one idea above them.</figcaption>
+    </figure>
     <div class="sorter mt" data-xp="15" data-label="Sort the solar panel paragraph">
       <div class="sorter__pool">
         <button class="chip" data-bin="main">Solar panel electricity production depends on several factors.</button>
@@ -359,6 +499,11 @@
     <h2>A topic sentence introduces the main idea of a paragraph</h2>
     <div class="example"><strong>Battery performance is strongly influenced by temperature.</strong> At very low temperatures, chemical reactions inside the battery slow down, reducing its ability to deliver energy.</div>
     <p>The first sentence tells the reader what the paragraph is about.</p>
+    <figure class="chart-card">
+      <div class="vz-line vz-rise" style="--c:var(--cyan)"><small>Topic sentence · the general statement</small><p><strong>Battery performance</strong> is strongly influenced by <span class="vz-tok x">temperature</span>.</p></div>
+      <div class="vz-line vz-rise" style="--c:var(--violet);--d:.2s;margin-left:1.2rem"><small>Supporting sentence · a specific case</small><p>At very low <span class="vz-tok x">temperatures</span>, chemical reactions inside the <strong>battery</strong> slow down, reducing its ability to deliver energy.</p></div>
+      <figcaption>The first sentence tells the reader what the paragraph is about; the next one develops it. Pink: the repeated key term that keeps the focus.</figcaption>
+    </figure>
     <div class="card"><h3>Look for</h3><p>Repeated key terms · General statements · Statements developed by later sentences</p></div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">How does the second sentence relate to the first?</p>
@@ -419,6 +564,18 @@
       <div class="flip"><div class="flip__front"><h4>Reference words</h4></div><div class="flip__back"><p>Words that point back to something already mentioned, e.g. “this problem”.</p></div></div>
     </div>
     <div class="example mt">The system produces excessive heat. <strong>This problem</strong> can reduce component life.</div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 232" role="img" aria-label="Cohesion map. Sentence one: the system produces excessive heat. Sentence two: this problem can reduce component life. An arc runs from the reference words 'This problem' back to 'excessive heat'.">
+        <text class="t13" x="0" y="20" style="font-weight:700;letter-spacing:.06em">SENTENCE 1</text>
+        <g style="--d:0s" class="vz-fade"><rect x="0" y="30" width="140" height="44" rx="12" fill="#ececf1"/><text class="k mid t16" x="70.0" y="58">The system</text><rect x="150" y="30" width="140" height="44" rx="12" fill="#ececf1"/><text class="k mid t16" x="220.0" y="58">produces</text><rect x="300" y="30" width="140" height="44" rx="12" fill="rgba(209,48,122,.18)"/><text class="k mid t16" x="370.0" y="58">excessive heat</text></g>
+        <text class="t13" x="0" y="166" style="font-weight:700;letter-spacing:.06em">SENTENCE 2</text>
+        <g class="vz-fade" style="--d:.2s"><rect x="0" y="176" width="140" height="44" rx="12" fill="rgba(209,48,122,.18)"/><text class="k mid t16" x="70.0" y="204">This problem</text><rect x="150" y="176" width="140" height="44" rx="12" fill="#ececf1"/><text class="k mid t16" x="220.0" y="204">can reduce</text><rect x="300" y="176" width="140" height="44" rx="12" fill="#ececf1"/><text class="k mid t16" x="370.0" y="204">component life</text></g>
+        <path class="vz-fade" style="--d:.5s" d="M370 76 C370 140 110 112 110 168" stroke="var(--pink)" stroke-width="3" fill="none" stroke-linecap="round" data-tip="“This problem” is a reference word: it points back to the excessive heat in sentence 1."/>
+        <path class="vz-fade" style="--d:.5s" d="M102 158 L110 170 L118 158" stroke="var(--pink)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <text class="t14 vz-fade" style="--d:.7s;fill:var(--pink);font-weight:700" x="196" y="156">reference word points back</text>
+      </svg>
+      <figcaption>Cohesion in one picture: “This problem” connects sentence 2 to the excessive heat in sentence 1.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">In the example, what does “This problem” refer to?</p>
       <div class="quiz__opts">
@@ -459,6 +616,18 @@
         <div class="bin" data-bin="ex"><span class="bin__label">Example</span></div>
       </div>
     </div>
+    <div class="keystats mt">
+      <div class="keystat"><b><span class="vz-count" data-to="5">5</span></b><span>kinds of signal word: addition, contrast, cause, result, example</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="14">14</span></b><span>signal words in the sorter above</span></div>
+    </div>
+    <figure class="chart-card">
+      <svg class="vz-svg" viewBox="0 70 460 340" role="img" aria-label="A wheel with five numbered segments for the five kinds of signal word. 1 Addition: furthermore, moreover, in addition. 2 Contrast: however, although, in contrast. 3 Cause: because, due to, as a result of. 4 Result: therefore, consequently, thus. 5 Example: for example, for instance.">
+        <path class="vz-fade" style="--d:0.00s" d="M232.8 108.0 A92 92 0 0 1 316.6 169.0 L279.0 182.5 A52 52 0 0 0 231.6 148.0 Z" fill="var(--cyan)" data-tip="Addition: Furthermore, Moreover, In addition"/><text class="w mid t16" x="272.3" y="146.8" style="pointer-events:none">1</text><path class="vz-fade" style="--d:0.12s" d="M318.3 174.2 A92 92 0 0 1 286.3 272.8 L261.8 241.1 A52 52 0 0 0 279.9 185.4 Z" fill="var(--pink)" data-tip="Contrast: However, Although, In contrast"/><text class="w mid t16" x="298.5" y="227.2" style="pointer-events:none">2</text><path class="vz-fade" style="--d:0.24s" d="M281.8 276.0 A92 92 0 0 1 178.2 276.0 L200.7 243.0 A52 52 0 0 0 259.3 243.0 Z" fill="var(--amber)" data-tip="Cause: Because, Due to, As a result of"/><text class="w mid t16" x="230.0" y="277.0" style="pointer-events:none">3</text><path class="vz-fade" style="--d:0.36s" d="M173.7 272.8 A92 92 0 0 1 141.7 174.2 L180.1 185.4 A52 52 0 0 0 198.2 241.1 Z" fill="var(--violet)" data-tip="Result: Therefore, Consequently, Thus"/><text class="w mid t16" x="161.5" y="227.2" style="pointer-events:none">4</text><path class="vz-fade" style="--d:0.48s" d="M143.4 169.0 A92 92 0 0 1 227.2 108.0 L228.4 148.0 A52 52 0 0 0 181.0 182.5 Z" fill="var(--lime)" data-tip="Example: For example, For instance"/><text class="w mid t16" x="187.7" y="146.8" style="pointer-events:none">5</text>
+        <text class="k mid t14" x="230" y="196">Signal</text><text class="k mid t14" x="230" y="213">words</text>
+        <text class="t16" x="318" y="92" text-anchor="start" style="fill:var(--cyan);font-weight:700">1 · Addition</text><text class="t14 k" x="318" y="111" text-anchor="start" style="font-weight:500">Furthermore</text><text class="t14 k" x="318" y="129" text-anchor="start" style="font-weight:500">Moreover</text><text class="t14 k" x="318" y="147" text-anchor="start" style="font-weight:500">In addition</text><text class="t16" x="338" y="226" text-anchor="start" style="fill:var(--pink);font-weight:700">2 · Contrast</text><text class="t14 k" x="338" y="245" text-anchor="start" style="font-weight:500">However</text><text class="t14 k" x="338" y="263" text-anchor="start" style="font-weight:500">Although</text><text class="t14 k" x="338" y="281" text-anchor="start" style="font-weight:500">In contrast</text><text class="t16" x="230" y="330" text-anchor="middle" style="fill:var(--amber);font-weight:700">3 · Cause</text><text class="t14 k" x="230" y="349" text-anchor="middle" style="font-weight:500">Because</text><text class="t14 k" x="230" y="367" text-anchor="middle" style="font-weight:500">Due to</text><text class="t14 k" x="230" y="385" text-anchor="middle" style="font-weight:500">As a result of</text><text class="t16" x="122" y="226" text-anchor="end" style="fill:var(--violet);font-weight:700">4 · Result</text><text class="t14 k" x="122" y="245" text-anchor="end" style="font-weight:500">Therefore</text><text class="t14 k" x="122" y="263" text-anchor="end" style="font-weight:500">Consequently</text><text class="t14 k" x="122" y="281" text-anchor="end" style="font-weight:500">Thus</text><text class="t16" x="142" y="92" text-anchor="end" style="fill:var(--lime);font-weight:700">5 · Example</text><text class="t14 k" x="142" y="111" text-anchor="end" style="font-weight:500">For example</text><text class="t14 k" x="142" y="129" text-anchor="end" style="font-weight:500">For instance</text>
+      </svg>
+      <figcaption>The five kinds of signal word, colour-coded and numbered. Hover or tap a segment to list its words.</figcaption>
+    </figure>
   </section>
 
   <!-- 23 · Logical relationships -->
@@ -479,6 +648,13 @@
         <button data-why="Nothing has been compared yet, so a contrast is unlikely.">A contrast with another system</button>
       </div>
     </div>
+    <figure class="chart-card mt">
+      <svg class="vz-svg" viewBox="0 0 460 304" role="img" aria-label="Four relationship patterns with the lesson's examples. Cause to effect: high temperature increases resistance. Problem to solution: the system overheats, a cooling mechanism is required. Comparison and contrast: system A is cheaper, system B is more efficient. Sequence: first, next, then, finally.">
+        <g class="vz-rise" data-tip="Cause → Effect: High temperature / increases resistance"><rect x="0" y="0" width="222" height="150" rx="18" fill="var(--bg-2)"/><text class="t14" x="14" y="26" style="fill:var(--cyan);font-weight:700">Cause → Effect</text><rect x="14" y="40" width="194" height="32" rx="10" fill="var(--cyan)"/><text class="w mid t14" x="111" y="61">High temperature</text><text class="mid t18" x="111" y="90" style="fill:var(--cyan);font-weight:700">↓</text><rect x="14" y="100" width="194" height="32" rx="10" fill="none" stroke="var(--cyan)" stroke-width="2.5"/><text class="k mid t14" x="111" y="121">increases resistance</text></g><g class="vz-rise" data-tip="Problem → Solution: The system overheats / cooling is required"><rect x="238" y="0" width="222" height="150" rx="18" fill="var(--bg-2)"/><text class="t14" x="252" y="26" style="fill:var(--violet);font-weight:700">Problem → Solution</text><rect x="252" y="40" width="194" height="32" rx="10" fill="var(--violet)"/><text class="w mid t14" x="349" y="61">The system overheats</text><text class="mid t18" x="349" y="90" style="fill:var(--violet);font-weight:700">↓</text><rect x="252" y="100" width="194" height="32" rx="10" fill="none" stroke="var(--violet)" stroke-width="2.5"/><text class="k mid t14" x="349" y="121">cooling is required</text></g><g class="vz-rise" data-tip="Comparison → Contrast: System A: cheaper / System B: more efficient"><rect x="0" y="154" width="222" height="150" rx="18" fill="var(--bg-2)"/><text class="t14" x="14" y="180" style="fill:var(--pink);font-weight:700">Comparison → Contrast</text><rect x="14" y="194" width="194" height="32" rx="10" fill="var(--pink)"/><text class="w mid t14" x="111" y="215">System A: cheaper</text><text class="mid t18" x="111" y="244" style="fill:var(--pink);font-weight:700">⇄</text><rect x="14" y="254" width="194" height="32" rx="10" fill="none" stroke="var(--pink)" stroke-width="2.5"/><text class="k mid t14" x="111" y="275">System B: more efficient</text></g><g class="vz-rise" data-tip="Sequence: first → next → then → finally"><rect x="238" y="154" width="222" height="150" rx="18" fill="var(--bg-2)"/><text class="t14" x="252" y="180" style="fill:var(--amber);font-weight:700">Sequence</text><circle cx="274" cy="232" r="15" fill="var(--amber)"/><text class="w mid t14" x="274" y="237">1</text><text class="mid t13 k" x="274" y="266" style="font-weight:500">First</text><path d="M291 232 H307" stroke="var(--amber)" stroke-width="2.5"/><circle cx="324" cy="232" r="15" fill="var(--amber)"/><text class="w mid t14" x="324" y="237">2</text><text class="mid t13 k" x="324" y="266" style="font-weight:500">next</text><path d="M341 232 H357" stroke="var(--amber)" stroke-width="2.5"/><circle cx="374" cy="232" r="15" fill="var(--amber)"/><text class="w mid t14" x="374" y="237">3</text><text class="mid t13 k" x="374" y="266" style="font-weight:500">then</text><path d="M391 232 H407" stroke="var(--amber)" stroke-width="2.5"/><circle cx="424" cy="232" r="15" fill="var(--amber)"/><text class="w mid t14" x="424" y="237">4</text><text class="mid t13 k" x="424" y="266" style="font-weight:500">finally</text></g>
+      </svg>
+      <figcaption>The four relationships, each with the lesson’s example. Hover or tap a tile.</figcaption>
+    </figure>
+    <p class="pull mt">Recognising the relationship helps readers predict what information should come next.<cite>Logical relationships</cite></p>
     <p class="small muted">Recognising the relationship helps readers predict what information should come next.</p>
   </section>
 
@@ -487,6 +663,29 @@
     <div class="part-letter">C</div>
     <h2>Reading test strategies</h2>
     <p class="slide__lead">Gapped text, matching headings, multiple choice and vocabulary in context: the Week 8 Reading Test question types.</p>
+  </section>
+
+
+  <!-- Part C spread · question types -->
+  <section class="slide" data-title="The four reading-test question types">
+    <div class="slide__kicker"><span class="tag tag--red">Reading Test</span> The Week 8 test at a glance</div>
+    <h2>Four question types, each with its own strategy</h2>
+    <p class="slide__lead">Learn the steps once. Then use them on every question.</p>
+    <figure class="photo-fig"><img src="../assets/img/exam-hall.jpg" alt="Students sitting at wooden desks in a lecture hall, studying and talking together" loading="lazy" width="1200" height="1043"><figcaption>The Week 8 Reading Test is worth 30% of your mark. Practise the four strategies together.</figcaption></figure>
+
+    <div class="vz-flow vz-flow--plain">
+      <div style="--c:var(--cyan)"><b>1</b><span><strong>Gapped text.</strong> A sentence or paragraph has been removed.</span></div>
+      <div style="--c:var(--violet)"><b>2</b><span><strong>Matching headings.</strong> Choose the heading that fits the whole paragraph.</span></div>
+      <div style="--c:var(--amber)"><b>3</b><span><strong>Multiple choice.</strong> Choose the answer the text supports.</span></div>
+      <div style="--c:var(--lime)"><b>4</b><span><strong>Vocabulary in context.</strong> Use clues around the word.</span></div>
+    </div>
+    <figure class="chart-card mt">
+      <h3 class="vz-h">How many steps in each strategy?</h3>
+      <svg class="vz-svg" viewBox="0 0 460 190" role="img" aria-label="Bar chart of steps per strategy: gapped text 8 steps, matching headings 7 steps, multiple choice 7 steps.">
+        <text class="k t14" x="0" y="26">Gapped text</text><rect class="vz-grow" style="--d:0.00s" x="0" y="34" width="320" height="24" rx="8" fill="var(--cyan)" fill-opacity="1" data-tip="Gapped text: 8 steps"/><text class="k t14" x="330" y="52">8 steps</text><text class="k t14" x="0" y="84">Matching headings</text><rect class="vz-grow" style="--d:0.15s" x="0" y="92" width="280" height="24" rx="8" fill="var(--cyan)" fill-opacity="0.75" data-tip="Matching headings: 7 steps"/><text class="k t14" x="290" y="110">7 steps</text><text class="k t14" x="0" y="142">Multiple choice</text><rect class="vz-grow" style="--d:0.30s" x="0" y="150" width="280" height="24" rx="8" fill="var(--cyan)" fill-opacity="0.75" data-tip="Multiple choice: 7 steps"/><text class="k t14" x="290" y="168">7 steps</text>
+      </svg>
+      <figcaption>Step counts taken from the three strategy slides that follow.</figcaption>
+    </figure>
   </section>
 
   <!-- 24 · Gapped text -->
@@ -694,6 +893,7 @@
       <div class="example">Because the temperature was high, the system could not operate properly.</div>
       <p class="small">“Due to the fact that” → “Because”; “was unable to” → “could not”.</p>
     </div></details>
+    <p class="pull mt">Technical writing should respect the reader’s time.<cite>Conciseness</cite></p>
     <p class="small muted mt">Technical writing should respect the reader's time. Purdue's engineering guidance similarly recommends saying what is needed without unnecessary wording. (Purdue Engineering)</p>
   </section>
 
@@ -778,6 +978,7 @@
   <section class="slide" data-title="Figures, tables and diagrams">
     <div class="slide__kicker">Visuals</div>
     <h2>Technical communication often combines words with visuals</h2>
+    <figure class="photo-fig"><img src="../assets/img/chart-screen.jpg" alt="A colourful heatmap chart displayed on a computer screen" loading="lazy" width="1200" height="521"><figcaption>Figures show processes, systems, relationships and trends; tables show numerical data.</figcaption></figure>
     <div class="sorter" data-xp="15" data-label="What do figures show, and what do tables show?">
       <div class="sorter__pool">
         <button class="chip" data-bin="fig">Processes</button>
@@ -844,6 +1045,10 @@
       <div class="flip"><div class="flip__front"><span class="tag">E</span><h4 class="mt">Evidence</h4></div><div class="flip__back"><p>How are claims supported?</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">C</span><h4 class="mt">Clarity</h4></div><div class="flip__back"><p>Is the information clear, accurate, concise, and useful?</p></div></div>
     </div>
+    <figure class="chart-card mt">
+      <div class="vz-flow"><div class="vz-rise" style="--c:var(--cyan);--d:0.0s"><b>A</b><span><strong style="color:var(--text)">Audience</strong><br>Who is the document for?</span></div><div class="vz-rise" style="--c:var(--violet);--d:0.1s"><b>P</b><span><strong style="color:var(--text)">Purpose</strong><br>Why was it written?</span></div><div class="vz-rise" style="--c:var(--amber);--d:0.2s"><b>O</b><span><strong style="color:var(--text)">Organisation</strong><br>How are the ideas arranged?</span></div><div class="vz-rise" style="--c:var(--lime);--d:0.3s"><b>E</b><span><strong style="color:var(--text)">Evidence</strong><br>How are claims supported?</span></div><div class="vz-rise" style="--c:var(--pink);--d:0.4s"><b>C</b><span><strong style="color:var(--text)">Clarity</strong><br>Is it clear, accurate, concise, and useful?</span></div></div>
+      <figcaption>Read in this order: audience, purpose, organisation, evidence, clarity.</figcaption>
+    </figure>
     <p class="small muted">When reading an engineering text, use these five questions as a quick analytical framework.</p>
   </section>
 
@@ -917,6 +1122,10 @@
     <div class="gapfill" data-xp="15" data-label="Gapped text">
       <p>Battery temperature affects charging performance. When the temperature is very low, chemical reactions inside a battery occur more slowly. <input class="gap" data-answer="As a result|Consequently">, the battery may require more time to reach full charge. At high temperatures, <input class="gap" data-answer="however">, excessive heat can accelerate chemical reactions and reduce battery life. <input class="gap" data-answer="Therefore|Thus|Consequently">, battery systems should include suitable temperature-control mechanisms.</p>
     </div>
+    <figure class="chart-card mt">
+      <div class="vz-chain" role="img" aria-label="The battery paragraph as five sentences in order. Sentence 3 starts with As a result, a cause and effect signal. Sentence 4 contains however, a contrast signal. Sentence 5 starts with Therefore, a conclusion signal."><div><i>1</i><p><strong>Battery temperature affects charging performance.</strong></p></div><div data-rel="builds on the main idea" style="--c:var(--muted)"><i>2</i><p>When the temperature is very low, chemical reactions inside a battery occur more slowly.</p></div><div data-rel="cause / effect" style="--c:var(--amber)"><i>3</i><p><span class="vz-tok m3">As a result<sup>↯</sup></span>, the battery may require more time to reach full charge.</p></div><div data-rel="contrast" style="--c:var(--pink)"><i>4</i><p>At high temperatures, <span class="vz-tok x">however<sup>⇄</sup></span>, excessive heat can accelerate chemical reactions and reduce battery life.</p></div><div data-rel="conclusion / result" style="--c:var(--violet)"><i>5</i><p><span class="vz-tok m2">Therefore<sup>✓</sup></span>, battery systems should include suitable temperature-control mechanisms.</p></div></div>
+      <figcaption>The paragraph as a chain. The signal words (highlighted) tell you how each sentence relates to the one before.</figcaption>
+    </figure>
     <details class="reveal mt" data-xp="5"><summary>What relationship does each signal?</summary><div class="reveal__body">
       <ul>
         <li><strong>As a result</strong> → cause/effect</li>
@@ -941,6 +1150,15 @@
         </div>
       </div>
     </div>
+    <figure class="chart-card mt">
+      <div class="vz-flow">
+        <div class="vz-rise" style="--c:var(--cyan)"><b>1</b><span><strong style="color:var(--text)">Main idea</strong><br>temperature affects charging</span></div>
+        <div class="vz-rise" style="--c:var(--violet);--d:.1s"><b>2</b><span><strong style="color:var(--text)">Low-temperature effect</strong><br>slower reactions, longer charge</span></div>
+        <div class="vz-rise" style="--c:var(--amber);--d:.2s"><b>3</b><span><strong style="color:var(--text)">High-temperature effect</strong><br>excessive heat, reduced battery life</span></div>
+        <div class="vz-rise" style="--c:var(--lime);--d:.3s"><b>4</b><span><strong style="color:var(--text)">Recommendation</strong><br>temperature-control mechanisms</span></div>
+      </div>
+      <figcaption>How the paragraph is organised: main idea → low-temperature effect → high-temperature effect → recommendation.</figcaption>
+    </figure>
   </section>
 
   <!-- 48 · Evidence, clarity, overall -->
@@ -1004,5 +1222,60 @@
 
 </main>
 <script src="../assets/js/deck.js"></script>
+<script>
+/* visual pass: draw charts and count up numbers when scrolled into view */
+(function () {
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var stat = /[?&]static\b/.test(location.search);
+  var figs = [].slice.call(document.querySelectorAll(".chart-card, .keystats, .vz-flow"));
+  function counters(el, animate) {
+    [].forEach.call(el.querySelectorAll(".vz-count"), function (c) {
+      var to = parseFloat(c.getAttribute("data-to")), dec = (c.getAttribute("data-dec") | 0);
+      if (!animate) { c.textContent = to.toFixed(dec); return; }
+      var t0 = null;
+      (function step(t) {
+        if (t0 === null) t0 = t;
+        var p = Math.min(1, (t - t0) / 1100), e = 1 - Math.pow(1 - p, 3);
+        c.textContent = (to * e).toFixed(dec);
+        if (p < 1) requestAnimationFrame(step); else c.textContent = to.toFixed(dec);
+      })(performance.now());
+    });
+  }
+  if (!("IntersectionObserver" in window) || reduce || stat) {
+    figs.forEach(function (f) { f.classList.add("is-in"); counters(f, false); });
+  } else {
+    document.documentElement.classList.add("vz-js");
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("is-in"); counters(e.target, true); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.2 });
+    figs.forEach(function (f) { io.observe(f); [].forEach.call(f.querySelectorAll(".vz-count"), function (c) { c.textContent = "0"; }); });
+  }
+  /* hover / tap tooltips on [data-tip] parts */
+  var tip = document.createElement("div");
+  tip.className = "vz-tip"; tip.setAttribute("role", "tooltip"); document.body.appendChild(tip);
+  var cur = null;
+  function show(el) {
+    cur = el; tip.textContent = el.getAttribute("data-tip"); tip.classList.add("on");
+    var r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+    var y = r.top - h - 10; if (y < 8) y = r.bottom + 10;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  }
+  function hide() { cur = null; tip.classList.remove("on"); }
+  [].forEach.call(document.querySelectorAll("[data-tip]"), function (el) {
+    el.setAttribute("tabindex", "0");
+    el.addEventListener("mouseenter", function () { show(el); });
+    el.addEventListener("mouseleave", hide);
+    el.addEventListener("focus", function () { show(el); });
+    el.addEventListener("blur", hide);
+    el.addEventListener("click", function (ev) { ev.stopPropagation(); cur === el ? hide() : show(el); });
+  });
+  document.addEventListener("click", hide);
+  addEventListener("scroll", hide, { passive: true });
+})();
+</script>
+
 </body>
 </html>

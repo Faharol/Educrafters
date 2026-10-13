@@ -9,6 +9,91 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
+<style>
+/* visual pass: scoped to v-* classes */
+.v-js .v-anim .v-seg{transition:stroke-dasharray 1.1s cubic-bezier(.2,.7,.2,1)}
+.v-js .v-anim:not(.in) .v-seg{stroke-dasharray:0 100 !important}
+.v-js .v-anim .v-grow{transform-origin:0 50%;transform-box:fill-box;transition:transform .9s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--i,0)*110ms)}
+.v-js .v-anim:not(.in) .v-grow{transform:scaleX(0)}
+.v-js .v-anim .v-pop{transition:opacity .6s ease,transform .6s ease;transition-delay:calc(var(--i,0)*90ms)}
+.v-js .v-anim:not(.in) .v-pop{opacity:0;transform:translateY(10px)}
+.chart-card svg text.t1{font-size:14px}.chart-card svg text.t2{font-size:16px}.chart-card svg text.t3{font-size:12.5px}
+.chart-card svg text.big{font-size:30px;font-weight:800;fill:var(--text);letter-spacing:-.02em}
+.chart-card svg text.mid{font-size:22px;font-weight:700;fill:var(--text)}
+.chart-card svg text.w{fill:#fff;font-weight:700}
+.v-title{font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .9rem}
+.v-flow{display:flex;align-items:stretch;gap:.5rem;flex-wrap:nowrap}
+.v-step{flex:1 1 0;min-width:0;border-radius:18px;padding:1rem 1rem 1.05rem;background:color-mix(in srgb,var(--c,var(--cyan)) 9%,#fff);border-top:4px solid var(--c,var(--cyan))}
+.v-step .k{display:block;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--cyan));margin-bottom:.25rem}
+.v-step b{display:block;font-size:1.05rem;line-height:1.2;color:var(--text);letter-spacing:-.01em}
+.v-step span.d{display:block;font-size:.82rem;color:var(--muted);margin-top:.35rem;line-height:1.35}
+.v-step--dash{border-top-style:dashed;background:#fff;box-shadow:0 0 0 1px var(--line)}
+.v-arrow{flex:0 0 auto;align-self:center;color:var(--line-strong);font-size:1.5rem;line-height:1}
+.v-back{margin-top:.7rem;border:2px dashed var(--line-strong);border-radius:16px;padding:.7rem 1rem;font-size:.85rem;color:var(--muted)}
+.v-back b{color:var(--text)}
+@media (max-width:700px){.v-flow{flex-direction:column}.v-arrow{transform:rotate(90deg);margin:-.1rem 0}}
+.v-cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.9rem}
+.v-ic{display:flex;flex-direction:column;gap:.35rem;padding:1.1rem 1rem;border-radius:20px;background:color-mix(in srgb,var(--c) 8%,#fff)}
+.v-ic svg{width:48px;height:48px;fill:none;stroke:var(--c);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;margin-bottom:.3rem}
+.v-ic b{font-size:1.1rem;color:var(--text)}
+.v-ic .d{font-size:.85rem;color:var(--muted)}
+.v-ic .e{font-size:.78rem;color:var(--text);margin-top:.3rem;padding-top:.5rem;border-top:1px solid color-mix(in srgb,var(--c) 25%,#fff)}
+@media (max-width:760px){.v-cards4{grid-template-columns:1fr 1fr}}
+.v-donut-wrap{max-width:460px;margin:0 auto}
+.v-co{display:flex;gap:4px;margin:.2rem 0 .5rem}
+.v-co>div{border-radius:14px;padding:.8rem .7rem;color:#fff;min-width:0}
+.v-co b{display:block;font-size:1.5rem;letter-spacing:-.03em;line-height:1}
+.v-co .n{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+.v-co .t{display:block;font-size:.72rem;line-height:1.3;margin-top:.45rem;opacity:.95}
+.v-weeks{display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px}
+.v-wk{border-radius:12px;background:var(--bg-2);padding:.55rem .3rem .6rem;text-align:center;min-height:6.2rem;display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.v-wk b{font-size:1.15rem;letter-spacing:-.02em;color:var(--text)}
+.v-wk small{font-size:.66rem;line-height:1.2;color:var(--muted)}
+.v-wk i{font-style:normal;font-size:.58rem;font-weight:800;letter-spacing:.06em;margin-top:auto;padding:.1rem .35rem;border-radius:99px;background:rgba(255,255,255,.28)}
+.v-wk--a{background:var(--cyan)}.v-wk--a b,.v-wk--a small{color:#fff}
+.v-wk--p{background:color-mix(in srgb,var(--violet) 16%,#fff)}
+.v-wk--p b{color:var(--violet)}
+.v-wk--t{background:color-mix(in srgb,var(--lime) 14%,#fff)}
+.v-wk--t b{color:var(--lime)}
+.v-wk--n b,.v-wk--n small{color:var(--dim)}
+.v-wk--n{background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
+.v-key{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;margin-top:.9rem;font-size:.78rem;color:var(--muted)}
+.v-key span::before{content:"";display:inline-block;width:.7rem;height:.7rem;border-radius:4px;background:var(--k);margin-right:.4rem;vertical-align:-1px}
+@media (max-width:760px){.v-weeks{grid-template-columns:1fr 1fr}.v-wk{flex-direction:row;min-height:0;text-align:left;padding:.55rem .7rem;gap:.55rem}.v-wk b{min-width:1.7rem;font-size:1.05rem}.v-wk small{font-size:.74rem}.v-wk i{margin:0 0 0 auto}}
+.v-tree{text-align:center}
+.v-root{display:inline-block;background:var(--text);color:#fff;font-weight:700;padding:.6rem 1.2rem;border-radius:99px}
+.v-root::after{content:"";display:block;width:2px;height:18px;background:var(--line-strong);margin:.9rem auto -1.6rem;position:relative;top:.2rem}
+.v-branches{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.2rem;text-align:left}
+.v-br{border-radius:20px;padding:1.1rem;background:color-mix(in srgb,var(--c) 8%,#fff);border-top:4px solid var(--c)}
+.v-br h4{margin:0 0 .15rem;font-size:1rem}.v-br p{margin:0 0 .7rem;font-size:.8rem;color:var(--muted)}
+.v-br ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:.4rem}
+.v-br li{background:#fff;border-radius:99px;padding:.3rem .75rem;font-size:.82rem;font-weight:600;box-shadow:0 0 0 1px var(--line);margin:0}
+@media (max-width:640px){.v-branches{grid-template-columns:1fr}}
+.v-mx{width:100%;border-collapse:separate;border-spacing:0;font-size:.88rem}
+.v-mx th,.v-mx td{padding:.65rem .7rem;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.v-mx thead th{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line-strong)}
+.v-mx tbody th{font-weight:700;color:var(--text);white-space:nowrap}
+.v-mx .tc{background:color-mix(in srgb,var(--cyan) 8%,#fff);font-weight:600;color:var(--text)}
+.v-mx thead .tc{color:var(--cyan)}
+.v-dots{letter-spacing:.15em;color:var(--cyan);font-size:1rem;white-space:nowrap}.v-dots s{text-decoration:none;color:var(--line-strong)}
+.v-mxwrap{overflow-x:auto}
+.v-mx td{min-width:7.5rem}
+@media (max-width:640px){.v-mx{font-size:.8rem}.v-mx th,.v-mx td{padding:.5rem .45rem}.v-mx td{min-width:0}.v-mx tbody th{white-space:normal}}
+.chart-card svg text.t4{font-size:20px}.chart-card svg text.t5{font-size:15px}
+@media (max-width:560px){.keystats.v-ks{grid-template-columns:1fr 1fr;gap:.7rem}.keystats.v-ks .keystat{padding:1rem 1.05rem}.keystats.v-ks .keystat span{font-size:.8rem}}
+@media (max-width:640px){
+.v-mx,.v-mx tbody,.v-mx tr,.v-mx td,.v-mx th{display:block;width:100%}
+.v-mx thead{position:absolute;left:-9999px}
+.v-mx tr{padding:.7rem 0;border-bottom:1px solid var(--line-strong)}
+.v-mx tbody th{border:0;padding:.2rem 0 .4rem;font-size:.95rem}
+.v-mx td{border:0;padding:.3rem .5rem;display:flex;gap:.6rem}
+.v-mx td::before{content:attr(data-l);flex:0 0 5.6rem;font-size:.68rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);padding-top:.15rem}
+.v-mx td.tc{border-radius:10px;margin-top:.2rem}
+.v-mx td[colspan]{text-align:left!important}
+}
+@media (max-width:340px){.v-cards4{grid-template-columns:1fr}}
+.v-ks b[data-count]{font-variant-numeric:tabular-nums}
+</style>
 </head>
 <body data-week="01" data-title="Basics of Technical Communication">
 <main class="deck">
@@ -59,6 +144,32 @@
           <tr><td><strong>Total</strong></td><td></td><td class="num"><strong>100%</strong></td><td></td></tr>
         </tbody>
       </table>
+    </div>
+    <div class="keystats v-anim v-ks">
+      <div class="keystat"><b data-count="4">4</b><span>assessments</span></div>
+      <div class="keystat"><b data-count="100" data-suf="%">100%</b><span>continuous assessment</span></div>
+      <div class="keystat"><b data-count="0">0</b><span>final examinations</span></div>
+      <div class="keystat"><b data-count="14">14</b><span>weeks of study</span></div>
+    </div>
+    <div class="grid grid-2 mt">
+      <figure class="chart-card v-anim">
+        <svg viewBox="0 0 400 220" role="img" aria-label="Donut chart of assessment weights: Reading Test 30 percent, Speaking Assessment 30 percent, Writing Test 20 percent, Poster Assignment 20 percent">
+          <g transform="rotate(-90 96 110)" fill="none" stroke-width="32"><circle class="v-seg" cx="96" cy="110" r="70" stroke="var(--cyan)" pathLength="100" stroke-dasharray="29 71" stroke-dashoffset="0"><title>Reading Test, 30%</title></circle><circle class="v-seg" cx="96" cy="110" r="70" stroke="var(--violet)" pathLength="100" stroke-dasharray="29 71" stroke-dashoffset="-30"><title>Speaking Assessment, 30%</title></circle><circle class="v-seg" cx="96" cy="110" r="70" stroke="var(--pink)" pathLength="100" stroke-dasharray="19 81" stroke-dashoffset="-60"><title>Writing Test, 20%</title></circle><circle class="v-seg" cx="96" cy="110" r="70" stroke="var(--lime)" pathLength="100" stroke-dasharray="19 81" stroke-dashoffset="-80"><title>Poster Assignment, 20%</title></circle></g>
+          <text x="96" y="108" text-anchor="middle" class="big" style="font-size:28px">100%</text>
+          <text x="96" y="130" text-anchor="middle" class="t3">continuous</text>
+          <g class="v-pop" style="--i:1"><rect x="206" y="30" width="14" height="14" rx="4" fill="var(--cyan)"/><text x="228" y="44" class="mid" style="font-size:26px">30%</text><text x="294" y="44" class="t2 lbl-strong" style="font-size:16px">Reading Test</text></g><g class="v-pop" style="--i:2"><rect x="206" y="74" width="14" height="14" rx="4" fill="var(--violet)"/><text x="228" y="88" class="mid" style="font-size:26px">30%</text><text x="294" y="88" class="t2 lbl-strong" style="font-size:16px">Speaking</text></g><g class="v-pop" style="--i:3"><rect x="206" y="118" width="14" height="14" rx="4" fill="var(--pink)"/><text x="228" y="132" class="mid" style="font-size:26px">20%</text><text x="294" y="132" class="t2 lbl-strong" style="font-size:16px">Writing Test</text></g><g class="v-pop" style="--i:4"><rect x="206" y="162" width="14" height="14" rx="4" fill="var(--lime)"/><text x="228" y="176" class="mid" style="font-size:26px">20%</text><text x="294" y="176" class="t2 lbl-strong" style="font-size:16px">Poster</text></g>
+        </svg>
+        <figcaption>Where the 100% comes from. Speaking = 10% presentation + 20% group discussion.</figcaption>
+      </figure>
+      <figure class="chart-card v-anim">
+        <p class="v-title">Split by course outcome</p>
+        <div class="v-co" role="img" aria-label="Bar split by course outcome: CO1 30 percent, CO2 40 percent, CO3 30 percent">
+          <div class="v-grow" style="flex:30;background:var(--cyan);--i:0"><span class="n">CO 1</span><b>30%</b><span class="t">Reading Test</span></div>
+          <div class="v-grow" style="flex:40;background:var(--violet);--i:1"><span class="n">CO 2</span><b>40%</b><span class="t">Poster 20 + Writing Test 20</span></div>
+          <div class="v-grow" style="flex:30;background:var(--pink);--i:2"><span class="n">CO 3</span><b>30%</b><span class="t">Presentation 10 + Discussion 20</span></div>
+        </div>
+        <figcaption>The same four assessments, grouped by the outcome each one builds (from Table 1).</figcaption>
+      </figure>
     </div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Which single assessment carries the most marks?</p>
@@ -115,7 +226,7 @@
   <!-- 6 · How 100% is made up -->
   <section class="slide" data-title="How the 100% is made up">
     <div class="slide__kicker">Assessment briefing</div>
-    <h2>Individual 80% · Group 20%</h2>
+    <h2>Individual 60% · Group 40%</h2>
     <div class="hbars">
       <div class="hbar"><span>Reading Test · Week 8</span><div class="hbar__track"><div class="hbar__fill" data-v="30" data-max="30">30%</div></div></div>
       <div class="hbar"><span>Speaking Assessment · Weeks 13–14</span><div class="hbar__track"><div class="hbar__fill" data-v="30" data-max="30">30%</div></div></div>
@@ -155,6 +266,7 @@
         <p><strong>Basics of Technical Communication (Week 1):</strong> barriers, channels, CMAPP model.<br><strong>Preparing for the Workplace (Week 2):</strong> tailoring a résumé, claims versus evidence.</p>
       </div>
     </div>
+    <figure class="photo-fig mt"><img src="../assets/img/exam-hall.jpg" alt="Students seated at wooden desks with open books and notes, as in a paper-based test" loading="lazy" width="1200" height="1043"><figcaption>Assessment weeks are always face-to-face, and the Reading Test is taken on paper.</figcaption></figure>
     <div class="callout callout--warn mt"><p><strong>This week is examinable.</strong> What you learn today comes back in Section B of the Reading Test. There is a self-test at the end of this lesson.</p></div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Which topic from this week is named for Section B?</p>
@@ -256,6 +368,27 @@
     <div class="slide__kicker">Course briefing</div>
     <h2>The fourteen weeks at a glance</h2>
     <p class="slide__lead">Blended: Weeks 1 to 7 alternate online and face-to-face. <strong>Assessment weeks are always face-to-face.</strong></p>
+    <figure class="chart-card mt v-anim">
+      <p class="v-title">Semester timeline</p>
+      <div class="v-weeks" role="list" aria-label="Fourteen-week timeline with assessment weeks marked F2F, face-to-face">
+        <div class="v-wk v-wk--t" role="listitem"><b>1</b><small>Basics of TC</small></div>
+        <div class="v-wk v-wk--t" role="listitem"><b>2</b><small>Preparing for work</small></div>
+        <div class="v-wk v-wk--n" role="listitem"><b>3</b><small>—</small></div>
+        <div class="v-wk v-wk--n" role="listitem"><b>4</b><small>—</small></div>
+        <div class="v-wk v-wk--p" role="listitem"><b>5</b><small>Poster briefing</small></div>
+        <div class="v-wk v-wk--p" role="listitem"><b>6</b><small>Supervision 1</small></div>
+        <div class="v-wk v-wk--n" role="listitem"><b>7</b><small>—</small></div>
+        <div class="v-wk v-wk--a" role="listitem"><b>8</b><small>Reading Test 30%</small><i>F2F</i></div>
+        <div class="v-wk v-wk--n" role="listitem"><b>9</b><small>—</small></div>
+        <div class="v-wk v-wk--a" role="listitem"><b>10</b><small>Writing Test 20% + Supervision 2</small><i>F2F</i></div>
+        <div class="v-wk v-wk--n" role="listitem"><b>11</b><small>—</small></div>
+        <div class="v-wk v-wk--a" role="listitem"><b>12</b><small>Poster due 20%</small><i>F2F</i></div>
+        <div class="v-wk v-wk--a" role="listitem"><b>13</b><small>Speaking 30%</small><i>F2F</i></div>
+        <div class="v-wk v-wk--a" role="listitem"><b>14</b><small>Speaking 30%</small><i>F2F</i></div>
+      </div>
+      <div class="v-key"><span style="--k:var(--cyan)">Assessment (face-to-face)</span><span style="--k:color-mix(in srgb,var(--violet) 40%,#fff)">Poster work</span><span style="--k:color-mix(in srgb,var(--lime) 40%,#fff)">Teaching weeks 1 to 2</span><span style="--k:var(--line)">Not detailed in this briefing</span></div>
+      <figcaption>Weeks marked F2F are always face-to-face. Weeks 3, 4, 7, 9 and 11 are not detailed in this briefing.</figcaption>
+    </figure>
     <ol class="steps">
       <li><div><h3>Weeks 1–2</h3><p>Basics of Technical Communication · Preparing for the Workplace (examined in Section B of the Reading Test).</p></div></li>
       <li><div><h3>Weeks 5–6</h3><p>Poster briefing and group formation · Supervision 1.</p></div></li>
@@ -302,6 +435,20 @@
     <div class="slide__kicker">Part A · Definition</div>
     <h2>Communication</h2>
     <div class="example">Communication is the process of transmitting and exchanging information, ideas, thoughts, or feelings between individuals or groups through shared symbols, signs, or behaviours to establish mutual understanding.</div>
+    <figure class="chart-card mt v-anim">
+      <p class="v-title">How communication travels</p>
+      <div class="v-flow">
+        <div class="v-step v-pop" style="--c:var(--cyan);--i:0"><span class="k">1 · Sender</span><b>Conveys</b><span class="d">Starts the exchange with words, signs or behaviour.</span></div>
+        <span class="v-arrow" aria-hidden="true">→</span>
+        <div class="v-step v-pop" style="--c:var(--violet);--i:1"><span class="k">2 · Message</span><b>Information, ideas, feelings</b><span class="d">Carried through shared symbols, signs or behaviours.</span></div>
+        <span class="v-arrow" aria-hidden="true">→</span>
+        <div class="v-step v-step--dash v-pop" style="--c:var(--amber);--i:2"><span class="k">Barrier</span><b>The sieve</b><span class="d">Only part of the message filters through (Part B).</span></div>
+        <span class="v-arrow" aria-hidden="true">→</span>
+        <div class="v-step v-pop" style="--c:var(--lime);--i:3"><span class="k">3 · Receiver</span><b>Understands</b><span class="d">Mutual understanding is the goal.</span></div>
+      </div>
+      <p class="v-back"><b>↩ Feedback.</b> In a one-to-one conversation, sender and receiver swap roles. In a large organisation, feedback is not guaranteed.</p>
+      <figcaption>A simple model built from this lesson's definition, with the barrier you meet in Part B.</figcaption>
+    </figure>
     <div class="gapfill mt" data-xp="15">
       <p class="small muted">Complete the definition from memory. Then press Check.</p>
       <p>Communication is the <input class="gap" data-answer="process"> of transmitting and <input class="gap" data-answer="exchanging"> information, ideas, thoughts, or feelings between individuals or groups through <input class="gap" data-answer="shared"> symbols, signs, or behaviours to establish <input class="gap" data-answer="mutual"> understanding.</p>
@@ -318,6 +465,15 @@
       <div class="card card--accent"><span class="num-badge">3</span><h3 class="mt">Non-verbal</h3><p class="small">No words or sounds.</p></div>
       <div class="card card--accent"><span class="num-badge">4</span><h3 class="mt">Visual</h3><p class="small">Visual media and aids.</p></div>
     </div>
+    <figure class="chart-card mt v-anim">
+      <div class="v-cards4">
+        <div class="v-ic v-pop" style="--c:var(--cyan);--i:0"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 8h36a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H22l-10 8v-8H6a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z"/><path d="M13 18h22M13 25h13"/></svg><b>Verbal</b><span class="d">Words, spoken.</span><span class="e">Phone call · announcement · speech</span></div>
+        <div class="v-ic v-pop" style="--c:var(--violet);--i:1"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="10" y="4" width="28" height="40" rx="4"/><path d="M16 15h16M16 23h16M16 31h9"/></svg><b>Written</b><span class="d">Words, written.</span><span class="e">E-mail · report · memo</span></div>
+        <div class="v-ic v-pop" style="--c:var(--pink);--i:2"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 24s7-13 21-13 21 13 21 13-7 13-21 13S3 24 3 24z"/><circle cx="24" cy="24" r="6"/></svg><b>Non-verbal</b><span class="d">No words or sounds.</span><span class="e">Eye contact · gesture · tone of voice</span></div>
+        <div class="v-ic v-pop" style="--c:var(--lime);--i:3"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="8" width="40" height="32" rx="5"/><circle cx="16" cy="19" r="4"/><path d="M6 36l12-11 9 8 6-5 9 8"/></svg><b>Visual</b><span class="d">Visual media and aids.</span><span class="e">Map · poster · sign</span></div>
+      </div>
+      <figcaption>The four types at a glance, with one family of examples each.</figcaption>
+    </figure>
     <p class="small muted mt">The next four slides look at each type in turn.</p>
   </section>
 
@@ -351,6 +507,7 @@
       <div class="flip"><div class="flip__front"><span class="tag">03</span><h4 class="mt">Intrapersonal</h4></div><div class="flip__back"><p>A private, restricted form. A silent conversation with ourselves, juggling the roles of sender and receiver of our own thoughts and actions.</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">04</span><h4 class="mt">Interpersonal</h4></div><div class="flip__back"><p>Between two individuals (one-on-one). They swap the roles of sender and receiver to communicate more clearly.</p></div></div>
     </div>
+    <figure class="photo-fig mt"><img src="../assets/img/team-table.jpg" alt="A small group of colleagues talking around a table in a team meeting" loading="lazy" width="1200" height="521"><figcaption>Small-group verbal communication: team meetings, board meetings, press conferences.</figcaption></figure>
     <div class="sorter mt" data-xp="15" data-label="Which type of verbal communication is it?">
       <div class="sorter__pool">
         <button class="chip" data-bin="group">A board meeting</button>
@@ -375,6 +532,7 @@
     <h2>Written communication</h2>
     <p class="slide__lead">A sender conveys a message through <strong>written words</strong>.</p>
     <div class="example">E.g. letters, personal journals, e-mails, reports, articles and memos.</div>
+    <figure class="photo-fig mt"><img src="../assets/img/typing.jpg" alt="Hands typing on a laptop keyboard" loading="lazy" width="1200" height="521"><figcaption>Written messages can be edited and corrected before they are sent.</figcaption></figure>
     <div class="callout callout--ok mt"><p><strong>Key advantage:</strong> unlike some other forms of communication, written messages can be <strong>edited and rectified</strong> before they are sent to the receivers.</p></div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">What can you do with written communication that is hard to do in a live speech?</p>
@@ -411,6 +569,7 @@
     <h2>Visual communication</h2>
     <p>The visual transmission of ideas and information through video, animation, images, GIFs, and other visual media. The message is understood or expressed with the help of <strong>visual aids</strong>.</p>
     <div class="example">E.g. photography, signs, symbols, typography, maps, colours, posters, movies, plays, television shows.</div>
+    <figure class="photo-fig mt"><img src="../assets/img/whiteboard.jpg" alt="Two women planning ideas with notes on a whiteboard" loading="lazy" width="1200" height="521"><figcaption>Visual aids turn ideas into something a team can see together.</figcaption></figure>
     <div class="sorter mt" data-xp="15" data-label="Sort the examples into the four types">
       <div class="sorter__pool">
         <button class="chip" data-bin="verbal">Giving a speech</button>
@@ -538,6 +697,16 @@
       <div class="card"><span class="num-badge">3</span><p class="mt"><strong>Use of inappropriate media</strong></p></div>
       <div class="card"><span class="num-badge">4</span><p class="mt"><strong>Information overload</strong></p></div>
     </div>
+    <figure class="chart-card mt v-anim">
+      <div class="v-tree">
+        <span class="v-root">Barriers to communication</span>
+        <div class="v-branches">
+          <div class="v-br v-pop" style="--c:var(--violet);--i:0"><h4>Intrapersonal</h4><p>Inside one person</p><ul><li>Wrong assumptions</li><li>Varied perceptions</li><li>Differing background</li><li>Wrong inferences</li></ul></div>
+          <div class="v-br v-pop" style="--c:var(--amber);--i:1"><h4>Organisational</h4><p>Across a whole organisation</p><ul><li>Too many transfer stations</li><li>Fear of superiors</li><li>Inappropriate media</li><li>Information overload</li></ul></div>
+        </div>
+      </div>
+      <figcaption>All eight barriers in this lesson, on one map.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">What usually causes communication barriers in an organisation?</p>
       <div class="quiz__opts">
@@ -587,6 +756,21 @@
         </ul>
       </div>
     </div>
+    <div class="grid grid-2 mt">
+      <figure class="photo-fig photo-fig--tall" style="margin:0"><img src="../assets/img/chart-screen.jpg" alt="A screen crowded with a colourful heatmap chart, showing how much data a reader may face" loading="lazy" width="1200" height="521" style="height:100%;min-height:15rem"><figcaption>Too much on the screen: vital facts get lost.</figcaption></figure>
+      <figure class="chart-card v-anim" style="margin:0">
+        <svg viewBox="0 0 400 300" role="img" aria-label="Screening funnel: many irrelevant details mixed with a few vital points go in, and only the major points come out">
+          <text x="200" y="14" text-anchor="middle" class="t2 lbl-strong">Too much information</text>
+          <g transform="translate(0,6)"><circle cx="60" cy="40" r="7" fill="var(--line-strong)"/><circle cx="95" cy="62" r="7" fill="var(--line-strong)"/><circle cx="130" cy="36" r="7" fill="var(--line-strong)"/><circle cx="170" cy="58" r="7" fill="var(--line-strong)"/><circle cx="205" cy="40" r="7" fill="var(--line-strong)"/><circle cx="245" cy="64" r="7" fill="var(--line-strong)"/><circle cx="285" cy="38" r="7" fill="var(--line-strong)"/><circle cx="320" cy="60" r="7" fill="var(--line-strong)"/><circle cx="360" cy="42" r="7" fill="var(--line-strong)"/><circle cx="78" cy="92" r="7" fill="var(--line-strong)"/><circle cx="150" cy="88" r="7" fill="var(--line-strong)"/><circle cx="232" cy="92" r="7" fill="var(--line-strong)"/><circle cx="300" cy="90" r="7" fill="var(--line-strong)"/><circle cx="112" cy="22" r="7" fill="var(--line-strong)"/><circle cx="268" cy="20" r="7" fill="var(--line-strong)"/><circle cx="338" cy="24" r="7" fill="var(--line-strong)"/><circle cx="182" cy="76" r="9" fill="var(--cyan)" stroke="#fff" stroke-width="2"/><circle cx="214" cy="70" r="9" fill="var(--cyan)" stroke="#fff" stroke-width="2"/><circle cx="198" cy="98" r="9" fill="var(--cyan)" stroke="#fff" stroke-width="2"/></g>
+          <path d="M40 124 H360 L240 200 H160 Z" fill="color-mix(in srgb, var(--violet) 10%, #fff)" stroke="var(--violet)" stroke-width="2.5" stroke-linejoin="round"/>
+          <text x="200" y="168" text-anchor="middle" class="mid" style="font-size:22px">Screening</text>
+          <path d="M200 204 V228" stroke="var(--line-strong)" stroke-width="3" stroke-linecap="round"/>
+          <g class="v-pop" style="--i:2"><circle cx="164" cy="256" r="11" fill="var(--cyan)"/><circle cx="200" cy="256" r="11" fill="var(--cyan)"/><circle cx="236" cy="256" r="11" fill="var(--cyan)"/></g>
+          <text x="200" y="291" text-anchor="middle" class="t2 lbl-strong">Major points only</text>
+        </svg>
+        <figcaption>Grey dots = irrelevant details; blue dots = vital points. Screening keeps the blue.</figcaption>
+      </figure>
+    </div>
     <div class="sorter mt" data-xp="15" data-label="Which organisational barrier is described?">
       <div class="sorter__pool">
         <button class="chip" data-bin="t">The message is distorted at each level of a long chain.</button>
@@ -623,6 +807,10 @@
       <li>Used to communicate with colleagues and superiors.</li>
       <li>Used for presentations at conferences and meetings.</li>
     </ul>
+    <div class="split mt">
+      <p class="pull" style="margin:0">To get something done within an organisation, or help someone else get something done.<cite>The purpose of technical communication</cite></p>
+      <figure class="photo-fig" style="margin:0"><img src="../assets/img/engineer-lab.jpg" alt="An engineer working in an industrial laboratory" loading="lazy" width="1200" height="1043"><figcaption>Workplace communication, written and oral, starts where the work happens.</figcaption></figure>
+    </div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Is a presentation at a project meeting technical communication?</p>
       <div class="quiz__opts">
@@ -728,6 +916,34 @@
     </div>
   </section>
 
+  <!-- Three kinds of writing at a glance -->
+  <section class="slide" data-title="Three kinds of writing at a glance">
+    <div class="slide__kicker">Part C · Compare</div>
+    <h2>Three kinds of writing at a glance</h2>
+    <p class="slide__lead">The six features side by side. Technical communication is the column on the right.</p>
+    <div class="keystats v-anim v-ks">
+      <div class="keystat"><b data-count="6">6</b><span>features of technical communication</span></div>
+      <div class="keystat"><b data-count="5">5</b><span>elements in the CMAPP model</span></div>
+      <div class="keystat"><b data-count="4">4</b><span>types of communication</span></div>
+      <div class="keystat"><b data-count="8">8</b><span>barriers to communication (4 + 4)</span></div>
+    </div>
+    <figure class="chart-card mt">
+      <div class="v-mxwrap"><table class="v-mx">
+        <caption class="sr-only" style="position:absolute;left:-9999px">Personal essay, academic writing and technical communication compared on six features</caption>
+        <thead><tr><th></th><th>Personal essay</th><th>Academic writing</th><th class="tc">Technical communication</th></tr></thead>
+        <tbody>
+          <tr><th>1 · Purpose</th><td data-l="Personal essay">Share personal observations or feelings</td><td data-l="Academic">Show what you know, to earn a high grade</td><td class="tc" data-l="Technical comm.">Get something done in an organisation</td></tr>
+          <tr><th>2 · Audience</th><td data-l="Personal essay">Readers from all walks of life</td><td data-l="Academic">The lecturer</td><td class="tc" data-l="Technical comm.">Specific readers who will act</td></tr>
+          <tr><th>3 · Organisation</th><td colspan="2" data-l="Essay and academic" style="text-align:center">Topic sentences and transitions</td><td class="tc" data-l="Technical comm.">Headings, readable at a glance</td></tr>
+          <tr><th>4 · Style</th><td data-l="Personal essay">Casual, conversational</td><td data-l="Academic">Depth, logic, clarity, evidence</td><td class="tc" data-l="Technical comm.">Simple, concise, straightforward</td></tr>
+          <tr><th>5 · Tone</th><td data-l="Personal essay">Expressive</td><td data-l="Academic">Academic, formal, objective</td><td class="tc" data-l="Technical comm.">Objective and business-like</td></tr>
+          <tr><th>6 · Graphics</th><td data-l="Personal essay"><span class="v-dots" aria-hidden="true">●<s>●●</s></span> <span class="small muted">Rarely</span></td><td data-l="Academic"><span class="v-dots" aria-hidden="true">●●<s>●</s></span> <span class="small muted">Sometimes</span></td><td class="tc" data-l="Technical comm."><span class="v-dots" aria-hidden="true">●●●<s></s></span> Frequently</td></tr>
+        </tbody>
+      </table></div>
+      <figcaption>Summary of the three comparison tables in this lesson. Dots show how often graphics are used.</figcaption>
+    </figure>
+  </section>
+
   <!-- CMAPP -->
   <section class="slide" data-title="The CMAPP model">
     <div class="slide__kicker">Part C · Planning model</div>
@@ -740,6 +956,15 @@
       <div class="flip"><div class="flip__front"><span class="tag">P</span><h4 class="mt">Purpose</h4></div><div class="flip__back"><p>The reason you are communicating (to remind, to inform …) and the reactions or responses you expect from your audience.</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">P</span><h4 class="mt">Product</h4></div><div class="flip__back"><p>The physical form of the communication and its appearance (e.g. reports, memos, letters, posters).</p></div></div>
     </div>
+    <figure class="chart-card mt v-anim" style="max-width:520px;margin-left:auto;margin-right:auto">
+      <svg viewBox="0 20 460 405" role="img" aria-label="CMAPP wheel: Context, Message, Audience, Purpose and Product arranged around a centre">
+        <line x1="230" y1="235" x2="230" y2="95" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 5"/><line x1="230" y1="235" x2="363" y2="192" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 5"/><line x1="230" y1="235" x2="312" y2="348" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 5"/><line x1="230" y1="235" x2="148" y2="348" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 5"/><line x1="230" y1="235" x2="97" y2="192" stroke="var(--line-strong)" stroke-width="2" stroke-dasharray="3 5"/><g class="v-pop" style="--i:0"><circle cx="230" cy="95" r="40" fill="var(--cyan)"/><text x="230" y="105" text-anchor="middle" class="big w" style="fill:#fff">C</text><text x="282" y="93" text-anchor="start" class="t4 lbl-strong" style="stroke:#fff;stroke-width:5px;paint-order:stroke">Context</text><text x="282" y="110" text-anchor="start" class="t5" style="stroke:#fff;stroke-width:5px;paint-order:stroke">time · place</text><title>Context: time · place</title></g><g class="v-pop" style="--i:1"><circle cx="363" cy="192" r="40" fill="var(--violet)"/><text x="363" y="202" text-anchor="middle" class="big w" style="fill:#fff">M</text><text x="363" y="254" text-anchor="middle" class="t4 lbl-strong" style="stroke:#fff;stroke-width:5px;paint-order:stroke">Message</text><text x="363" y="271" text-anchor="middle" class="t5" style="stroke:#fff;stroke-width:5px;paint-order:stroke">the content</text><title>Message: the content</title></g><g class="v-pop" style="--i:2"><circle cx="312" cy="348" r="40" fill="var(--pink)"/><text x="312" y="358" text-anchor="middle" class="big w" style="fill:#fff">A</text><text x="312" y="410" text-anchor="middle" class="t4 lbl-strong" style="stroke:#fff;stroke-width:5px;paint-order:stroke">Audience</text><text x="312" y="427" text-anchor="middle" class="t5" style="stroke:#fff;stroke-width:5px;paint-order:stroke">readers · listeners</text><title>Audience: readers · listeners</title></g><g class="v-pop" style="--i:3"><circle cx="148" cy="348" r="40" fill="var(--lime)"/><text x="148" y="358" text-anchor="middle" class="big w" style="fill:#fff">P</text><text x="148" y="410" text-anchor="middle" class="t4 lbl-strong" style="stroke:#fff;stroke-width:5px;paint-order:stroke">Purpose</text><text x="148" y="427" text-anchor="middle" class="t5" style="stroke:#fff;stroke-width:5px;paint-order:stroke">reason · response</text><title>Purpose: reason · response</title></g><g class="v-pop" style="--i:4"><circle cx="97" cy="192" r="40" fill="var(--amber)"/><text x="97" y="202" text-anchor="middle" class="big w" style="fill:#fff">P</text><text x="97" y="254" text-anchor="middle" class="t4 lbl-strong" style="stroke:#fff;stroke-width:5px;paint-order:stroke">Product</text><text x="97" y="271" text-anchor="middle" class="t5" style="stroke:#fff;stroke-width:5px;paint-order:stroke">report · memo · poster</text><title>Product: report · memo · poster</title></g>
+        <circle cx="230" cy="235" r="46" fill="#fff" stroke="var(--line-strong)" stroke-width="2"/>
+        <text x="230" y="233" text-anchor="middle" class="mid" style="font-size:19px">CMAPP</text>
+        <text x="230" y="251" text-anchor="middle" class="t3">plan first</text>
+      </svg>
+      <figcaption>Five things to think about before you communicate.</figcaption>
+    </figure>
   </section>
 
   <!-- CMAPP practice -->
@@ -798,6 +1023,7 @@
   <section class="slide" data-title="Importance of communication">
     <div class="slide__kicker">Part C · Why it matters</div>
     <h2>Importance of communication</h2>
+    <p class="pull">Your knowledge and ideas will be useless unless you communicate them to others.<cite>Importance of communication · for yourself</cite></p>
     <div class="grid grid-2">
       <div class="card"><span class="num-badge">01</span><h3 class="mt">For the organisation</h3><p>All organisations require up-to-date information to operate efficiently.</p></div>
       <div class="card card--accent"><span class="num-badge">02</span><h3 class="mt">For yourself</h3><p>Your knowledge and ideas will be useless unless you communicate them to others. Communication expertise will be critical to your career success.</p></div>
@@ -902,5 +1128,25 @@
 
 </main>
 <script src="../assets/js/deck.js"></script>
+<script>
+/* visual pass: draw charts / count numbers when scrolled into view (reduced-motion safe) */
+(function(){
+  var els=[].slice.call(document.querySelectorAll('.v-anim'));
+  var st=/[?&]static\b/.test(location.search);
+  var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(st||rm||!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in');});return;}
+  document.documentElement.classList.add('v-js');
+  function count(root){
+    [].forEach.call(root.querySelectorAll('[data-count]'),function(n){
+      var to=parseFloat(n.getAttribute('data-count')),suf=n.getAttribute('data-suf')||'',t0=null,dur=1100;
+      function f(t){if(t0===null)t0=t;var p=Math.min(1,(t-t0)/dur),e=1-Math.pow(1-p,3);n.textContent=Math.round(to*e)+suf;if(p<1)requestAnimationFrame(f);}
+      n.textContent='0'+suf;requestAnimationFrame(f);
+    });
+  }
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');count(e.target);io.unobserve(e.target);}});},{threshold:.2});
+  els.forEach(function(e){io.observe(e);});
+})();
+</script>
+
 </body>
 </html>

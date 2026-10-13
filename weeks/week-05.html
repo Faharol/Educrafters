@@ -9,6 +9,87 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/style.css">
+<style>
+/* Visual pass: scoped helpers (vz-*) */
+.vz-svg{max-width:620px;margin:0 auto}
+.vz-svg--wide{max-width:760px}
+.chart-card .vz-h{font:700 1.05rem/1.25 var(--display);letter-spacing:-.01em;margin:0 0 .15rem;color:var(--text)}
+.chart-card .vz-sub{font-size:.88rem;color:var(--muted);margin:0 0 .9rem}
+.chart-card svg.vz-svg text{font-size:15px}
+.chart-card svg text.t-b{font-weight:700}
+.chart-card svg text.t-w{fill:#fff}
+.chart-card svg text.t-cy{fill:var(--cyan)}.chart-card svg text.t-vi{fill:var(--violet)}.chart-card svg text.t-pk{fill:var(--pink)}
+.chart-card svg text.t-gn{fill:var(--lime)}.chart-card svg text.t-am{fill:var(--amber)}.chart-card svg text.t-rd{fill:var(--red)}
+.chart-card svg text.t-tx{fill:var(--text)}
+.chart-card svg text.t-s{font-size:15px}.chart-card svg text.t-m{font-size:17px}.chart-card svg text.t-l{font-size:22px}
+@media (max-width:560px){.chart-card{padding:1.1rem .85rem .95rem}}
+[data-tip]{cursor:help;outline:none}
+svg [data-tip]:hover,svg [data-tip]:focus-visible{filter:brightness(.94)}
+[data-tip]:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.vz-tooltip{position:fixed;z-index:9999;max-width:240px;background:#1d1d1f;color:#fff;font:500 .82rem/1.4 var(--font);padding:.5rem .7rem;border-radius:10px;pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.vz-tooltip.on{opacity:1;transform:none}
+.vz-hint{font-size:.78rem;color:var(--dim);margin:.6rem 0 0}
+/* draw-on-scroll */
+.vz-prep .vz-grow{transform:scaleX(0)}
+.vz-prep .vz-growy{transform:scaleY(0)}
+.vz-prep .vz-fade{opacity:0}
+.vz-prep .vz-draw{stroke-dashoffset:var(--len,600)}
+.vz-grow,.vz-growy{transform-box:fill-box;transition:transform .9s cubic-bezier(.2,.8,.2,1) var(--d,0s)}
+.vz-grow{transform-origin:left center}.vz-growy{transform-origin:center bottom}
+.vz-fade{transition:opacity .7s ease var(--d,0s)}
+.vz-draw{stroke-dasharray:var(--len,600);transition:stroke-dashoffset 1.4s ease var(--d,0s)}
+@media (prefers-reduced-motion:reduce){.vz-grow,.vz-growy,.vz-fade,.vz-draw{transition:none!important}}
+/* stacked words bar */
+.vz-stack{display:flex;gap:4px;height:46px;border-radius:14px;overflow:hidden;margin:.4rem 0 .5rem}
+.vz-stack>div{display:flex;align-items:center;justify-content:center;color:#fff;font:700 .95rem var(--font);transition:flex-basis .9s cubic-bezier(.2,.8,.2,1)}
+.vz-stack-l{display:flex;gap:4px;font-size:.8rem;color:var(--muted)}
+.vz-stack-l span{text-align:center}
+/* chips / sentence breakdown */
+.vz-sent{font:500 1.05rem/2.8 var(--font);margin:.2rem 0 .6rem}
+.vz-p{display:inline-block;position:relative;padding:.1em .4em;line-height:1.45;vertical-align:middle;border-radius:8px;margin:0 .22em;min-width:3.2em;text-align:center;border-bottom:3px solid}
+.vz-p small{position:absolute;left:0;top:100%;margin-top:.1rem;font:700 .62rem/1 var(--font);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.vz-p--cy{background:rgba(0,113,227,.1);border-color:var(--cyan)}.vz-p--cy small{color:var(--cyan)}
+.vz-p--vi{background:rgba(110,79,246,.1);border-color:var(--violet)}.vz-p--vi small{color:var(--violet)}
+.vz-p--pk{background:rgba(209,48,122,.1);border-color:var(--pink)}.vz-p--pk small{color:var(--pink)}
+.vz-p--gn{background:rgba(26,143,60,.1);border-color:var(--lime)}.vz-p--gn small{color:var(--lime)}
+.vz-p--am{background:rgba(178,94,0,.1);border-color:var(--amber)}.vz-p--am small{color:var(--amber)}
+.vz-sentbox{padding:.2rem 0 1.3rem;border-bottom:1px solid var(--line);margin-bottom:1rem}
+.vz-sentbox:last-of-type{border-bottom:0;margin-bottom:0}
+.vz-sentbox h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .2rem}
+@media (max-width:560px){.vz-sent{font-size:.95rem;line-height:2.8}}
+/* extra chips, ladders, scope rows */
+.vz-p--gy{background:rgba(110,110,115,.12);border-color:var(--muted)}.vz-p--gy small{color:var(--muted)}
+.vz-hl-bad{background:rgba(215,0,21,.12);color:var(--red);border-radius:4px;padding:0 .12em;font-weight:700}
+.vz-hl-ok{background:rgba(26,143,60,.14);color:var(--lime);border-radius:4px;padding:0 .12em;font-weight:700}
+.vz-lad>div{margin:0 0 .85rem}
+.vz-lad .row{display:flex}
+.vz-lad .bar{display:flex;align-items:center;min-height:38px;border-radius:12px;padding:.3rem .95rem;color:#fff;font:700 .92rem/1.2 var(--font);min-width:max-content;transition:flex-basis .9s cubic-bezier(.2,.8,.2,1)}
+.vz-lad small{display:block;margin:.3rem 0 0 .2rem;font-size:.8rem;color:var(--muted)}
+.vz-sc{margin:0 0 1rem}.vz-sc .t{display:flex;flex-wrap:wrap;gap:.3rem .6rem;align-items:center;font-weight:600;font-size:.95rem}
+.vz-sc .b{display:flex;height:10px;background:var(--bg-2);border-radius:5px;overflow:hidden;margin-top:.45rem}
+.vz-sc .b div{border-radius:5px;transition:flex-basis .9s cubic-bezier(.2,.8,.2,1)}
+.vz-flow>div.st{border-top:5px solid var(--c,var(--cyan));background:var(--bg-2)}
+.vz-flow .big{font:800 2.2rem/1 var(--display);color:var(--c,var(--cyan));margin-bottom:.4rem;letter-spacing:-.03em}
+.vz-flow em{display:block;font-style:normal;font-size:.9rem;margin-top:.5rem;color:var(--text)}
+/* timeline */
+.vz-tl{display:grid;grid-template-columns:repeat(10,1fr);gap:.5rem;position:relative;margin:.8rem 0 .4rem}
+.vz-tl::before{content:"";position:absolute;left:4%;right:4%;top:19px;height:3px;background:var(--line);border-radius:2px}
+.vz-tl>div{position:relative;text-align:center;font-size:.76rem;line-height:1.25;color:var(--muted)}
+.vz-tl .n{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;margin:0 auto .5rem;font:700 .95rem var(--font);color:#fff;box-shadow:0 0 0 4px #fff;position:relative}
+.vz-tl b{display:block;color:var(--text);font-weight:600;font-size:.78rem;margin-bottom:.15rem}
+.vz-tl .c-b{background:var(--cyan)}.vz-tl .c-t{background:#a1a1a6}.vz-tl .c-a{background:var(--red)}.vz-tl .c-s{background:var(--amber)}.vz-tl .c-v{background:var(--violet)}
+.vz-tl .big{width:48px;height:48px;margin-top:-4px}
+@media (max-width:720px){.vz-tl{grid-template-columns:1fr;row-gap:.9rem}.vz-tl::before{left:19px;right:auto;top:10px;bottom:10px;width:3px;height:auto}.vz-tl>div{display:flex;gap:.9rem;text-align:left;align-items:center;font-size:.9rem}.vz-tl .n{margin:0;flex:none}.vz-tl .big{margin-top:0}.vz-tl b{font-size:.95rem}}
+.vz-key{display:flex;flex-wrap:wrap;gap:.4rem 1rem;font-size:.78rem;color:var(--muted);margin-top:.8rem}
+.vz-key i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.35rem;vertical-align:middle}
+/* funnel / steps flow (html) */
+.vz-flow{display:flex;align-items:stretch;gap:.6rem;flex-wrap:wrap}
+.vz-flow>div{flex:1 1 150px;border-radius:18px;padding:1rem 1.1rem;background:var(--bg-2)}
+.vz-flow b{display:block;font:800 1.05rem var(--display);letter-spacing:-.01em;margin-bottom:.2rem}
+.vz-flow span{font-size:.84rem;color:var(--muted);display:block}
+.vz-flow .arr{flex:0 0 auto;background:none;padding:0;align-self:center;font-size:1.4rem;color:var(--dim)}
+@media (max-width:640px){.vz-flow .arr{display:none}}
+</style>
 </head>
 <body data-week="05" data-title="Writing for Technical Communication">
 <main class="deck">
@@ -65,6 +146,11 @@
     <div class="slide__kicker">Part A · Purpose</div>
     <h2>What a technical report is for</h2>
     <p class="slide__lead">A technical report exists so that someone who was not there can make a decision. It is not a diary of what you did. It is an argument, built from evidence, that ends in an action.</p>
+    
+    <div class="split">
+      <figure class="photo-fig"><img src="../assets/img/business-team.jpg" alt="Four men in suits reading printed reports together in an office" loading="lazy" width="1200" height="1043"><figcaption>The reader: usually busier and more senior than the writer.</figcaption></figure>
+      <p class="pull">Could the reader act on it without asking you a single question?<cite>The test of a good report</cite></p>
+    </div>
     <div class="grid grid-3">
       <div class="card"><h3>The reader</h3><p>Usually busier and more senior than the writer. Reads the recommendation first, then checks the findings to see if it is justified.</p></div>
       <div class="card card--accent"><h3>The test of a good report</h3><p>Could the reader act on it <strong>without asking you a single question</strong>?</p></div>
@@ -90,6 +176,39 @@
       <div class="card card--accent"><span class="num-badge">02</span><h3 class="mt">Findings</h3><p>What the data shows: overall pattern, biggest change, the exception. Numbers included. No opinions yet.</p></div>
       <div class="card"><span class="num-badge">03</span><h3 class="mt">Recommendations</h3><p>What should be done, by whom, in what order, and why the evidence supports it.</p></div>
     </div>
+    
+    <figure class="chart-card">
+      <p class="vz-h">Anatomy of a three-part report</p>
+      <p class="vz-sub">Hover or tap a block. The manager reads the green block first.</p>
+      <svg class="vz-svg" viewBox="0 0 480 420" role="img" aria-label="Wireframe of a technical report page with three coloured blocks. 01 Introduction: 30 to 40 words covering context, purpose and scope. 02 Findings: three sentences, about 70 words, covering overall picture, biggest change and the exception. 03 Recommendations: who, what, when, condition and urgency. Read first by a busy manager.">
+        <rect x="8" y="8" width="240" height="404" rx="16" style="fill:#fff;stroke:var(--line-strong)" stroke-width="1.5"/>
+        <rect x="28" y="28" width="150" height="10" rx="5" style="fill:var(--text)"/><rect x="28" y="46" width="96" height="6" rx="3" style="fill:var(--line-strong)"/>
+        <g data-tip="Introduction: context (who it is for), purpose (what the report does), scope (what data, what period). No findings, no recommendations.">
+          <rect x="24" y="66" width="208" height="86" rx="12" style="fill:var(--cyan);stroke:var(--cyan)" fill-opacity=".08" stroke-width="1.5"/>
+          <text class="t-b t-cy" x="38" y="90" style="font-size:12px;letter-spacing:.06em">01 INTRODUCTION</text>
+          <rect x="38" y="102" width="180" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="38" y="116" width="150" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="38" y="130" width="96" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/>
+        </g>
+        <g data-tip="Findings: the overall picture, the most important change with numbers, and the exception. Describe only. No 'should'.">
+          <rect x="24" y="164" width="208" height="120" rx="12" style="fill:var(--violet);stroke:var(--violet)" fill-opacity=".08" stroke-width="1.5"/>
+          <text class="t-b t-vi" x="38" y="188" style="font-size:12px;letter-spacing:.06em">02 FINDINGS</text>
+          <g style="fill:var(--violet)"><circle cx="45" cy="208" r="8"/><circle cx="45" cy="236" r="8"/><circle cx="45" cy="264" r="8"/></g>
+          <g class="t-w" style="font:700 10px var(--font);fill:#fff" text-anchor="middle"><text x="45" y="211.5" style="fill:#fff;font-size:10px;font-weight:700">1</text><text x="45" y="239.5" style="fill:#fff;font-size:10px;font-weight:700">2</text><text x="45" y="267.5" style="fill:#fff;font-size:10px;font-weight:700">3</text></g>
+          <rect x="62" y="203" width="160" height="7" rx="3.5" style="fill:var(--violet)" fill-opacity=".35"/><rect x="62" y="231" width="150" height="7" rx="3.5" style="fill:var(--violet)" fill-opacity=".35"/><rect x="62" y="259" width="120" height="7" rx="3.5" style="fill:var(--violet)" fill-opacity=".35"/>
+        </g>
+        <g data-tip="Recommendations: what should be done, by whom, in what order, and why the evidence supports it. Busy readers go here first.">
+          <rect x="24" y="296" width="208" height="104" rx="12" style="fill:var(--lime);stroke:var(--lime)" fill-opacity=".1" stroke-width="2.5"/>
+          <text class="t-b t-gn" x="38" y="320" style="font-size:12px;letter-spacing:.06em">03 RECOMMENDATIONS</text>
+          <rect x="38" y="332" width="180" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/><rect x="38" y="346" width="160" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/><rect x="38" y="360" width="170" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/><rect x="38" y="374" width="100" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/>
+        </g>
+        <g fill="none" stroke-width="2" stroke-linecap="round"><path d="M232 109 H262" style="stroke:var(--cyan)"/><path d="M232 224 H262" style="stroke:var(--violet)"/><path d="M232 348 H262" style="stroke:var(--lime)"/></g>
+        <g style="font-size:15px">
+          <text class="t-m t-b t-cy" x="272" y="100">Introduction</text><text x="272" y="120">30 to 40 words</text><text x="272" y="138">context, purpose, scope</text>
+          <text class="t-m t-b t-vi" x="272" y="198">Findings</text><text x="272" y="218">3 sentences, ~70 words</text><text x="272" y="236">overall, biggest, exception</text>
+          <text class="t-m t-b t-gn" x="272" y="318">Recommendations</text><text x="272" y="338">who, what, when,</text><text x="272" y="356">condition, urgency</text><text class="lbl-strong" x="272" y="382">Read first by the manager</text>
+        </g>
+      </svg>
+      <figcaption>Figure A. The structure readers expect: break the order and they lose their place.</figcaption>
+    </figure>
     <div class="sorter mt" data-xp="15" data-label="Which part does each sentence belong in?">
       <div class="sorter__pool">
         <button class="chip" data-bin="intro">“This report has been prepared for the Operations Manager of NorthStar Components…”</button>
@@ -165,6 +284,7 @@
     <div class="slide__kicker">Part A · 03 Recommendations</div>
     <h2>Recommendations: five things every one of them needs</h2>
     <p class="slide__lead">Week 6 will go deeper. For now, the rule from the workplace: a recommendation nobody can act on is not a recommendation.</p>
+    <p class="pull">A recommendation nobody can act on is not a recommendation.<cite>Week 5 · Recommendations</cite></p>
     <div class="flip-grid" data-xp="10">
       <div class="flip"><div class="flip__front"><span class="tag">01</span><h4 class="mt">WHO</h4></div><div class="flip__back"><p>Which department or role carries it out.</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">02</span><h4 class="mt">WHAT</h4></div><div class="flip__back"><p>The specific measure, named exactly as in the source table.</p></div></div>
@@ -185,6 +305,18 @@
       <div class="tabs__panel card" data-panel="f"><p>Total water use rose from 280 to 319 thousand cubic metres between the two quarters, an increase of 13.9%. The cooling tower accounted for most of this change, rising from 96 to 118 thousand cubic metres (22.9%), which is 56% of the total increase. Production also increased, from 128 to 141 (10.2%), and landscaping from 22 to 27 (22.7%), although the latter is a small volume. Cleaning was the only department to fall, from 34 to 33.</p></div>
       <div class="tabs__panel card" data-panel="r"><p>It is recommended that the closed-loop cooling system be installed first. Although it is the most expensive option at RM 240,000, it targets the cooling tower, which is both the largest single consumer and the main cause of the increase, and it offers the highest saving of 20 to 25%. The low-flow fittings and leak detection programme should be carried out in parallel, since it costs only RM 30,000 and can be completed within six weeks. Rainwater harvesting could be reviewed once the first two measures have been evaluated.</p></div>
     </div>
+    
+    <figure class="chart-card">
+      <p class="vz-h">Where the words go</p>
+      <p class="vz-sub">Word count of each part of the model report above.</p>
+      <div class="vz-stack" role="img" aria-label="Stacked bar of the model report by part: Introduction 31 words, Findings 77 words, Recommendations 89 words.">
+        <div style="flex-basis:15.7%;background:var(--cyan)" data-flex="15.7%" data-tip="Introduction: 31 words">31</div>
+        <div style="flex-basis:39.1%;background:var(--violet)" data-flex="39.1%" data-tip="Findings: 77 words">77</div>
+        <div style="flex-basis:45.2%;background:var(--lime)" data-flex="45.2%" data-tip="Recommendations: 89 words">89</div>
+      </div>
+      <div class="vz-stack-l"><span style="flex-basis:15.7%;color:var(--cyan)">Intro</span><span style="flex-basis:39.1%;color:var(--violet)">Findings</span><span style="flex-basis:45.2%;color:var(--lime)">Recommendations</span></div>
+      <figcaption>Figure B. Introduction, Findings, Recommendations: the recommendation gets the most room because the reader acts on it.</figcaption>
+    </figure>
     <p class="small muted">Read it aloud once. Then go to the next slide and hunt for its key parts.</p>
   </section>
 
@@ -260,6 +392,7 @@
     <div class="slide__kicker">Part B · Figure 1</div>
     <h2>The data: Figure 1</h2>
     <p class="small muted">NorthStar Components, Kulim. Water used by department, in thousands of cubic metres, Q1 and Q2 2026.</p>
+    <figure class="photo-fig"><img src="../assets/img/cooling-towers.jpg" alt="Large industrial cooling towers against the sky" loading="lazy" width="1200" height="521"><figcaption>Cooling towers like the one in the NorthStar example. Illustrative photo, not the company site.</figcaption></figure>
     <div class="grid grid-2">
       <div class="card">
         <svg class="svg-chart" viewBox="0 0 640 330" role="img" aria-label="Grouped bar chart. Production 128 in Q1, 141 in Q2. Cooling tower 96, 118. Cleaning 34, 33. Landscaping 22, 27.">
@@ -304,7 +437,49 @@
         </div>
       </div>
     </div>
-  </section>
+  
+
+    <div class="keystats mt">
+      <div class="keystat"><b class="vz-count" data-to="13.9" data-dec="1" data-suf="%">13.9%</b><span>rise in total water use, 280 to 319 thousand m³</span></div>
+      <div class="keystat"><b class="vz-count" data-to="56" data-suf="%">56%</b><span>of that rise came from the cooling tower</span></div>
+      <div class="keystat"><b class="vz-count" data-to="22.9" data-dec="1" data-suf="%">22.9%</b><span>cooling tower growth, 96 to 118</span></div>
+      <div class="keystat"><b>1 of 4</b><span>departments fell: cleaning, 34 to 33</span></div>
+    </div>
+    <div class="grid grid-2 mt">
+      <figure class="chart-card">
+        <p class="vz-h">Change from Q1 to Q2</p>
+        <p class="vz-sub">Thousand m³. Read the size, not only the percentage.</p>
+        <svg class="vz-svg" viewBox="0 0 480 270" role="img" aria-label="Diverging bar chart of the change in water use from Q1 to Q2, in thousand cubic metres. Cooling tower up 22 (22.9 percent). Production up 13 (10.2 percent). Landscaping up 5 (22.7 percent). Cleaning down 1 (2.9 percent).">
+          <line class="axis-l" x1="60" y1="8" x2="60" y2="256"/>
+          <text class="t-b t-tx t-m" x="10" y="30">Cooling tower</text>
+          <rect class="vz-grow" style="fill:var(--cyan);--d:.05s" x="60" y="40" width="330" height="26" rx="6" data-tip="Cooling tower: 96 to 118, up 22 thousand m³ (+22.9%)"/>
+          <text class="t-b t-cy t-m" x="400" y="59">▲ +22</text>
+          <text class="t-b t-tx t-m" x="10" y="98">Production</text>
+          <rect class="vz-grow" style="fill:var(--cyan);--d:.15s" fill-opacity=".55" x="60" y="108" width="195" height="26" rx="6" data-tip="Production: 128 to 141, up 13 thousand m³ (+10.2%)"/>
+          <text class="t-b t-cy t-m" x="265" y="127">▲ +13</text>
+          <text class="t-b t-tx t-m" x="10" y="166">Landscaping</text>
+          <rect class="vz-grow" style="fill:var(--cyan);--d:.25s" fill-opacity=".55" x="60" y="176" width="75" height="26" rx="6" data-tip="Landscaping: 22 to 27, up 5 thousand m³ (+22.7%). A big percentage from a small start."/>
+          <text class="t-b t-cy t-m" x="145" y="195">▲ +5</text>
+          <text class="t-b t-tx t-m" x="10" y="234">Cleaning</text>
+          <rect class="vz-grow" style="fill:var(--pink);transform-origin:right center;--d:.35s" x="45" y="244" width="15" height="26" rx="4" data-tip="Cleaning: 34 to 33, down 1 thousand m³ (−2.9%). The only department to fall."/>
+          <text class="t-b t-pk t-m" x="75" y="263">▼ −1</text>
+        </svg>
+        <figcaption>Figure C. Landscaping rose 22.7% but only by 5; the cooling tower rose 22.9% by 22.</figcaption>
+      </figure>
+      <figure class="chart-card">
+        <p class="vz-h">Who drove the rise?</p>
+        <p class="vz-sub">Share of the +39 thousand m³ total increase.</p>
+        <svg class="vz-svg" style="max-width:340px" viewBox="0 0 240 262" role="img" aria-label="Donut chart. The cooling tower accounts for 56 percent of the total increase in water use. All other changes together make up 44 percent.">
+          <circle cx="120" cy="120" r="82" fill="none" style="stroke:var(--bg-2)" stroke-width="30"/>
+          <circle class="vz-draw" cx="120" cy="120" r="82" fill="none" style="stroke:var(--cyan);--len:515" stroke-width="30" stroke-linecap="round" stroke-dasharray="515" stroke-dashoffset="225" transform="rotate(-90 120 120)" data-tip="Cooling tower: 22 of the 39 thousand m³ increase, 56%"/>
+          <text class="t-b t-tx" x="120" y="122" text-anchor="middle" style="font-size:44px;letter-spacing:-.03em">56%</text>
+          <text x="120" y="146" text-anchor="middle" style="font-size:15px">cooling tower</text>
+          <text x="120" y="254" text-anchor="middle" style="font-size:14px">everything else: 44%</text>
+        </svg>
+        <figcaption>Figure D. “Accounted for over half of the total rise”: this is the sentence the recommendation rests on.</figcaption>
+      </figure>
+    </div>
+    </section>
 
   <!-- 15 · Table 1 -->
   <section class="slide" data-title="The options: Table 1">
@@ -322,6 +497,38 @@
         </tbody>
       </table>
     </div>
+    
+    <figure class="chart-card mt">
+      <p class="vz-h">Three options, side by side</p>
+      <p class="vz-sub">The most expensive option also offers by far the highest saving. Grey tracks show 0 to 25%.</p>
+      <svg class="vz-svg" viewBox="0 0 480 290" role="img" aria-label="Comparison of three water-saving options. Closed-loop cooling system: cost RM 240,000, estimated saving 20 to 25 percent. Rainwater harvesting: cost RM 85,000, saving 6 to 9 percent. Low-flow fittings and leak detection: cost RM 30,000, saving 4 to 7 percent.">
+          <text class="t-b t-tx t-m" x="8" y="16">Closed-loop cooling system</text>
+          <text x="8" y="42" style="font-size:14px">Cost</text>
+          <rect class="vz-grow" style="fill:var(--violet);--d:0s" x="62" y="28" width="226" height="18" rx="5" data-tip="Closed-loop cooling system: RM 240,000"/>
+          <text class="t-b t-vi t-s" x="296" y="42">RM 240,000</text>
+          <text x="8" y="68" style="font-size:14px">Saving</text>
+          <rect x="62" y="54" width="300" height="18" rx="5" style="fill:var(--bg-2)"/>
+          <rect class="vz-grow" style="fill:var(--lime);--d:0.1s" x="302" y="54" width="60" height="18" rx="5" data-tip="Closed-loop cooling system: estimated saving 20 to 25%"/>
+          <text class="t-b t-gn t-s" x="370" y="68">20 to 25%</text>
+          <text class="t-b t-tx t-m" x="8" y="116">Rainwater harvesting</text>
+          <text x="8" y="142" style="font-size:14px">Cost</text>
+          <rect class="vz-grow" style="fill:var(--violet);--d:0.15s" x="62" y="128" width="80" height="18" rx="5" data-tip="Rainwater harvesting: RM 85,000"/>
+          <text class="t-b t-vi t-s" x="150" y="142">RM 85,000</text>
+          <text x="8" y="168" style="font-size:14px">Saving</text>
+          <rect x="62" y="154" width="300" height="18" rx="5" style="fill:var(--bg-2)"/>
+          <rect class="vz-grow" style="fill:var(--lime);--d:0.25s" x="134" y="154" width="36" height="18" rx="5" data-tip="Rainwater harvesting: estimated saving 6 to 9%"/>
+          <text class="t-b t-gn t-s" x="370" y="168">6 to 9%</text>
+          <text class="t-b t-tx t-m" x="8" y="212">Low-flow fittings and leak detection</text>
+          <text x="8" y="238" style="font-size:14px">Cost</text>
+          <rect class="vz-grow" style="fill:var(--violet);--d:0.3s" x="62" y="224" width="28" height="18" rx="5" data-tip="Low-flow fittings and leak detection: RM 30,000"/>
+          <text class="t-b t-vi t-s" x="98" y="238">RM 30,000</text>
+          <text x="8" y="264" style="font-size:14px">Saving</text>
+          <rect x="62" y="250" width="300" height="18" rx="5" style="fill:var(--bg-2)"/>
+          <rect class="vz-grow" style="fill:var(--lime);--d:0.4s" x="110" y="250" width="36" height="18" rx="5" data-tip="Low-flow fittings and leak detection: estimated saving 4 to 7%"/>
+          <text class="t-b t-gn t-s" x="370" y="264">4 to 7%</text>
+      </svg>
+      <figcaption>Figure E. Costs and estimated savings from Table 1. Savings are estimates, so a range is shown, not a point.</figcaption>
+    </figure>
     <div class="quiz" data-xp="10" data-label="Question 6 · The link">
       <p class="quiz__q">The biggest change in Figure 1 was the cooling tower. Which option links directly to it?</p>
       <div class="quiz__opts">
@@ -342,7 +549,20 @@
       <li><div><h3>02 · The most important change, with numbers</h3><p class="example">“The cooling tower recorded the sharpest increase, from 96 to 118 thousand cubic metres (22.9%), and accounted for over half of the total rise.”</p><p class="small mono">[category] recorded the [superlative] [noun of change], from [a] to [b] ([%]).</p></div></li>
       <li><div><h3>03 · The part that goes the other way</h3><p class="example">“Cleaning was the only department to fall, by a small margin, from 34 to 33.”</p><p class="small mono">[category] was the only [group] to [opposite verb], from [a] to [b].</p></div></li>
     </ol>
-  </section>
+  
+
+    <figure class="chart-card mt">
+      <p class="vz-h">The three patterns, colour-coded</p>
+      <p class="vz-sub">The same colour means the same job in every sentence.</p>
+      <div class="vz-sentbox"><h4>01 · The overall movement</h4>
+        <p class="vz-sent"><span class="vz-p vz-p--cy">Total water use<small>total</small></span> <span class="vz-p vz-p--vi">rose<small>verb</small></span> by <span class="vz-p vz-p--pk">13.9%<small>percent</small></span> between Q1 and Q2, from <span class="vz-p vz-p--am">280<small>start</small></span> to <span class="vz-p vz-p--gn">319<small>end</small></span> thousand cubic metres.</p></div>
+      <div class="vz-sentbox"><h4>02 · The most important change</h4>
+        <p class="vz-sent">The <span class="vz-p vz-p--cy">cooling tower<small>category</small></span> recorded the <span class="vz-p vz-p--vi">sharpest increase<small>superlative + noun</small></span>, from <span class="vz-p vz-p--am">96<small>start</small></span> to <span class="vz-p vz-p--gn">118<small>end</small></span> thousand cubic metres (<span class="vz-p vz-p--pk">22.9%<small>percent</small></span>), and <span class="vz-p vz-p--cy">accounted for over half of the total rise<small>share</small></span>.</p></div>
+      <div class="vz-sentbox"><h4>03 · The part that goes the other way</h4>
+        <p class="vz-sent"><span class="vz-p vz-p--cy">Cleaning<small>category</small></span> was the <span class="vz-p vz-p--vi">only department<small>group</small></span> to <span class="vz-p vz-p--pk">fall<small>opposite verb</small></span>, by a small margin, from <span class="vz-p vz-p--am">34<small>start</small></span> to <span class="vz-p vz-p--gn">33<small>end</small></span>.</p></div>
+      <figcaption>Figure F. About 70 words, in this order, make a findings paragraph.</figcaption>
+    </figure>
+    </section>
 
   <!-- 17 · Pattern gap-fill -->
   <section class="slide" data-title="Practise the patterns">
@@ -361,6 +581,26 @@
     <div class="slide__kicker">Part B · Vocabulary</div>
     <h2>The language of change</h2>
     <p class="slide__lead">Use precise verbs. “Went up” and “went down” are B1. “Escalated” and “contracted slightly” are C1.</p>
+    
+    <figure class="chart-card">
+      <p class="vz-h">A map of the language of change</p>
+      <p class="vz-sub">Follow the line: every stretch has its own verbs.</p>
+      <svg class="vz-svg" viewBox="0 0 480 280" role="img" aria-label="A line that rises, peaks, falls, bottoms out and then plateaus, labelled with vocabulary. Rising: rise, increase, grow, climb, surge, escalate. Peak: peak at, reach a high of. Falling: fall, decrease, decline, drop, contract, plummet. Trough: bottom out at, reach a low of. Plateau: remain stable, stay level, plateau, hold steady.">
+                <polyline class="vz-draw" style="stroke:var(--text);--len:700" points="20,240 190,62 310,214 345,172 466,172" fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="700"/>
+        <g data-tip="Up: rise, increase, grow, climb, surge, escalate. Adverbs: sharply, steadily, slightly, marginally."><path d="M26 234 L186 68" style="stroke:var(--cyan)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
+          <text class="t-b t-cy t-m" x="104" y="170">▲ Up</text><text x="104" y="190">rise · increase</text><text x="104" y="208">grow · climb</text><text x="104" y="226">surge · escalate</text></g>
+        <g data-tip="Highest: peak at, reach a high of. Noun: a peak, a high. 'the highest recorded'."><circle class="vz-fade" cx="190" cy="62" r="9" style="fill:var(--amber)"/>
+          <text class="t-b t-am t-m" x="190" y="20" text-anchor="middle">Peak</text><text x="190" y="38" text-anchor="middle">peak at · a high of</text></g>
+        <g data-tip="Down: fall, decrease, decline, drop, contract, plummet. Adverbs: sharply, gradually, slightly."><path d="M196 72 L306 208" style="stroke:var(--pink)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
+          <text class="t-b t-pk t-m" x="262" y="92">▼ Down</text><text x="262" y="112">fall · decline</text><text x="262" y="130">drop · contract</text><text x="262" y="148">plummet</text></g>
+        <g data-tip="Lowest: bottom out at, reach a low of. Noun: a trough, a low."><circle class="vz-fade" cx="310" cy="214" r="9" style="fill:var(--violet)"/>
+          <text class="t-b t-vi t-m" x="300" y="246" text-anchor="middle">Trough</text><text x="300" y="266" text-anchor="middle">bottom out at · a low of</text></g>
+        <g data-tip="No change: remain stable, stay level, plateau, hold steady. Adverbs: broadly, largely, roughly."><path d="M352 172 H462" style="stroke:var(--lime)" stroke-width="10" stroke-linecap="round" opacity=".28"/>
+          <text class="t-b t-gn t-m" x="352" y="200">▬ Level</text><text x="352" y="220">plateau · stay level</text><text x="352" y="238">hold steady</text></g>
+      </svg>
+      <p class="vz-hint">B1 says “went up”. C1 says “escalated”. B1 says “went down”. C1 says “contracted slightly”.</p>
+      <figcaption>Figure G. Precise verbs for rises, falls, extremes and no change, from the table below.</figcaption>
+    </figure>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Direction</th><th>Verbs</th><th>Nouns</th><th>Adverbs and adjectives</th></tr></thead>
@@ -453,6 +693,26 @@
         <p class="small">could, up to, would largely: probability rather than promise. This is the register of an engineer who knows estimates are estimates.</p>
       </div>
     </div>
+    
+    <figure class="chart-card mt">
+      <p class="vz-h">The certainty scale</p>
+      <p class="vz-sub">The table says 20 to 25%, estimated. Your verbs must say so.</p>
+      <svg class="vz-svg" viewBox="0 0 480 250" role="img" aria-label="A scale from promise on the left to probability on the right. On the promise side, overclaimed phrases: will solve the problem, will cut, by 25% as a certainty. On the probability side, hedged phrases: would largely address, could reduce, by up to 25%.">
+        <defs><linearGradient id="vzg5" x1="0" x2="1"><stop offset="0" stop-color="#d70015"/><stop offset=".5" stop-color="#b25e00"/><stop offset="1" stop-color="#1a8f3c"/></linearGradient></defs>
+        <rect class="vz-grow" x="10" y="106" width="460" height="24" rx="12" fill="url(#vzg5)"/>
+        <g stroke-width="2" style="stroke:var(--line-strong)"><path d="M40 40 V106"/><path d="M92 72 V106"/><path d="M142 130 V164"/><path d="M300 40 V106"/><path d="M370 72 V106"/><path d="M432 130 V164"/></g>
+        <g style="fill:#fff;stroke:var(--text)" stroke-width="3"><circle cx="40" cy="118" r="8"/><circle cx="92" cy="118" r="8"/><circle cx="142" cy="118" r="8"/><circle cx="300" cy="118" r="8"/><circle cx="370" cy="118" r="8"/><circle cx="432" cy="118" r="8"/></g>
+        <g data-tip="Overclaimed: 'will' and 'solve' present an estimate as a promise. A manager who reads 'will' and sees 18% stops trusting you."><text class="t-b t-rd t-m" x="14" y="36">will solve the problem</text></g>
+        <g data-tip="Overclaimed: 'will cut' is a promise."><text class="t-b t-rd t-m" x="62" y="66">will cut</text></g>
+        <g data-tip="Overclaimed: 25% stated as a certainty. The table says 20 to 25%, estimated."><text class="t-b t-rd t-m" x="14" y="184">by 25% (as a certainty)</text></g>
+        <g data-tip="Hedged: 'would largely address' is probability, not a promise."><text class="t-b t-gn t-m" x="290" y="36">would largely address</text></g>
+        <g data-tip="Hedged: 'could reduce' leaves room for an estimate."><text class="t-b t-gn t-m" x="340" y="66">could reduce</text></g>
+        <g data-tip="Hedged: 'by up to 25%' respects the range in the table."><text class="t-b t-gn t-m" x="468" y="184" text-anchor="end">by up to 25%</text></g>
+        <text class="t-b t-rd" x="10" y="226" style="font-size:14px;letter-spacing:.05em">OVERCLAIMED: PROMISE</text>
+        <text class="t-b t-gn" x="470" y="226" text-anchor="end" style="font-size:14px;letter-spacing:.05em">HEDGED: PROBABILITY</text>
+      </svg>
+      <figcaption>Figure H. Same evidence, two registers. Probability, not promise, is how an engineer talks about estimates.</figcaption>
+    </figure>
     <div class="sorter mt" data-xp="15" data-label="Overclaiming or hedging?">
       <div class="sorter__pool">
         <button class="chip" data-bin="over">will cut</button>
@@ -560,6 +820,13 @@
       <div class="card"><span class="num-badge">03</span><h3 class="mt">Weight and outcome</h3><p>20% of the course, group mark. Assesses CO2: producing well-structured technical texts by synthesising and evaluating multiple sources.</p></div>
       <div class="card"><span class="num-badge">04</span><h3 class="mt">When</h3><p>Briefing today (Week 5). Supervision 1 in Week 6. Supervision 2 in Week 10. Final submission online in Week 12.</p></div>
     </div>
+    
+    <div class="keystats mt">
+      <div class="keystat"><b class="vz-count" data-to="20" data-suf="%">20%</b><span>of your course grade, as a group mark</span></div>
+      <div class="keystat"><b class="vz-count" data-to="4">4</b><span>students per group, one leader submits</span></div>
+      <div class="keystat"><b>3 + 3</b><span>problems and matching solutions, plus a recommendation</span></div>
+      <div class="keystat"><b>Week 12</b><span>final PDF submitted online</span></div>
+    </div>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">How many problems and solutions does the poster need?</p>
       <div class="quiz__opts">
@@ -575,6 +842,7 @@
     <div class="slide__kicker">Poster · Topic</div>
     <h2>Choosing an SDG-linked topic</h2>
     <p class="slide__lead">Pick a goal, then a real engineering system, then a place. “Water” is a topic. “Cooling-tower water use in a Kulim electronics plant” is a poster.</p>
+    <figure class="photo-fig"><img src="../assets/img/hardhat-solar.jpg" alt="A hard hat resting on a solar panel" loading="lazy" width="1200" height="521"><figcaption>SDG 7 in practice: rooftop solar, battery storage, energy audits. Pick a goal, then a real system, then a place.</figcaption></figure>
     <div class="tabs">
       <div class="tabs__bar"><button data-tab="s7">SDG 7</button><button data-tab="s6">SDG 6</button><button data-tab="s9">SDG 9 &amp; 12</button><button data-tab="s11">SDG 11</button></div>
       <div class="tabs__panel card" data-panel="s7"><h4>Affordable and clean energy</h4><p>Rooftop solar for a UniMAP hostel block. Battery storage in tropical heat. Energy audit of a workshop.</p></div>
@@ -582,6 +850,20 @@
       <div class="tabs__panel card" data-panel="s9"><h4>Industry and responsible production</h4><p>Waste reduction on a production line. Predictive maintenance to cut scrap. Packaging redesign.</p></div>
       <div class="tabs__panel card" data-panel="s11"><h4>Sustainable cities</h4><p>Flood-resistant housing in Kelantan. EV charging for a small town. Noise on a construction site.</p></div>
     </div>
+    
+    <figure class="chart-card mt">
+      <p class="vz-h">From a goal to a poster</p>
+      <p class="vz-sub">Pick a goal, then a real engineering system, then a place.</p>
+      <svg class="vz-svg" viewBox="0 0 480 260" role="img" aria-label="A funnel narrowing in three steps. Wide: the goal, SDG 6 Clean water and sanitation. Narrower: a real engineering system, cooling-tower water recycling. Narrowest: a place, cooling-tower water use in a Kulim electronics plant, which is a poster.">
+        <g data-tip="Water is a topic. It has no system and no place."><rect class="vz-grow" style="fill:var(--cyan);transform-origin:center;--d:0s" fill-opacity=".14" x="10" y="8" width="460" height="68" rx="16"/>
+          <text class="t-b t-cy" x="240" y="34" text-anchor="middle" style="font-size:13px;letter-spacing:.08em">1 · A GOAL</text><text class="t-b t-tx t-m" x="240" y="58" text-anchor="middle">SDG 6 · Clean water and sanitation</text></g>
+        <g data-tip="A real engineering system: still not a poster, because there is no place."><rect class="vz-grow" style="fill:var(--violet);transform-origin:center;--d:.15s" fill-opacity=".16" x="60" y="92" width="360" height="68" rx="16"/>
+          <text class="t-b t-vi" x="240" y="118" text-anchor="middle" style="font-size:13px;letter-spacing:.08em">2 · A SYSTEM</text><text class="t-b t-tx t-m" x="240" y="142" text-anchor="middle">Cooling-tower water recycling</text></g>
+        <g data-tip="Yes. It names a goal, a real engineering system and a place."><rect class="vz-grow" style="fill:var(--lime);transform-origin:center;--d:.3s" x="110" y="176" width="260" height="76" rx="16"/>
+          <text class="t-b t-w" x="240" y="200" text-anchor="middle" style="font-size:13px;letter-spacing:.08em;fill:#fff">3 · A PLACE = A POSTER</text><text class="t-b t-w" x="240" y="220" text-anchor="middle" style="font-size:14px;fill:#fff">Cooling-tower water use in</text><text class="t-b t-w" x="240" y="238" text-anchor="middle" style="font-size:14px;fill:#fff">a Kulim electronics plant</text></g>
+      </svg>
+      <figcaption>Figure J. “Water” is a topic. The bottom of the funnel is a poster.</figcaption>
+    </figure>
     <div class="quiz mt" data-xp="10">
       <p class="quiz__q">Which one is a poster, not just a topic?</p>
       <div class="quiz__opts">
@@ -597,6 +879,7 @@
     <div class="slide__kicker">Poster · Structure</div>
     <h2>Poster structure</h2>
     <p class="slide__lead">Same logic as the report: context, evidence, action. The reader’s eye moves down each column in turn.</p>
+    <figure class="photo-fig"><img src="../assets/img/whiteboard.jpg" alt="Two women planning a project at a whiteboard covered with notes" loading="lazy" width="1200" height="521"><figcaption>Plan the reading path on a whiteboard before you open any design software.</figcaption></figure>
     <ol class="steps" data-build>
       <li><div><h3>01 · Title and group</h3><p>Names the goal and the system. Group members and matric numbers.</p></div></li>
       <li><div><h3>02 · Introduction</h3><p>How big is the problem, for whom? One cited statistic. Why this SDG.</p></div></li>
@@ -605,13 +888,52 @@
       <li><div><h3>05 · Conclusion and recommendation</h3><p>Which solution first, and why. One large number the reader will remember.</p></div></li>
       <li><div><h3>06 · References</h3><p>APA 7 or IEEE, consistent. Every figure and every fact on the poster traced to a source.</p></div></li>
     </ol>
-  </section>
+  
+
+    <figure class="chart-card">
+      <p class="vz-h">The A1 poster: six sections, one reading path</p>
+      <p class="vz-sub">The eye moves down each column in turn. Hover or tap a section.</p>
+      <svg class="vz-svg vz-svg--wide" viewBox="0 0 480 430" role="img" aria-label="Wireframe of a poster in three columns under a title band. 01 Title and group across the top. Column one: 02 Introduction, then 03 Three problems. Column two: 04 Three solutions, compared on cost, effect and time. Column three: 05 Conclusion and recommendation with one large number, then 06 References.">
+        <rect x="4" y="4" width="472" height="422" rx="16" style="fill:var(--bg-2);stroke:var(--line-strong)" stroke-width="1.5"/>
+        <g data-tip="01 Title and group: names the goal and the system. Group members and matric numbers."><rect x="14" y="14" width="452" height="52" rx="10" style="fill:var(--text)"/>
+          <text class="t-w t-b" x="30" y="46" style="font-size:18px;fill:#fff">01 · Title and group</text><rect x="330" y="32" width="120" height="7" rx="3.5" style="fill:#fff" fill-opacity=".5"/><rect x="360" y="46" width="90" height="7" rx="3.5" style="fill:#fff" fill-opacity=".3"/></g>
+        <g data-tip="02 Introduction: how big is the problem, for whom? One cited statistic. Why this SDG."><rect x="14" y="76" width="144" height="104" rx="10" style="fill:var(--cyan)" fill-opacity=".12"/><text class="t-b t-cy" x="26" y="100" style="font-size:13px">02 · Introduction</text><rect x="26" y="114" width="112" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="129" width="96" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="144" width="104" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/><rect x="26" y="159" width="70" height="7" rx="3.5" style="fill:var(--cyan)" fill-opacity=".35"/></g>
+        <g data-tip="03 Three problems: each with evidence, a figure, a photograph or a cited source."><rect x="14" y="190" width="144" height="226" rx="10" style="fill:var(--violet)" fill-opacity=".1"/><text class="t-b t-vi" x="26" y="214" style="font-size:13px">03 · Three problems</text>
+          <rect x="24" y="224" width="124" height="56" rx="9" style="fill:#fff;stroke:var(--violet)" stroke-width="1.5"/><text class="t-b t-tx" x="34" y="246" style="font-size:14px">Problem 1</text><text x="34" y="264" style="font-size:12.5px">with evidence</text><rect x="24" y="288" width="124" height="56" rx="9" style="fill:#fff;stroke:var(--violet)" stroke-width="1.5"/><text class="t-b t-tx" x="34" y="310" style="font-size:14px">Problem 2</text><text x="34" y="328" style="font-size:12.5px">with evidence</text><rect x="24" y="352" width="124" height="56" rx="9" style="fill:#fff;stroke:var(--violet)" stroke-width="1.5"/><text class="t-b t-tx" x="34" y="374" style="font-size:14px">Problem 3</text><text x="34" y="392" style="font-size:12.5px">with evidence</text></g>
+        <g data-tip="04 Three solutions: each compared on cost, effect and time. A verbal table works well here."><rect x="168" y="76" width="144" height="340" rx="10" style="fill:var(--amber)" fill-opacity=".1"/><text class="t-b t-am" x="180" y="100" style="font-size:13px">04 · Three solutions</text>
+          <rect x="178" y="112" width="124" height="88" rx="9" style="fill:#fff;stroke:var(--amber)" stroke-width="1.5"/><text class="t-b t-tx" x="188" y="134" style="font-size:14px">Solution 1</text><text x="188" y="152" style="font-size:12.5px">cost · effect · time</text><rect x="178" y="208" width="124" height="88" rx="9" style="fill:#fff;stroke:var(--amber)" stroke-width="1.5"/><text class="t-b t-tx" x="188" y="230" style="font-size:14px">Solution 2</text><text x="188" y="248" style="font-size:12.5px">cost · effect · time</text><rect x="178" y="304" width="124" height="88" rx="9" style="fill:#fff;stroke:var(--amber)" stroke-width="1.5"/><text class="t-b t-tx" x="188" y="326" style="font-size:14px">Solution 3</text><text x="188" y="344" style="font-size:12.5px">cost · effect · time</text></g>
+        <g data-tip="05 Conclusion and recommendation: which solution first, and why. One large number the reader will remember."><rect x="322" y="76" width="144" height="236" rx="10" style="fill:var(--lime)" fill-opacity=".12"/><text class="t-b t-gn" x="334" y="100" style="font-size:13px">05 · Conclusion</text><text class="t-b t-gn" x="334" y="118" style="font-size:13px">+ recommendation</text>
+          <text class="t-b t-gn" x="394" y="196" text-anchor="middle" style="font-size:54px;letter-spacing:-.04em">00%</text><text x="394" y="220" text-anchor="middle" style="font-size:13px">one large number</text><rect x="334" y="246" width="116" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/><rect x="334" y="261" width="100" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/><rect x="334" y="276" width="108" height="7" rx="3.5" style="fill:var(--lime)" fill-opacity=".35"/></g>
+        <g data-tip="06 References: APA 7 or IEEE, consistent. Every figure and every fact traced to a source."><rect x="322" y="322" width="144" height="94" rx="10" style="fill:var(--pink)" fill-opacity=".1"/><text class="t-b t-pk" x="334" y="346" style="font-size:13px">06 · References</text><rect x="334" y="360" width="116" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/><rect x="334" y="374" width="100" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/><rect x="334" y="388" width="108" height="7" rx="3.5" style="fill:var(--pink)" fill-opacity=".35"/></g>
+      </svg>
+      <figcaption>Figure I. Same logic as the report: context, evidence, action.</figcaption>
+    </figure>
+    </section>
 
   <!-- 29 · Timeline -->
   <section class="slide" data-title="Poster timeline">
     <div class="slide__kicker">Poster · Timeline</div>
     <h2>Poster timeline</h2>
     <p class="slide__lead">Three checkpoints before submission. Miss one and the next becomes much harder.</p>
+    
+    <figure class="chart-card">
+      <p class="vz-h">Weeks 5 to 14 at a glance</p>
+      <p class="vz-sub">You are here: Week 5. Miss a checkpoint and the next becomes much harder.</p>
+      <div class="vz-tl" role="list" aria-label="Poster timeline, weeks 5 to 14">
+        <div role="listitem"><span class="n c-b big">5</span><span><b>Briefing</b>Groups formed</span></div>
+        <div role="listitem"><span class="n c-b">6</span><span><b>Supervision 1</b>Title and scope</span></div>
+        <div role="listitem"><span class="n c-t">7</span><span><b>Teaching</b>Graphics and visuals</span></div>
+        <div role="listitem"><span class="n c-a">8</span><span><b>Assessment</b>Reading Test 30%</span></div>
+        <div role="listitem"><span class="n c-t">9</span><span><b>Teaching</b>Language skills</span></div>
+        <div role="listitem"><span class="n c-a">10</span><span><b>Writing Test 20%</b>Supervision 2: outline and draft</span></div>
+        <div role="listitem"><span class="n c-t">11</span><span><b>Teaching</b>Group communication</span></div>
+        <div role="listitem"><span class="n c-s">12</span><span><b>Submission</b>Poster 20%</span></div>
+        <div role="listitem"><span class="n c-a">13</span><span><b>Assessment</b>Speaking Part 1</span></div>
+        <div role="listitem"><span class="n c-a">14</span><span><b>Assessment</b>Speaking Part 2</span></div>
+      </div>
+      <div class="vz-key"><span><i style="background:var(--cyan)"></i>Briefing and supervision</span><span><i style="background:#a1a1a6"></i>Teaching</span><span><i style="background:var(--red)"></i>Assessment</span><span><i style="background:var(--amber)"></i>Submission</span></div>
+      <figcaption>Figure K. The poster timeline, from the table below.</figcaption>
+    </figure>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Week</th><th>Type</th><th>What happens</th></tr></thead>
@@ -666,6 +988,7 @@
     <div class="slide__kicker">Poster · Team</div>
     <h2>Groups and roles</h2>
     <p class="slide__lead">Four people, four jobs. Everyone writes. Nobody only designs.</p>
+    <figure class="photo-fig"><img src="../assets/img/team-table.jpg" alt="A group of people discussing work around a table" loading="lazy" width="1200" height="521"><figcaption>Four people, four jobs. Everyone writes. Nobody only designs.</figcaption></figure>
     <div class="grid grid-4">
       <div class="card"><span class="num-badge">01</span><h3 class="mt">Leader</h3><p class="small">Keeps the timeline, submits the file, speaks for the group at supervisions.</p></div>
       <div class="card"><span class="num-badge">02</span><h3 class="mt">Researcher</h3><p class="small">Runs the source grid from Week 3. Owns the reference list.</p></div>
@@ -696,6 +1019,7 @@
   <section class="slide" data-title="Six ways posters lose marks">
     <div class="slide__kicker"><span class="tag tag--red">Avoid</span> Poster</div>
     <h2>Six ways posters lose marks</h2>
+    <p class="pull">A number without a source is an opinion in a costume.<cite>Week 5 · Six ways posters lose marks</cite></p>
     <div class="flip-grid" data-xp="10">
       <div class="flip"><div class="flip__front"><span class="tag">01</span><h4 class="mt">A topic, not a problem</h4></div><div class="flip__back"><p>“Renewable energy in Malaysia” has no reader, no place and no decision. Narrow it until a manager could act on it.</p></div></div>
       <div class="flip"><div class="flip__front"><span class="tag">02</span><h4 class="mt">Uncited figures</h4></div><div class="flip__back"><p>A number without a source is an opinion in a costume.</p></div></div>
@@ -818,5 +1142,56 @@
 
 </main>
 <script src="../assets/js/deck.js"></script>
+<script>
+/* Visual pass: tooltips, draw-on-scroll, counters (reduced-motion safe) */
+(function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var stat = /[?&]static\b/.test(location.search);
+  var tip = document.createElement('div'); tip.className = 'vz-tooltip'; tip.setAttribute('role', 'tooltip'); document.body.appendChild(tip);
+  var cur = null;
+  function show(el) {
+    var t = el.getAttribute('data-tip'); if (!t) return;
+    cur = el; tip.textContent = t; tip.classList.add('on');
+    var r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    var x = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+    var y = r.top - h - 10; if (y < 8) y = r.bottom + 10;
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  }
+  function hide() { tip.classList.remove('on'); cur = null; }
+  document.addEventListener('pointerover', function (e) { var el = e.target.closest && e.target.closest('[data-tip]'); if (el && e.pointerType !== 'touch') show(el); });
+  document.addEventListener('pointerout', function (e) { var el = e.target.closest && e.target.closest('[data-tip]'); if (el && e.pointerType !== 'touch') hide(); });
+  document.addEventListener('focusin', function (e) { var el = e.target.closest && e.target.closest('[data-tip]'); if (el) show(el); });
+  document.addEventListener('focusout', hide);
+  document.addEventListener('click', function (e) { var el = e.target.closest && e.target.closest('[data-tip]'); if (el && el !== cur) show(el); else hide(); });
+  window.addEventListener('scroll', hide, { passive: true });
+  document.querySelectorAll('svg [data-tip]').forEach(function (n) { if (!n.hasAttribute('tabindex')) n.setAttribute('tabindex', '0'); });
+
+  function fmt(v, d) { return d ? v.toFixed(d) : Math.round(v).toLocaleString('en-US'); }
+  function count(el) {
+    var to = parseFloat(el.getAttribute('data-to')), d = +(el.getAttribute('data-dec') || 0);
+    var pre = el.getAttribute('data-pre') || '', suf = el.getAttribute('data-suf') || '', t0 = null;
+    function step(ts) { if (!t0) t0 = ts; var p = Math.min(1, (ts - t0) / 1100), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = pre + fmt(to * e, d) + suf; if (p < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  if (reduce || stat || !('IntersectionObserver' in window)) return;
+  var targets = document.querySelectorAll('.chart-card, .keystats, .vz-anim');
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var el = en.target; io.unobserve(el); el.classList.remove('vz-prep'); el.classList.add('in');
+      el.querySelectorAll('.vz-count').forEach(count);
+      el.querySelectorAll('[data-flex]').forEach(function (n) { n.style.flexBasis = n.getAttribute('data-flex'); });
+    });
+  }, { threshold: 0.25 });
+  targets.forEach(function (el) {
+    el.classList.add('vz-prep');
+    el.querySelectorAll('.vz-count').forEach(function (n) { n.textContent = (n.getAttribute('data-pre') || '') + '0' + (n.getAttribute('data-suf') || ''); });
+    el.querySelectorAll('[data-flex]').forEach(function (n) { n.style.flexBasis = '0%'; });
+    io.observe(el);
+  });
+})();
+</script>
+
 </body>
 </html>

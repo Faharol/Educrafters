@@ -11,12 +11,12 @@
 <link rel="stylesheet" href="../assets/css/style.css">
 <style>
 /* ---- Week 7 only: live charts and diagrams ---- */
-.viz { background: rgba(8, 12, 26, .72); border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; margin: 0 0 1rem; }
+.viz { background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; margin: 0 0 1rem; }
 .viz svg { display: block; width: 100%; height: auto; }
 .viz text { font-family: var(--font); }
 .viz text:not([fill]) { fill: var(--text); }
 .viz .ax { stroke: var(--muted); stroke-width: 1.5; }
-.viz .gl { stroke: rgba(154, 168, 204, .18); stroke-width: 1; }
+.viz .gl { stroke: rgba(0,0,0,.09); stroke-width: 1; }
 .viz .lab { fill: var(--muted); font-size: 13px; }
 .viz .val { font: 600 13px var(--mono); fill: var(--text); }
 .viz .ttl { font: 700 15px var(--display); fill: var(--text); }
@@ -27,7 +27,7 @@
 .figcap { font: .84rem var(--mono); color: var(--muted); margin: .55rem 0 0; }
 .figcap--top { margin: 0 0 .55rem; }
 .viz__bar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .7rem; }
-.btn.is-on { border-color: var(--cyan); background: rgba(62, 230, 255, .12); color: var(--cyan); }
+.btn.is-on { border-color: var(--cyan); background: rgba(0,113,227,.10); color: var(--cyan); }
 .illus { font: .76rem var(--mono); color: var(--dim); margin: .4rem 0 0; }
 .stepbox { background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1rem 1.15rem; }
 .stepbox__n { font: 700 .78rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--pink); }
@@ -45,7 +45,7 @@
 .decide button { text-align: left; font: 500 .95rem var(--font); color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: .75rem .9rem; cursor: pointer; }
 .decide button:hover { border-color: var(--cyan); }
 .decide button b { display: block; font: 700 .78rem var(--mono); color: var(--violet); letter-spacing: .08em; text-transform: uppercase; margin-top: .35rem; opacity: 0; transition: opacity .3s; }
-.decide button.is-open { border-color: var(--ok); background: rgba(67, 240, 160, .08); }
+.decide button.is-open { border-color: var(--ok); background: rgba(26,143,60,.09); }
 .decide button.is-open b { opacity: 1; color: var(--ok); }
 .decide__root { font: 700 1rem var(--display); text-align: center; border: 2px solid var(--violet); border-radius: 50% / 40%; padding: .7rem 1rem; margin: 0 auto .8rem; max-width: 420px; }
 .swatches { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
@@ -68,15 +68,68 @@
 .paper td { border-bottom: 1px solid #ccc; }
 .paper caption { color: #111; font-family: inherit; text-align: center; padding: .2rem 0 .5rem; }
 .paper tbody tr:hover td { background: none; }
-.informal { font-family: var(--mono); background: rgba(10, 16, 34, .6); border-radius: var(--radius-sm); padding: .6rem 1rem; display: inline-grid; grid-template-columns: auto auto; gap: .1rem 2.5rem; }
+.informal { font-family: var(--mono); background: var(--bg-2); border-radius: var(--radius-sm); padding: .6rem 1rem; display: inline-grid; grid-template-columns: auto auto; gap: .1rem 2.5rem; }
 .informal span:nth-child(even) { text-align: right; color: var(--cyan); }
 .cvd-filter { position: absolute; width: 0; height: 0; overflow: hidden; }
 .tilt-wrap { perspective: 520px; display: grid; place-items: center; min-height: 230px; }
 .tilt { transition: transform .9s cubic-bezier(.2, .8, .2, 1); width: min(240px, 70vw); }
-.tilt.is-3d { transform: rotateX(62deg) rotateZ(-25deg) translateY(30px); filter: drop-shadow(0 18px 0 rgba(0, 0, 0, .45)); }
+.tilt.is-3d { transform: rotateX(62deg) rotateZ(-25deg) translateY(30px); filter: drop-shadow(0 18px 0 rgba(0,0,0,.18)); }
 .gray { filter: grayscale(1); }
 .viz svg.gray-t { transition: filter .5s; }
 @media (max-width: 640px) { .viz { padding: .6rem; } .stepbox { padding: .8rem; } }
+.vz-bar{transform-box:fill-box}
+.vz-bar--neg{transform-origin:right center}
+.stepdots span{background:var(--line)!important}
+.stepdots span.on{background:var(--grad)!important}
+.photo-fig img{height:auto}
+.keystat b .vz-count{display:inline;margin:0;font:inherit;color:inherit}
+.vz-ph img{height:auto!important;aspect-ratio:4/3!important}
+.vz-row{display:grid;grid-template-columns:minmax(6rem,10rem) 1fr;gap:.8rem;align-items:center;margin:.45rem 0;font-size:.88rem}
+.vz-row .vz-track{position:relative;height:2rem;background:var(--bg-2);border-radius:10px}
+.vz-row .vz-fill{position:absolute;left:0;top:0;bottom:0;border-radius:10px}
+.vz-mark{position:absolute;top:0;bottom:0;border-left:2px dashed #1d1d1f;opacity:.6;pointer-events:none}
+.vz-mark i{position:absolute;top:-1.1rem;font:600 .72rem var(--font);font-style:normal;color:var(--text);white-space:nowrap}
+.vz-marks{position:relative;margin:2.2rem 0 .2rem}
+.vz-marks .vz-ml{position:absolute;left:calc(var(--lw) + .8rem);right:0;top:-.3rem;bottom:0;pointer-events:none}
+.vz-pull{margin:0;align-self:center}
+@media(max-width:640px){.vz-row{grid-template-columns:5.6rem 1fr;gap:.5rem;font-size:.8rem}.vz-marks{--lw:5.6rem!important}}
+</style>
+<style id="vz-css">
+/* visual helpers (scoped: vz-*) */
+.vz-stack{display:flex;gap:4px;margin:.4rem 0 0}
+.vz-stack .vz-blk{border-radius:12px;padding:.7rem .3rem .55rem;text-align:center;color:#fff;min-width:0;transform-origin:left center;transition:transform .9s cubic-bezier(.2,.8,.2,1) var(--d,0s),filter .2s;cursor:default;outline-offset:2px}
+.vz-stack .vz-blk b{display:block;font:800 clamp(1.1rem,3.6vw,1.9rem)/1 var(--display,var(--font));letter-spacing:-.03em}
+.vz-stack .vz-blk span{display:block;font-size:clamp(.62rem,2vw,.78rem);opacity:.95;margin-top:.25rem;font-weight:600}
+.vz-blk:hover,.vz-blk:focus{filter:brightness(1.08)}
+.vz-a{background:var(--cyan)}.vz-a2{background:#3b95ec}.vz-b{background:var(--violet)}.vz-b2{background:#9378f8}
+.vz-amber{background:var(--amber)}.vz-lime{background:var(--lime)}.vz-pink{background:var(--pink)}
+.vz-brace{display:flex;gap:4px;font:700 .8rem var(--font);color:var(--muted);margin:0 0 .35rem}
+.vz-brace div{border-bottom:3px solid currentColor;padding-bottom:.25rem;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vz-brace .ca{color:var(--cyan)}.vz-brace .cb{color:var(--violet)}
+.vz-pre .vz-blk{transform:scaleX(0)}
+.vz-ring{transition:stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1) var(--d,0s)}
+.vz-pre .vz-ring{stroke-dasharray:0 100!important}
+.vz-bar{transform-origin:left center;transition:transform 1s cubic-bezier(.2,.8,.2,1) var(--d,0s)}
+.vz-pre .vz-bar{transform:scaleX(0)}
+.vz-legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-size:.85rem;color:var(--muted);margin-top:.8rem}
+.vz-legend i{display:inline-block;width:.8rem;height:.8rem;border-radius:4px;margin-right:.4rem;vertical-align:-1px}
+.vz-tip{position:fixed;z-index:60;pointer-events:none;background:#1d1d1f;color:#fff;font:500 .8rem/1.35 var(--font);padding:.45rem .7rem;border-radius:10px;max-width:15rem;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.vz-tip.on{opacity:1;transform:none}
+[data-tip]{cursor:pointer}
+.vz-flow{display:grid;grid-template-columns:1fr auto 1fr;gap:.8rem;align-items:center}
+.vz-node{border-radius:16px;padding:1rem 1.1rem;background:var(--bg-2);border:1px solid var(--line)}
+.vz-node b{display:block;font-size:1.05rem}
+.vz-node small{color:var(--muted)}
+.vz-arrow{font-size:1.6rem;color:var(--muted)}
+@media(max-width:640px){.vz-flow{grid-template-columns:1fr}.vz-arrow{transform:rotate(90deg);text-align:center}}
+@media(prefers-reduced-motion:reduce){.vz-blk,.vz-ring,.vz-bar{transition:none!important}}
+.keystat b .vz-count{display:inline;margin:0;font:inherit;color:inherit}
+.vz-ph img{height:auto!important;aspect-ratio:4/3!important}
+.split{align-items:start}
+.photo-fig img{height:auto}
+.chart-card svg[viewBox="0 0 200 200"]{max-width:290px;margin:0 auto}
+.vz-ticks{position:relative;height:1.2rem;font-size:.75rem;color:var(--muted);margin-top:.5rem}
+.vz-ticks span{position:absolute;transform:translateX(-50%)}
 </style>
 </head>
 <body data-week="07" data-title="Graphics &amp; Visuals in Technical Communication">
@@ -118,6 +171,11 @@
         </tbody>
       </table>
     </div>
+    <figure class="chart-card vz mt">
+      <h3>The session at a glance</h3>
+      <div role="img" aria-label="Proportional bar of suggested time in minutes: Part A 55, Part B 35, Part C 35, Part D 30, Part E 20."><div class="vz-stack"><div class="vz-blk vz-a" style="flex:55 1 0;--d:0s" data-tip="Part A, Reading visual data: 55 minutes"><b>55</b><span>Part A</span></div><div class="vz-blk vz-b" style="flex:35 1 0;--d:0.1s" data-tip="Part B, Types and functions: 35 minutes"><b>35</b><span>Part B</span></div><div class="vz-blk vz-pink" style="flex:35 1 0;--d:0.2s" data-tip="Part C, Honest and accessible: 35 minutes"><b>35</b><span>Part C</span></div><div class="vz-blk vz-amber" style="flex:30 1 0;--d:0.3s" data-tip="Part D, Visuals in your text: 30 minutes"><b>30</b><span>Part D</span></div><div class="vz-blk vz-lime" style="flex:20 1 0;--d:0.4s" data-tip="Part E, Visuals on a poster: 20 minutes"><b>20</b><span>Part E</span></div></div></div>
+      <figcaption>Suggested minutes for each part. Block width is proportional to time. Tap a block for its title.</figcaption>
+    </figure>
     <p class="small muted">Suggested time: Part A 55 min · Part B 35 min · Part C 35 min · Part D 30 min · Part E 20 min.</p>
   </section>
 
@@ -148,6 +206,10 @@
     <div class="grid grid-2">
       <div class="card"><span class="tag">Linear</span><h3 class="mt">Read from start to finish</h3><p>One direction, sentence after sentence. <em>Reports, essays, letters.</em></p></div>
       <div class="card card--accent"><span class="tag tag--violet">Non-linear</span><h3 class="mt">Read in different directions</h3><p>Your eye jumps around it. <em>Charts, tables, maps, diagrams, flowcharts, dashboards.</em></p></div>
+    </div>
+    <div class="split" style="margin:1.2rem 0">
+      <figure class="photo-fig vz-ph" style="margin:0"><img src="../assets/img/engineer-lab.jpg" alt="An engineer in a laboratory studying readings and equipment, switching between reading data and writing about it" loading="lazy" width="1200" height="1043"><figcaption>Engineers read non-linear data all day, then write it up as linear text.</figcaption></figure>
+      <p class="pull vz-pull">The skill is the transfer: non-linear in, linear out.<cite>Linear and non-linear text</cite></p>
     </div>
     <p>Engineers move between the two all day: you read a sensor dashboard and write a shift report; you read a test table and write a specification; you read a survey chart and brief a manager. <strong>The skill is the transfer: non-linear in, linear out.</strong></p>
     <div class="sorter" data-xp="10" data-label="Linear or non-linear?">
@@ -212,6 +274,19 @@
       <div class="card"><span class="num-badge">129 → 138</span><h3 class="mt">Total injuries</h3><p>A rise of <strong>9</strong>, or <strong>7.0%</strong>.</p></div>
       <div class="card card--accent"><span class="num-badge">34 → 46</span><h3 class="mt">Falls from height</h3><p>A rise of <strong>12</strong>: bigger than the rise in the total.</p></div>
       <div class="card"><span class="num-badge">3 of 5</span><h3 class="mt">Categories fell</h3><p>That is why the total moved <em>less</em> than its own largest part.</p></div>
+    </div>
+    <div class="grid grid-2 mt">
+      <figure class="chart-card vz" style="margin:0">
+        <h3>Change from 2022 to 2024</h3>
+        <svg viewBox="0 0 430 264" role="img" aria-label="Diverging bar chart of change in injuries from 2022 to 2024. Falls from height up 12, slips and trips up 4, electrical down 1, struck by object down 3, manual handling down 3."><line class="axis-l" x1="200" x2="200" y1="4" y2="234"/><text x="130" y="35" text-anchor="end" class="lbl-strong" style="font-size:15px">Falls from height</text><rect class="vz-bar" x="200" y="16" width="108" height="28" rx="8" fill="#d70015" data-tip="Falls from height: 34 to 46, up 12 (+35.3%)" style="--d:0.00s;transform-origin:left center"/><text x="316" y="35" style="font-size:14px;font-weight:700;fill:#d70015">▲ +12 (+35.3%)</text><text x="130" y="81" text-anchor="end" class="lbl-strong" style="font-size:15px">Slips and trips</text><rect class="vz-bar" x="200" y="62" width="36" height="28" rx="8" fill="#d70015" data-tip="Slips and trips: 19 to 23, up 4 (+21.1%)" style="--d:0.08s;transform-origin:left center"/><text x="244" y="81" style="font-size:14px;font-weight:700;fill:#d70015">▲ +4 (+21.1%)</text><text x="130" y="127" text-anchor="end" class="lbl-strong" style="font-size:15px">Electrical</text><rect class="vz-bar vz-bar--neg" x="191" y="108" width="9" height="28" rx="8" fill="#0071e3" data-tip="Electrical: 8 to 7, down 1 (−12.5%)" style="--d:0.16s"/><text x="208" y="127" style="font-size:14px;font-weight:700;fill:#0071e3">▼ −1 (−12.5%)</text><text x="130" y="173" text-anchor="end" class="lbl-strong" style="font-size:15px">Struck by object</text><rect class="vz-bar vz-bar--neg" x="173" y="154" width="27" height="28" rx="8" fill="#0071e3" data-tip="Struck by object: 27 to 24, down 3 (−11.1%)" style="--d:0.24s"/><text x="208" y="173" style="font-size:14px;font-weight:700;fill:#0071e3">▼ −3 (−11.1%)</text><text x="130" y="219" text-anchor="end" class="lbl-strong" style="font-size:15px">Manual handling</text><rect class="vz-bar vz-bar--neg" x="173" y="200" width="27" height="28" rx="8" fill="#0071e3" data-tip="Manual handling: 41 to 38, down 3 (−7.3%)" style="--d:0.32s"/><text x="208" y="219" style="font-size:14px;font-weight:700;fill:#0071e3">▼ −3 (−7.3%)</text><text x="200" y="256" text-anchor="middle" style="font-size:14px">0 = no change</text></svg>
+        <figcaption>One category rose a lot, one rose a little, three fell. Red ▲ = rise, blue ▼ = fall; the sign and arrow carry the meaning as well as the colour. Data is fictional teaching material.</figcaption>
+      </figure>
+      <figure class="chart-card vz" style="margin:0">
+        <h3>Who the 138 injuries in 2024 were</h3>
+        <div role="img" aria-label="Stacked bar of 2024 injuries, total 138: falls from height 46, manual handling 38, struck by object 24, slips and trips 23, electrical 7. Falls are one third of the total."><div class="vz-stack"><div class="vz-blk" style="flex:46 1 0;background:#d70015;color:#fff;--d:0.0s" data-tip="Falls from height: 46 of 138 injuries in 2024 (33.3%)"><b>46</b></div><div class="vz-blk" style="flex:38 1 0;background:#0071e3;color:#fff;--d:0.1s" data-tip="Manual handling: 38 of 138 injuries in 2024 (27.5%)"><b>38</b></div><div class="vz-blk" style="flex:24 1 0;background:#4a9af0;color:#fff;--d:0.2s" data-tip="Struck by object: 24 of 138 injuries in 2024 (17.4%)"><b>24</b></div><div class="vz-blk" style="flex:23 1 0;background:#8fbff5;color:#1d1d1f;--d:0.3s" data-tip="Slips and trips: 23 of 138 injuries in 2024 (16.7%)"><b>23</b></div><div class="vz-blk" style="flex:7 1 0;background:#c4dcf9;color:#1d1d1f;--d:0.4s" data-tip="Electrical: 7 of 138 injuries in 2024 (5.1%)"><b>7</b></div></div></div>
+        <div class="vz-legend"><span><i style="background:#d70015"></i>Falls from height 46</span><span><i style="background:#0071e3"></i>Manual handling 38</span><span><i style="background:#4a9af0"></i>Struck by object 24</span><span><i style="background:#8fbff5"></i>Slips and trips 23</span><span><i style="background:#c4dcf9"></i>Electrical 7</span></div>
+        <figcaption>Falls from height are <span class="vz-count" data-to="33.3">33.3</span>% of the total: one third. Block width is proportional to the count.</figcaption>
+      </figure>
     </div>
     <div class="quiz mt" data-xp="10" data-label="Which would you send to a safety manager?">
       <p class="quiz__q">Which sentence reads the chart <em>and</em> finds the story?</p>
@@ -388,6 +463,7 @@
   <section class="slide" data-title="Reading a comparison table">
     <div class="slide__kicker">12 · Tables</div>
     <h2>Reading a comparison table</h2>
+    <p class="pull" style="margin-bottom:1.5rem">The chart tells you what the problem is. The table tells you what you could do about it.<cite>Reading a comparison table</cite></p>
     <div class="table-wrap">
       <table>
         <caption>Table 1: Proposed safety measures</caption>
@@ -699,8 +775,8 @@
     <div class="grid grid-2">
       <div class="viz" style="margin:0">
         <svg viewBox="0 0 560 500" role="img" aria-label="Flowchart: chart ready, print in black and white, decision: is every series still clear? Yes leads to add to poster and done. No leads to add a second channel, then back to print in black and white.">
-          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa8cc"/></marker></defs>
-          <g fill="none" stroke="#9aa8cc" stroke-width="2" marker-end="url(#arr)">
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+          <g fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#arr)">
             <line x1="250" y1="66" x2="250" y2="98"/>
             <line x1="250" y1="150" x2="250" y2="178"/>
             <line x1="250" y1="292" x2="250" y2="330"/>
@@ -708,23 +784,23 @@
             <line x1="370" y1="235" x2="408" y2="235"/>
             <polyline points="482,190 482,124 382,124"/>
           </g>
-          <ellipse cx="250" cy="40" rx="120" ry="26" fill="rgba(62,230,255,.12)" stroke="#3ee6ff" stroke-width="2"/>
+          <ellipse cx="250" cy="40" rx="120" ry="26" fill="rgba(0,113,227,.10)" stroke="#0071e3" stroke-width="2"/>
           <text x="250" y="45" text-anchor="middle" font-size="15">Chart is ready</text>
-          <rect x="118" y="100" width="264" height="50" rx="4" fill="rgba(155,123,255,.14)" stroke="#9b7bff" stroke-width="2"/>
+          <rect x="118" y="100" width="264" height="50" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
           <text x="250" y="130" text-anchor="middle" font-size="15">Print it in black and white</text>
-          <polygon points="250,180 370,235 250,290 130,235" fill="rgba(255,194,75,.12)" stroke="#ffc24b" stroke-width="2"/>
+          <polygon points="250,180 370,235 250,290 130,235" fill="rgba(255,194,75,.12)" stroke="#b25e00" stroke-width="2"/>
           <text x="250" y="230" text-anchor="middle" font-size="14">Is every series</text>
           <text x="250" y="248" text-anchor="middle" font-size="14">still clear?</text>
-          <text x="262" y="316" font-size="13" font-weight="700" fill="#43f0a0">Yes</text>
-          <text x="376" y="226" font-size="13" font-weight="700" fill="#ff6b8b">No</text>
-          <rect x="410" y="192" width="145" height="88" rx="4" fill="rgba(155,123,255,.14)" stroke="#9b7bff" stroke-width="2"/>
+          <text x="262" y="316" font-size="13" font-weight="700" fill="#1a8f3c">Yes</text>
+          <text x="376" y="226" font-size="13" font-weight="700" fill="#d70015">No</text>
+          <rect x="410" y="192" width="145" height="88" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
           <text x="482" y="218" text-anchor="middle" font-size="13">Add a second</text>
           <text x="482" y="236" text-anchor="middle" font-size="13">channel: shape,</text>
           <text x="482" y="254" text-anchor="middle" font-size="13">line style or</text>
           <text x="482" y="272" text-anchor="middle" font-size="13">direct label</text>
-          <rect x="118" y="332" width="264" height="50" rx="4" fill="rgba(155,123,255,.14)" stroke="#9b7bff" stroke-width="2"/>
+          <rect x="118" y="332" width="264" height="50" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
           <text x="250" y="362" text-anchor="middle" font-size="15">Add it to the poster</text>
-          <ellipse cx="250" cy="448" rx="80" ry="26" fill="rgba(62,230,255,.12)" stroke="#3ee6ff" stroke-width="2"/>
+          <ellipse cx="250" cy="448" rx="80" ry="26" fill="rgba(0,113,227,.10)" stroke="#0071e3" stroke-width="2"/>
           <text x="250" y="453" text-anchor="middle" font-size="15">Done</text>
         </svg>
         <p class="figcap">Example: the greyscale test from Part C, drawn as a flowchart</p>
@@ -757,14 +833,15 @@
     <div class="slide__kicker">24 · Diagrams</div>
     <h2>Exploded diagrams</h2>
     <p class="slide__lead">Use one when the reader has to assemble or take apart the object.</p>
+    <figure class="photo-fig"><img src="../assets/img/machinery.jpg" alt="Close-up of industrial machinery with bolts, plates and fittings that a technician might need to take apart and reassemble" loading="lazy" width="1200" height="1043" style="aspect-ratio:21/9"><figcaption>Real parts, bolted in order: an exploded diagram shows the order to take them apart.</figcaption></figure>
     <div class="grid grid-2">
       <div class="viz" style="margin:0">
         <svg id="explode" viewBox="0 0 460 380" role="img" aria-label="Exploded diagram of a bolted joint: bolt, washer, plate A, plate B, washer and nut pulled apart along one vertical axis, in assembly order, each labelled.">
-          <line x1="180" y1="6" x2="180" y2="372" stroke="#9aa8cc" stroke-dasharray="6 5" stroke-width="1.2"/>
+          <line x1="180" y1="6" x2="180" y2="372" stroke="#6e6e73" stroke-dasharray="6 5" stroke-width="1.2"/>
           <g class="xp-part" data-off="-105">
             <rect x="140" y="125" width="80" height="25" rx="3" fill="#56B4E9"/>
             <rect x="166" y="150" width="28" height="112" fill="#56B4E9"/>
-            <g stroke="#0a0f1f" stroke-width="1.5"><line x1="166" y1="200" x2="194" y2="206"/><line x1="166" y1="212" x2="194" y2="218"/><line x1="166" y1="224" x2="194" y2="230"/><line x1="166" y1="236" x2="194" y2="242"/><line x1="166" y1="248" x2="194" y2="254"/></g>
+            <g stroke="#f5f5f7" stroke-width="1.5"><line x1="166" y1="200" x2="194" y2="206"/><line x1="166" y1="212" x2="194" y2="218"/><line x1="166" y1="224" x2="194" y2="230"/><line x1="166" y1="236" x2="194" y2="242"/><line x1="166" y1="248" x2="194" y2="254"/></g>
           </g>
           <g class="xp-part" data-off="25"><rect x="146" y="150" width="68" height="8" rx="2" fill="#F0E442"/></g>
           <g class="xp-part" data-off="42"><rect x="90" y="158" width="180" height="30" fill="#009E73"/></g>
@@ -772,7 +849,7 @@
           <g class="xp-part" data-off="87"><rect x="146" y="218" width="68" height="8" rx="2" fill="#F0E442"/></g>
           <g class="xp-part" data-off="104"><rect x="150" y="226" width="60" height="24" rx="3" fill="#E69F00"/></g>
           <g id="xp-labels" style="opacity:0;transition:opacity .5s .5s" font-size="13">
-            <g stroke="#9aa8cc" stroke-width="1"><line x1="222" y1="32" x2="320" y2="32"/><line x1="216" y1="179" x2="320" y2="179"/><line x1="272" y1="215" x2="320" y2="215"/><line x1="272" y1="270" x2="320" y2="270"/><line x1="216" y1="309" x2="320" y2="309"/><line x1="212" y1="342" x2="320" y2="342"/></g>
+            <g stroke="#6e6e73" stroke-width="1"><line x1="222" y1="32" x2="320" y2="32"/><line x1="216" y1="179" x2="320" y2="179"/><line x1="272" y1="215" x2="320" y2="215"/><line x1="272" y1="270" x2="320" y2="270"/><line x1="216" y1="309" x2="320" y2="309"/><line x1="212" y1="342" x2="320" y2="342"/></g>
             <text x="326" y="36">① Hex bolt</text><text x="326" y="183">② Washer</text><text x="326" y="219">③ Plate A</text><text x="326" y="274">④ Plate B</text><text x="326" y="313">⑤ Washer</text><text x="326" y="346">⑥ Hex nut</text>
           </g>
         </svg>
@@ -1009,6 +1086,11 @@
     <div class="slide__kicker">35 · Colour vision deficiency</div>
     <h2>Why the palette matters</h2>
     <p>About <strong>8% of men</strong> have a colour vision deficiency, most often red–green. Switch the simulation on and compare.</p>
+    <div class="keystats vz">
+      <div class="keystat"><b><span class="vz-count" data-to="8">8</span>%</b><span>of men have a colour vision deficiency</span></div>
+      <div class="keystat"><b>4.5:1</b><span>WCAG contrast for normal text</span></div>
+      <div class="keystat"><b>3:1</b><span>for large text and chart lines and bars</span></div>
+    </div>
     <div class="grid grid-2">
       <div class="viz" style="margin:0"><svg id="cvdA" role="img" aria-label="Line chart with four lines in red, green, blue and grey."></svg><p class="figcap">Red–green palette</p></div>
       <div class="viz" style="margin:0"><svg id="cvdB" role="img" aria-label="Line chart with four lines in the Okabe–Ito palette."></svg><p class="figcap">Okabe–Ito palette</p></div>
@@ -1035,6 +1117,16 @@
     <div class="slide__kicker">37 · Contrast</div>
     <h2>Contrast: what passes and what does not</h2>
     <p>WCAG 2.1 asks for at least <strong>4.5:1</strong> for normal text, and <strong>3:1</strong> for large text and for non-text parts such as chart lines and bars.</p>
+<figure class="chart-card vz">
+      <h3>Contrast ratios against the thresholds</h3>
+      <div role="img" aria-label="Bar chart of contrast ratios on a white background: black 21.0, Okabe-Ito blue 5.2, light grey 2.3, Okabe-Ito orange 2.3. Dashed lines mark the 3 to 1 and 4.5 to 1 thresholds. Black and blue pass; light grey and orange fail.">
+        <div class="vz-marks" style="--lw:10rem">
+          <div class="vz-ml"><div class="vz-mark" style="left:14.29%"><i style="right:4px">3:1</i></div><div class="vz-mark" style="left:21.43%"><i style="left:4px">4.5:1</i></div></div>
+          <div class="vz-row"><span>Black text on white</span><div class="vz-track" data-tip="21.0:1 passes body text and large text"><div class="vz-fill vz-bar" style="width:100.00%;background:#1a8f3c;--d:0.0s"></div><span style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#fff;white-space:nowrap">21.0:1 ✓ pass</span></div></div><div class="vz-row"><span>Okabe–Ito blue on white</span><div class="vz-track" data-tip="5.2:1 passes body text and large text"><div class="vz-fill vz-bar" style="width:24.76%;background:#1a8f3c;--d:0.1s"></div><span style="position:absolute;left:calc(24.76% + .5rem);top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#1a8f3c;white-space:nowrap">5.2:1 ✓ pass</span></div></div><div class="vz-row"><span>Light grey on white</span><div class="vz-track" data-tip="2.3:1 fails both thresholds"><div class="vz-fill vz-bar" style="width:10.95%;background:#d70015;--d:0.2s"></div><span style="position:absolute;left:calc(10.95% + .5rem);top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#d70015;white-space:nowrap">2.3:1 ✗ fail</span></div></div><div class="vz-row"><span>Okabe–Ito orange on white</span><div class="vz-track" data-tip="2.3:1 fails both thresholds"><div class="vz-fill vz-bar" style="width:10.95%;background:#d70015;--d:0.3s"></div><span style="position:absolute;left:calc(10.95% + .5rem);top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#d70015;white-space:nowrap">2.3:1 ✗ fail</span></div></div>
+        </div>
+      </div>
+      <figcaption>The same four swatches as below, on one linear scale from 0 to 21. Light grey and orange sit under both dashed lines (3:1 and 4.5:1).</figcaption>
+    </figure>
     <div class="swatches" id="swatches"></div>
     <div class="card mt">
       <h3>Try your own colours</h3>
@@ -1299,6 +1391,11 @@
   <section class="slide" data-title="Production quality">
     <div class="slide__kicker">48 · Production</div>
     <h2>Production quality</h2>
+    <div class="keystats vz">
+      <div class="keystat"><b><span class="vz-count" data-to="300">300</span></b><span>dpi at final size, at least</span></div>
+      <div class="keystat"><b>1 m</b><span>away: axis labels should still be readable</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="3">3</span> s</b><span>for a caption to make the meaning clear</span></div>
+    </div>
     <div class="grid grid-2">
       <div class="card"><h3>At least 300 dpi at final size</h3><p>A poster is printed large. An image that looks fine on screen at 800 pixels wide will be visibly blocky at A1.</p></div>
       <div class="card"><h3>Vector for charts and diagrams</h3><p>SVG, EMF, PDF. Vector art stays sharp at any size. Export the chart from Excel or your plotting tool rather than taking a screenshot.</p></div>
@@ -1353,6 +1450,7 @@
   <section class="slide" data-title="Layout and reading path">
     <div class="slide__kicker">51 · Layout</div>
     <h2>Layout and reading path</h2>
+    <figure class="photo-fig"><img src="../assets/img/sticky-notes.jpg" alt="Colourful sticky notes arranged in columns on a wall, like the sections of a poster laid out in reading order" loading="lazy" width="1200" height="1043" style="aspect-ratio:21/9"><figcaption>Sections in columns, read in order: sketch your poster with notes before you design it.</figcaption></figure>
     <div class="grid grid-2">
       <div class="viz" style="margin:0">
         <svg id="poster" viewBox="0 0 360 500" role="img" aria-label="Poster sketch with a title band and three columns. Numbered arrows show the reading path down column one, then column two, then column three. The bottom band is left empty."></svg>
@@ -1546,32 +1644,32 @@
       $("fig1h").textContent = STEPS[step - 1][0]; $("fig1p").textContent = STEPS[step - 1][1];
       if (step === 1) {
         r.yTitle.classList.add("hl"); leg.querySelectorAll("text").forEach(function (e) { e.classList.add("hl"); });
-        S("rect", { x: 412, y: 6, width: 150, height: 30, rx: 6, fill: "none", stroke: "#3ee6ff", "stroke-width": 2 }, ann);
+        S("rect", { x: 412, y: 6, width: 150, height: 30, rx: 6, fill: "none", stroke: "#0071e3", "stroke-width": 2 }, ann);
       } else if (step === 2) {
-        S("line", { x1: r.L, x2: r.W - r.R, y1: r.base, y2: r.base, stroke: "#3ee6ff", "stroke-width": 4 }, ann);
+        S("line", { x1: r.L, x2: r.W - r.R, y1: r.base, y2: r.base, stroke: "#0071e3", "stroke-width": 4 }, ann);
         r.tickTxt[0].classList.add("hl");
-        S("text", { x: r.L + 10, y: r.base - 8, class: "ann", fill: "#3ee6ff" }, ann, "starts at 0 ✓");
+        S("text", { x: r.L + 10, y: r.base - 8, class: "ann", fill: "#0071e3" }, ann, "starts at 0 ✓");
       } else if (step === 3) {
         allBars.concat(allVals).forEach(function (e) { e.classList.add("dim"); });
         r.bars[1][0].classList.remove("dim"); r.vals[1][0].classList.remove("dim");
         var b = r.bars[1][0];
-        S("rect", { x: +b.getAttribute("x") - 4, y: +b.getAttribute("y") - 26, width: +b.getAttribute("width") + 8, height: r.base - b.getAttribute("y") + 26, rx: 4, fill: "none", stroke: "#3ee6ff", "stroke-width": 2 }, ann);
+        S("rect", { x: +b.getAttribute("x") - 4, y: +b.getAttribute("y") - 26, width: +b.getAttribute("width") + 8, height: r.base - b.getAttribute("y") + 26, rx: 4, fill: "none", stroke: "#0071e3", "stroke-width": 2 }, ann);
       } else if (step === 4) {
         V22.forEach(function (v, i) {
           var d = V24[i] - v, pct = (d / v * 100).toFixed(1);
           var yy = r.y(Math.max(v, V24[i])) - 30;
-          S("text", { x: r.gx(i), y: yy, "text-anchor": "middle", class: "ann", fill: i === 0 ? "#3ee6ff" : "#9aa8cc" }, ann, (d > 0 ? "+" : "−") + Math.abs(d) + " (" + (d > 0 ? "+" : "−") + Math.abs(pct) + "%)");
+          S("text", { x: r.gx(i), y: yy, "text-anchor": "middle", class: "ann", fill: i === 0 ? "#0071e3" : "#6e6e73" }, ann, (d > 0 ? "+" : "−") + Math.abs(d) + " (" + (d > 0 ? "+" : "−") + Math.abs(pct) + "%)");
         });
         [1, 2, 3, 4].forEach(function (i) { dimGroup(i, true); });
       } else if (step === 5) {
         [1, 3, 4].forEach(function (i) { dimGroup(i, true); });
-        S("text", { x: r.gx(1), y: r.y(46) - 4, "text-anchor": "middle", class: "ann", fill: "#3ee6ff" }, ann, "2022: 41 > 34");
-        S("text", { x: r.gx(1), y: r.y(46) + 16, "text-anchor": "middle", class: "ann", fill: "#3ee6ff" }, ann, "2024: 46 > 38");
-        S("text", { x: r.gx(1), y: r.y(46) + 36, "text-anchor": "middle", class: "ann", fill: "#ffc24b" }, ann, "order reversed");
+        S("text", { x: r.gx(1), y: r.y(46) - 4, "text-anchor": "middle", class: "ann", fill: "#0071e3" }, ann, "2022: 41 > 34");
+        S("text", { x: r.gx(1), y: r.y(46) + 16, "text-anchor": "middle", class: "ann", fill: "#0071e3" }, ann, "2024: 46 > 38");
+        S("text", { x: r.gx(1), y: r.y(46) + 36, "text-anchor": "middle", class: "ann", fill: "#b25e00" }, ann, "order reversed");
       } else if (step === 6) {
         [0, 4].forEach(function (i) { dimGroup(i, true); });
         [1, 2, 3].forEach(function (i) {
-          S("text", { x: r.gx(i), y: r.y(Math.max(V22[i], V24[i])) - 26, "text-anchor": "middle", class: "ann", fill: "#ff6b8b" }, ann, "▼ " + (V24[i] - V22[i]));
+          S("text", { x: r.gx(i), y: r.y(Math.max(V22[i], V24[i])) - 26, "text-anchor": "middle", class: "ann", fill: "#d70015" }, ann, "▼ " + (V24[i] - V22[i]));
         });
         D.award(f1id, 15);
       }
@@ -1607,7 +1705,7 @@
     vals.forEach(function (v, i) {
       var a1 = a + v / tot * Math.PI * 2;
       var x0 = cx + rad * Math.sin(a), y0 = cy - rad * Math.cos(a), x1 = cx + rad * Math.sin(a1), y1 = cy - rad * Math.cos(a1);
-      out.push(S("path", { d: "M" + cx + "," + cy + "L" + x0 + "," + y0 + "A" + rad + "," + rad + " 0 " + (a1 - a > Math.PI ? 1 : 0) + " 1 " + x1 + "," + y1 + "Z", fill: cols[i], stroke: stroke || "#0a0f1f", "stroke-width": 2 }, svg));
+      out.push(S("path", { d: "M" + cx + "," + cy + "L" + x0 + "," + y0 + "A" + rad + "," + rad + " 0 " + (a1 - a > Math.PI ? 1 : 0) + " 1 " + x1 + "," + y1 + "Z", fill: cols[i], stroke: stroke || "#f5f5f7", "stroke-width": 2 }, svg));
       a = a1;
     });
     return out;
@@ -1619,7 +1717,7 @@
     mt.setAttribute("viewBox", "0 0 240 120");
     var rows = [["Year", "Mandarin", "German", "Total"], ["2021", "70", "55", "447"], ["2022", "77", "86", "497"], ["2023", "130", "113", "666"], ["2024", "98", "125", "693"]];
     rows.forEach(function (row, i) {
-      row.forEach(function (c, j) { S("text", { x: [8, 54, 130, 190][j], y: 20 + i * 22, "font-size": 12, fill: i ? "#e8eeff" : "#3ee6ff", "font-weight": i ? 400 : 700 }, mt, c); });
+      row.forEach(function (c, j) { S("text", { x: [8, 54, 130, 190][j], y: 20 + i * 22, "font-size": 12, fill: i ? "#1d1d1f" : "#0071e3", "font-weight": i ? 400 : 700 }, mt, c); });
       S("line", { x1: 8, x2: 232, y1: 26 + i * 22, y2: 26 + i * 22, class: "gl" }, mt);
     });
   }
@@ -1658,16 +1756,16 @@
     S("rect", { width: 8, height: 8, fill: "#F0E442" }, hatch); S("line", { x1: 0, y1: 0, x2: 0, y2: 8, stroke: "#8a7f10", "stroke-width": 3 }, hatch);
     S("circle", { cx: cx, cy: cy, r: 140, fill: "url(#shine)" }, cut);
     var wedge = S("g", { style: "opacity:0;transition:opacity .6s" }, cut);
-    function quarter(rad, fill) { return S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - rad) + "A" + rad + "," + rad + " 0 0 1 " + (cx + rad) + "," + cy + "Z", fill: fill, stroke: "#0a0f1f", "stroke-width": 1.5 }, wedge); }
-    S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - 146) + "A146,146 0 0 1 " + (cx + 146) + "," + cy + "Z", fill: "#0a0f1f" }, wedge);
+    function quarter(rad, fill) { return S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - rad) + "A" + rad + "," + rad + " 0 0 1 " + (cx + rad) + "," + cy + "Z", fill: fill, stroke: "#f5f5f7", "stroke-width": 1.5 }, wedge); }
+    S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - 146) + "A146,146 0 0 1 " + (cx + 146) + "," + cy + "Z", fill: "#f5f5f7" }, wedge);
     layers.forEach(function (l, i) { quarter(l[0], i === 1 ? "url(#hatchI)" : l[1]); });
     var labs = S("g", { "font-size": 13 }, wedge);
     var lp = [[129, 300, 40], [107, 300, 82], [91, 300, 124], [50, 300, 166]];
     layers.forEach(function (l, i) {
       var ang = Math.PI / 4 + (i - 1.5) * 0.18, rr = lp[i][0];
       var px = cx + rr * Math.sin(ang), py = cy - rr * Math.cos(ang);
-      S("line", { x1: px, y1: py, x2: lp[i][1] + 8, y2: lp[i][2] - 4, stroke: "#9aa8cc", "stroke-width": 1 }, labs);
-      S("circle", { cx: px, cy: py, r: 3, fill: "#e8eeff" }, labs);
+      S("line", { x1: px, y1: py, x2: lp[i][1] + 8, y2: lp[i][2] - 4, stroke: "#6e6e73", "stroke-width": 1 }, labs);
+      S("circle", { cx: px, cy: py, r: 3, fill: "#1d1d1f" }, labs);
       S("text", { x: lp[i][1] + 12, y: lp[i][2] }, labs, l[2]);
     });
     var cutOn = false, cId = D.widgetId("cut");
@@ -1683,7 +1781,7 @@
   if (bd) {
     var defsB = S("defs", {}, bd);
     var mk = S("marker", { id: "arrB", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, orient: "auto" }, defsB);
-    S("path", { d: "M0,0 L10,5 L0,10 z", fill: "#3ee6ff" }, mk);
+    S("path", { d: "M0,0 L10,5 L0,10 z", fill: "#0071e3" }, mk);
     var BW = 116, BH = 50;
     var blocks = [["Setpoint", OI.purple], ["Controller", OI.sky], ["Heater", OI.orange], ["Tank", OI.green], ["Sensor", OI.yellow]];
     var edges = [[0, 1, "target"], [1, 2, "power"], [2, 3, "heat"], [3, 4, "temperature"], [4, 1, "signal"]];
@@ -1692,11 +1790,11 @@
     var gE = S("g", {}, bd), gB = S("g", {}, bd), lines = [], boxes = [];
     edges.forEach(function (e) {
       var g = S("g", {}, gE);
-      lines.push({ l: S("line", { stroke: "#3ee6ff", "stroke-width": 2, "marker-end": "url(#arrB)" }, g), t: S("text", { "font-size": 12, fill: "#9aa8cc", "text-anchor": "middle" }, g, e[2]) });
+      lines.push({ l: S("line", { stroke: "#0071e3", "stroke-width": 2, "marker-end": "url(#arrB)" }, g), t: S("text", { "font-size": 12, fill: "#6e6e73", "text-anchor": "middle" }, g, e[2]) });
     });
     blocks.forEach(function (b) {
       var g = S("g", {}, gB);
-      S("rect", { x: -BW / 2, y: -BH / 2, width: BW, height: BH, rx: 6, fill: "rgba(10,15,31,.95)", stroke: b[1], "stroke-width": 2.5 }, g);
+      S("rect", { x: -BW / 2, y: -BH / 2, width: BW, height: BH, rx: 6, fill: "var(--bg-2)", stroke: b[1], "stroke-width": 2.5 }, g);
       S("text", { x: 0, y: 5, "text-anchor": "middle", "font-size": 15, "font-weight": 700 }, g, b[0]);
       boxes.push(g);
     });
@@ -1779,9 +1877,9 @@
   var PIE_COL = [OI.orange, OI.sky, OI.green, OI.yellow, OI.blue, OI.verm, OI.purple, OI.black];
   function drawBadPie(svg, offset) {
     var g = S("g", {}, svg);
-    pie(g, 130 + (offset || 0), 140, 115, PIE_ORDER.map(function (k) { return DT[k][1]; }), PIE_COL, "#e8eeff");
+    pie(g, 130 + (offset || 0), 140, 115, PIE_ORDER.map(function (k) { return DT[k][1]; }), PIE_COL, "#1d1d1f");
     PIE_ORDER.forEach(function (k, i) {
-      S("rect", { x: 280 + (offset || 0), y: 40 + i * 28, width: 14, height: 14, fill: PIE_COL[i], stroke: "#e8eeff", "stroke-width": 1 }, g);
+      S("rect", { x: 280 + (offset || 0), y: 40 + i * 28, width: 14, height: 14, fill: PIE_COL[i], stroke: "#1d1d1f", "stroke-width": 1 }, g);
       S("text", { x: 300 + (offset || 0), y: 52 + i * 28, class: "lab" }, g, DT[k][0]);
     });
     return g;
@@ -1796,8 +1894,8 @@
     var BL = 160, BR = 420, top0 = 16, rowH = 30;
     DT.forEach(function (d, i) {
       var w = d[1] / 25 * (BR - BL), y = top0 + i * rowH, hot = i < 3;
-      S("text", { x: BL - 8, y: y + 18, "text-anchor": "end", class: "lab", fill: hot ? "#e8eeff" : "#9aa8cc" }, gBar, d[0]);
-      var rect = S("rect", { x: BL, y: y + 4, width: 0, height: 20, rx: 2, fill: hot ? OI.orange : "#5d6b8f" }, gBar);
+      S("text", { x: BL - 8, y: y + 18, "text-anchor": "end", class: "lab", fill: hot ? "#1d1d1f" : "#6e6e73" }, gBar, d[0]);
+      var rect = S("rect", { x: BL, y: y + 4, width: 0, height: 20, rx: 2, fill: hot ? OI.orange : "#86868b" }, gBar);
       rect.setAttribute("data-w", w);
       S("text", { x: BL + w + 6, y: y + 19, class: "val" }, gBar, d[1] + "%");
     });
@@ -1904,10 +2002,10 @@
     var jHatch = S("g", {}, jk);
     jr.bars[0].forEach(function (b) { S("rect", { x: b.getAttribute("x"), y: b.getAttribute("y"), width: b.getAttribute("width"), height: b.getAttribute("height"), fill: "url(#hatchJ)" }, jHatch); });
     var jLeg = S("g", {}, jk);
-    S("rect", { x: 380, y: 10, width: 120, height: 28, fill: "#111a34", stroke: "#e8eeff" }, jLeg);
+    S("rect", { x: 380, y: 10, width: 120, height: 28, fill: "#111a34", stroke: "#1d1d1f" }, jLeg);
     S("rect", { x: 390, y: 18, width: 12, height: 12, fill: OI.orange }, jLeg);
     S("text", { x: 408, y: 29, class: "lab" }, jLeg, "Injuries 2024");
-    var jBorder = S("rect", { x: 4, y: 4, width: 512, height: 352, fill: "none", stroke: "#e8eeff", "stroke-width": 8 }, jk);
+    var jBorder = S("rect", { x: 4, y: 4, width: 512, height: 352, fill: "none", stroke: "#1d1d1f", "stroke-width": 8 }, jk);
     var jVals = S("g", { style: "opacity:0" }, jk);
     jr.bars[0].forEach(function (b, i) { S("text", { x: +b.getAttribute("x") + jr.bw / 2, y: +b.getAttribute("y") - 6, "text-anchor": "middle", class: "val" }, jVals, V24[i]); });
     var JSTEPS = [
@@ -1917,7 +2015,7 @@
       function (on) { jLeg.style.opacity = on ? 1 : 0; },
       function (on) { jGrid.forEach(function (l, i) { if (i > 0) l.style.opacity = on ? 1 : 0; }); },
       function (on) {
-        jr.bars[0].forEach(function (b, i) { b.setAttribute("fill", on ? [OI.orange, OI.sky, OI.green, OI.purple, OI.yellow][i] : (i === 0 ? OI.orange : "#5d6b8f")); });
+        jr.bars[0].forEach(function (b, i) { b.setAttribute("fill", on ? [OI.orange, OI.sky, OI.green, OI.purple, OI.yellow][i] : (i === 0 ? OI.orange : "#86868b")); });
         jVals.style.opacity = on ? 0 : 1;
       }
     ];
@@ -1945,12 +2043,12 @@
       [[2, 74, 120, "Solutions", "table"], [2, 204, 70, "Conclusion", "one big number"], [2, 284, 60, "References", "+ QR"]]
     ];
     blocksP.forEach(function (col) { col.forEach(function (b) {
-      S("rect", { x: cols[b[0]], y: b[1], width: 104, height: b[2], rx: 4, fill: "#ffffff", stroke: "#9aa8cc" }, ps);
+      S("rect", { x: cols[b[0]], y: b[1], width: 104, height: b[2], rx: 4, fill: "#ffffff", stroke: "#6e6e73" }, ps);
       S("text", { x: cols[b[0]] + 8, y: b[1] + 18, "font-size": 12, "font-weight": 700, fill: "#111" }, ps, b[3]);
       S("rect", { x: cols[b[0]] + 8, y: b[1] + 28, width: 88, height: Math.min(40, b[2] - 52), fill: "#E69F00", opacity: .55 }, ps);
       S("text", { x: cols[b[0]] + 8, y: b[1] + b[2] - 10, "font-size": 10, fill: "#444" }, ps, b[4]);
     }); });
-    S("rect", { x: 14, y: 362, width: 332, height: 124, rx: 4, fill: "none", stroke: "#9aa8cc", "stroke-dasharray": "5 5" }, ps);
+    S("rect", { x: 14, y: 362, width: 332, height: 124, rx: 4, fill: "none", stroke: "#6e6e73", "stroke-dasharray": "5 5" }, ps);
     S("text", { x: 180, y: 428, "text-anchor": "middle", "font-size": 12, fill: "#555" }, ps, "white space: about 70% coverage");
 
     var pth = S("path", { d: "M68,78 L68,340 Q68,358 124,358 Q180,358 180,340 L180,78 Q180,66 236,66 Q292,66 292,78 L292,340", fill: "none", stroke: "#D55E00", "stroke-width": 4, "stroke-linecap": "round" }, ps);
@@ -1967,5 +2065,36 @@
   }
 })();
 </script>
+<script>
+/* chart animations: draw on scroll, counters, tooltips (after deck.js) */
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var figs=[].slice.call(document.querySelectorAll('.vz'));
+  function counters(f,go){[].forEach.call(f.querySelectorAll('.vz-count'),function(c){
+    var to=parseFloat(c.getAttribute('data-to')),dec=(c.getAttribute('data-to').split('.')[1]||'').length;
+    if(!go){c.textContent=(0).toFixed(dec);return;}
+    if(reduce){c.textContent=to.toFixed(dec);return;}
+    var t0=null;(function step(t){t0=t0||t;var p=Math.min(1,(t-t0)/1100),e=1-Math.pow(1-p,3);c.textContent=(to*e).toFixed(dec);if(p<1)requestAnimationFrame(step);})(performance.now());
+  });}
+  if(!reduce&&'IntersectionObserver' in window&&!/[?&]static/.test(location.search)){
+    figs.forEach(function(f){f.classList.add('vz-pre');counters(f,false);});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
+      var f=e.target;io.unobserve(f);requestAnimationFrame(function(){f.classList.remove('vz-pre');counters(f,true);});}});},{threshold:.05,rootMargin:"0px 0px -8% 0px"});
+    figs.forEach(function(f){io.observe(f);});
+  }
+  var tip=document.createElement('div');tip.className='vz-tip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);
+  function show(el){tip.textContent=el.getAttribute('data-tip');var r=el.getBoundingClientRect();tip.classList.add('on');
+    var w=tip.offsetWidth,x=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2));tip.style.left=x+'px';tip.style.top=Math.max(8,r.top-tip.offsetHeight-8)+'px';}
+  function hide(){tip.classList.remove('on');}
+  [].forEach.call(document.querySelectorAll('[data-tip]'),function(el){
+    if(!el.hasAttribute('tabindex'))el.setAttribute('tabindex','0');
+    el.addEventListener('mouseenter',function(){show(el)});el.addEventListener('mouseleave',hide);
+    el.addEventListener('focus',function(){show(el)});el.addEventListener('blur',hide);
+    el.addEventListener('click',function(ev){ev.stopPropagation();show(el)});
+  });
+  document.addEventListener('click',hide);window.addEventListener('scroll',hide,{passive:true});
+})();
+</script>
+
 </body>
 </html>
