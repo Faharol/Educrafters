@@ -76,7 +76,7 @@
   var top = el("header", { class: "deck-top" },
     '<a class="deck-top__home" href="../index.html" aria-label="Back to course home">' +
       '<span class="deck-top__logo">ETC</span><span class="long">SMB31202</span></a>' +
-    '<div class="deck-top__title">Week ' + WEEK.replace(/^0/, "") + " · " + TITLE + "</div>" +
+    '<div class="deck-top__title"><span class="deck-top__wk">Week ' + WEEK.replace(/^0/, "") + " · " + TITLE + '</span><span class="deck-top__sec" aria-hidden="true"></span></div>' +
     '<div class="deck-top__xp" title="Experience points earned this week">⚡ <span id="xpVal">0</span> XP</div>' +
     '<button class="btn btn--ghost" id="tocBtn" aria-controls="toc" aria-expanded="false">Contents</button>');
   var bar = el("div", { class: "progress", role: "progressbar", "aria-label": "Reading progress" });
@@ -133,8 +133,9 @@
   // title slide: cover photo
   var titleSlide = slides[0].classList.contains("slide--title") ? slides[0] : null;
   if (titleSlide) {
-    var hero = el("img", { class: "hero-img", src: photoUrl(0), alt: "", decoding: "async" });
-    titleSlide.appendChild(hero);
+    var heroFrame = el("div", { class: "hero-frame" });
+    heroFrame.appendChild(el("img", { class: "hero-img", src: photoUrl(0), alt: "", decoding: "async" }));
+    titleSlide.appendChild(heroFrame);
   }
 
   // chapter openers get a photo; plain sections alternate backgrounds; every 7th plain section is followed by a photo band
@@ -142,7 +143,10 @@
   slides.forEach(function (sl, i) {
     if (sl.classList.contains("slide--part")) {
       partN++;
-      sl.style.backgroundImage = "url(" + photoUrl(partN) + ")";
+      sl.classList.add("has-bg");
+      var pbg = el("div", { class: "part-bg", "aria-hidden": "true" });
+      pbg.style.backgroundImage = "url(" + photoUrl(partN) + ")";
+      sl.insertBefore(pbg, sl.firstChild);
     } else if (sl !== titleSlide && !$(".finale", sl)) {
       plainN++;
       if (plainN % 2 === 0) sl.classList.add("sec--alt");
@@ -210,6 +214,14 @@
     if (i === cur && $$(".slide.is-active").length) return;
     cur = i;
     slides.forEach(function (s, j) { s.classList.toggle("is-active", j === i); });
+    var secEl = $(".deck-top__sec");
+    if (secEl) {
+      var st = i === 0 ? "" : (slides[i].getAttribute("data-title") || "").replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "");
+      if (secEl.getAttribute("data-t") !== st) {
+        secEl.classList.add("swap");
+        setTimeout(function () { secEl.textContent = st; secEl.setAttribute("data-t", st); secEl.classList.remove("swap"); }, 180);
+      }
+    }
     $$("#tocList button").forEach(function (b, j) {
       b.classList.toggle("is-current", j === i);
       b.classList.toggle("is-seen", wk.seen.indexOf(j) >= 0);
@@ -247,11 +259,17 @@
     // fade-up on scroll
     if (!STATIC) {
       var ro = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); ro.unobserve(en.target); } });
+        entries.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); ro.unobserve(en.target); (function (t) { setTimeout(function () { t.style.transitionDelay = ""; }, 1700); })(en.target); } });
       }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
       slides.forEach(function (s) {
         if (s.classList.contains("slide--part")) return;
-        Array.prototype.forEach.call(s.children, function (c, k) { c.classList.add("reveal-on"); c.style.transitionDelay = Math.min(k, 3) * 70 + "ms"; ro.observe(c); });
+        Array.prototype.forEach.call(s.children, function (c, k) {
+          if (c.matches && c.matches(".grid, .flip-grid, .keystats, .weeks, .split")) {
+            Array.prototype.forEach.call(c.children, function (g, n) { g.classList.add("reveal-on", "rv-pop"); g.style.transitionDelay = Math.min(n, 7) * 90 + "ms"; ro.observe(g); });
+          } else {
+            c.classList.add("reveal-on"); c.style.transitionDelay = Math.min(k, 3) * 70 + "ms"; ro.observe(c);
+          }
+        });
       });
     }
   } else {
@@ -290,6 +308,7 @@
         var why = b.getAttribute("data-why");
         if (right) {
           b.classList.add("is-right");
+          if (window.Motion) window.Motion.burst(b);
           btns.forEach(function (x) { x.disabled = true; });
           fb.className = "quiz__fb ok";
           fb.innerHTML = "✓ " + (why || q.getAttribute("data-right") || "Correct!");
@@ -622,6 +641,14 @@
       if (++f < 150) requestAnimationFrame(loop); else c.remove();
     })();
   }
+
+  /* motion layer (parallax, text reveal, tilt, burst) */
+  (function () {
+    var me = document.currentScript || $$("script[src$='deck.js']")[0];
+    if (!me || window.Motion) return;
+    var m = document.createElement("script"); m.src = me.src.replace(/deck\.js(\?.*)?$/, "motion.js"); m.defer = true;
+    document.head.appendChild(m);
+  })();
 
   /* expose a tiny API for week-specific scripts */
   window.Deck = { award: award, widgetId: widgetId, go: go, toast: showToast, week: WEEK };

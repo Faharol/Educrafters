@@ -168,9 +168,42 @@
   Array.prototype.forEach.call(document.querySelectorAll("#filters button"), function (b) {
     b.addEventListener("click", function () {
       Array.prototype.forEach.call(document.querySelectorAll("#filters button"), function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-      renderWeeks(b.getAttribute("data-f"));
+      renderWeeks(b.getAttribute("data-f")); revealWeeks();
     });
   });
+
+  /* ---------- motion: reveal on scroll, count-up numbers ---------- */
+  var STATIC = /[?&]static\b/.test(location.search), still = reduce || STATIC;
+  var rvIO = ("IntersectionObserver" in window && !still) ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in"); rvIO.unobserve(e.target);
+      (function (t) { setTimeout(function () { t.style.transitionDelay = ""; }, 1700); })(e.target);
+    });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }) : null;
+  function reveal(list, pop) {
+    if (!rvIO) return;
+    Array.prototype.forEach.call(list, function (el, i) {
+      if (el.classList.contains("reveal-on")) return;
+      el.classList.add("reveal-on"); if (pop) el.classList.add("rv-pop");
+      el.style.transitionDelay = Math.min(i, 7) * 80 + "ms"; rvIO.observe(el);
+    });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".section__head, .assess-layout > figure, .chart-card, .legend, .timeline, .footer .wrap"), function (el, i) { reveal([el], false); });
+  reveal(document.querySelectorAll(".bento > .tile, .assess-layout .assess, .tip-grid .card"), true);
+  function revealWeeks() { reveal(document.querySelectorAll("#weekGrid > .wk"), true); if (window.Motion) window.Motion.tilt(); }
+  revealWeeks();
+
+  function countUp(el) {
+    var m = /^(\d+)/.exec(el.textContent); if (!m || still) return;
+    var end = +m[1], rest = el.innerHTML.slice(m[1].length), t0 = null;
+    if (end === 0) return;
+    function step(t) { if (!t0) t0 = t; var k = Math.min(1, (t - t0) / 1300), e = 1 - Math.pow(1 - k, 3); el.innerHTML = Math.round(end * e) + rest; if (k < 1) requestAnimationFrame(step); }
+    el.innerHTML = "0" + rest;
+    var go = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { go.disconnect(); requestAnimationFrame(step); } }, { threshold: 0.6 });
+    go.observe(el);
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".big-num"), countUp);
 
   $("#teamLine").innerHTML = "<strong>Course coordinator:</strong> " + C.team.coordinator + " · <strong>Lecturers:</strong> " + C.team.lecturers.join(" · ");
   $("#resetBtn").addEventListener("click", function () {
