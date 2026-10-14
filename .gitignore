@@ -1,2 +1,5 @@
+node_modules/
+.netlify/
 shots/
 *.png.th.jpg
+.DS_Store

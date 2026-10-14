@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Class Wall · ETC Lab · SMB31202</title>
+<meta name="description" content="The live Class Wall for SMB31202 English for Technical Communication: one board per week, posts from the whole class, projector mode for the lecturer.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='30' text-anchor='middle' fill='%232997FF'%3EE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/lab.css">
+<style>body.lab-wall{background:var(--bg)}</style>
+</head>
+<body class="lab-wall" data-root="">
+<main id="main">
+  <section class="whero has-orbs">
+    <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="band-in">
+      <p class="eyebrow"><span class="live"></span>Live · updates every few seconds</p>
+      <h1 class="display" id="wallTitle" style="margin-bottom:16px"></h1>
+      <p class="lede">One board per week. Post from your phone, read everyone else’s, then we talk about it on the projector. Nicknames only.</p>
+    </div>
+  </section>
+  <div class="lwrap">
+    <section class="wboards">
+      <div class="chips" role="group" aria-label="Boards" id="boards"></div>
+      <p class="muted small" style="margin:0">Each week has its own board. “Post to the wall” inside a week sends your writing here.</p>
+    </section>
+    <div id="wallmount"></div>
+  </div>
+  <footer class="foot"><div class="band-in"><span>ETC Lab · SMB31202 · <a href="index.html">Home</a></span><span id="motionBtn"></span></div></footer>
+</main>
+<script src="assets/js/course.js"></script>
+<script src="assets/js/hooks.js"></script>
+<script src="assets/js/lab.js"></script>
+<script>
+(function () {
+  var L = window.LAB, C = window.COURSE;
+  L.nav("wall", L.totalXp());
+  document.getElementById("wallTitle").innerHTML = L.words("Class") + " " + L.words("Wall.", 1, true);
+  var weeks = C.weeks.filter(function (w) { return typeof w.n === "number"; });
+  var boards = [["general", "General"]].concat(weeks.map(function (w) { return ["w" + L.pad(w.n), L.pad(w.n) + " " + w.title]; }));
+  var q = new URLSearchParams(location.search).get("board");
+  var cw = "w" + L.pad(L.currentWeek());
+  var board = boards.some(function (b) { return b[0] === q; }) ? q : cw;
+  var bx = document.getElementById("boards");
+  function drawBoards() { bx.innerHTML = boards.map(function (b) { return '<button class="lchip ' + (b[0] === board ? "on" : "") + '" type="button" data-board="' + b[0] + '">' + L.esc(b[1]) + "</button>"; }).join(""); }
+  drawBoards();
+  var wall = new L.Wall({ board: board, mount: document.getElementById("wallmount") });
+  bx.addEventListener("click", function (e) { var b = e.target.closest("[data-board]"); if (!b) return; board = b.getAttribute("data-board"); drawBoards(); wall.setBoard(board); try { history.replaceState(null, "", "?board=" + board); } catch (x) {} });
+  document.getElementById("motionBtn").innerHTML = L.motionBtn();
+  L.setupMotion(document);
+  document.getElementById("main").classList.add("enter");
+})();
+</script>
+</body>
+</html>

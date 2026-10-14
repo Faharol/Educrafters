@@ -1,23 +1,24 @@
-# Educrafters · SMB31202 English for Technical Communication
+# ETC Lab · SMB31202 English for Technical Communication
 
-Interactive, futuristic web lessons for **SMB31202 English for Technical Communication**
-(UniMAP, Semester 1, Session 2026/2027). Every weekly slide deck is rebuilt as an
-interactive lesson with quizzes, sorting games, gap-fills, flip cards, writing pads with
-model answers, exam timers, checklists and XP progress tracking.
+Interactive weekly lessons, a live Class Wall and an AI writing coach for **SMB31202
+English for Technical Communication** (UniMAP, Semester 1, Session 2026/2027).
+
+Live site: https://smb31202-etc.netlify.app
 
 ## Open it
 
-- Locally: open `index.html` in any browser. No install or build step.
-- Online (free): GitHub repo → **Settings → Pages** → Source: *Deploy from a branch* →
-  Branch: `main`, folder `/ (root)` → Save. The site appears at
-  `https://faharol.github.io/Educrafters/` after a minute.
+- Locally: serve the `public/` folder (`cd public && python3 -m http.server`) and open
+  `http://localhost:8000`. No build step. The Class Wall and the AI coach need the
+  Netlify Functions, so they only work on the live site.
+- Deploy: the site is on Netlify (publish directory `public/`, functions in
+  `netlify/functions/`). See `HANDOFF.md` for the full map and the next ideas.
 
 ## Structure
 
 | Path | What it is |
 |---|---|
-| `index.html` | Course home: this-week status, assessments, semester timeline, week cards |
-| `weeks/week-01.html` … `week-14.html` | One interactive lesson per week |
+| `public/index.html` | Course home: this-week status, assessments, semester timeline, week cards |
+| `public/weeks/week-01.html` … `week-14.html` | One interactive lesson per week |
 | `assets/css/style.css` | Shared theme |
 | `assets/js/deck.js` | Slide engine + interactive widgets + saved progress |
 | `assets/js/course.js` | Course data from the Scheme of Work (dates, topics, assessments) |

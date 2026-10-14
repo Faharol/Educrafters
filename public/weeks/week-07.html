@@ -1,0 +1,2105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 7 · Graphics &amp; Visuals · SMB31202</title>
+<meta name="description" content="SMB31202 Week 7: reading visual data, choosing the right visual, honest and accessible charts, captions and credits, and visuals on a poster.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/lab.css">
+<style>
+/* ---- Week 7 only: live charts and diagrams ---- */
+.viz { background: #ffffff; border: 1px solid var(--line); border-radius: var(--radius); padding: .9rem 1rem; margin: 0 0 1rem; }
+.viz svg { display: block; width: 100%; height: auto; }
+.viz text { font-family: var(--font); }
+.viz text:not([fill]) { fill: var(--text); }
+.viz .ax { stroke: var(--muted); stroke-width: 1.5; }
+.viz .gl { stroke: rgba(0,0,0,.09); stroke-width: 1; }
+.viz .lab { fill: var(--muted); font-size: 13px; }
+.viz .val { font: 600 13px var(--mono); fill: var(--text); }
+.viz .ttl { font: 700 15px var(--display); fill: var(--text); }
+.viz rect, .viz text, .viz path, .viz line, .viz g { transition: opacity .35s; }
+.viz .dim { opacity: .14; }
+.viz .hl { fill: var(--cyan) !important; font-weight: 700; }
+.viz .ann { font: 700 14px var(--mono); }
+.figcap { font: .84rem var(--mono); color: var(--muted); margin: .55rem 0 0; }
+.figcap--top { margin: 0 0 .55rem; }
+.viz__bar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .7rem; }
+.btn.is-on { border-color: var(--cyan); background: rgba(0,113,227,.10); color: var(--cyan); }
+.illus { font: .76rem var(--mono); color: var(--dim); margin: .4rem 0 0; }
+.stepbox { background: var(--panel); border: 1px solid var(--line-strong); border-radius: var(--radius); padding: 1rem 1.15rem; }
+.stepbox__n { font: 700 .78rem var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--pink); }
+.stepbox h3 { margin: .3rem 0 .4rem; }
+.stepdots { display: flex; gap: 6px; margin: .7rem 0; }
+.stepdots span { flex: 1; height: 6px; border-radius: 99px; background: rgba(255, 255, 255, .1); }
+.stepdots span.on { background: var(--grad); }
+.slide .grid { align-items: start; }
+.flip:has(.mini) { min-height: 225px; }
+#cutaway { max-height: 300px; }
+#poster { max-height: 440px; }
+.viz svg.tilt { width: min(240px, 70vw); }
+.mini svg { max-height: 110px; }
+.decide { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.decide button { text-align: left; font: 500 .95rem var(--font); color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: .75rem .9rem; cursor: pointer; }
+.decide button:hover { border-color: var(--cyan); }
+.decide button b { display: block; font: 700 .78rem var(--mono); color: var(--violet); letter-spacing: .08em; text-transform: uppercase; margin-top: .35rem; opacity: 0; transition: opacity .3s; }
+.decide button.is-open { border-color: var(--ok); background: rgba(26,143,60,.09); }
+.decide button.is-open b { opacity: 1; color: var(--ok); }
+.decide__root { font: 700 1rem var(--display); text-align: center; border: 2px solid var(--violet); border-radius: 50% / 40%; padding: .7rem 1rem; margin: 0 auto .8rem; max-width: 420px; }
+.swatches { display: grid; gap: .6rem; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.swatch { background: #fff; border-radius: var(--radius-sm); padding: .8rem .9rem; }
+.swatch p { margin: 0; font-weight: 600; }
+.swatch .small { font-family: var(--mono); color: #222; }
+.verdict { font: 700 .74rem var(--mono); padding: .1em .5em; border-radius: 99px; margin-right: .3rem; display: inline-block; }
+.verdict.ok { background: #0b7a43; color: #fff; } .verdict.no { background: #b0002a; color: #fff; }
+.checker { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; }
+.checker label { font: .8rem var(--mono); color: var(--muted); display: flex; gap: .4rem; align-items: center; }
+.checker input[type=color] { width: 44px; height: 32px; border: 1px solid var(--line-strong); background: none; border-radius: 6px; padding: 2px; }
+.paper { background: #fbfbf8; color: #111; border-radius: var(--radius-sm); padding: 1rem 1.1rem; font-family: "Times New Roman", Georgia, serif; }
+.paper p { margin: 0 0 .4rem; color: #111; }
+.paper strong { color: #111; }
+.paper svg text { fill: #222; }
+.paper .sc { font-variant: small-caps; letter-spacing: .04em; }
+.paper .old { text-decoration: line-through; color: #8a1c1c; }
+.paper table { font-size: .82rem; color: #111; }
+.paper th { color: #111; background: none; border-bottom: 1px solid #111; font-family: inherit; }
+.paper td { border-bottom: 1px solid #ccc; }
+.paper caption { color: #111; font-family: inherit; text-align: center; padding: .2rem 0 .5rem; }
+.paper tbody tr:hover td { background: none; }
+.informal { font-family: var(--mono); background: var(--bg-2); border-radius: var(--radius-sm); padding: .6rem 1rem; display: inline-grid; grid-template-columns: auto auto; gap: .1rem 2.5rem; }
+.informal span:nth-child(even) { text-align: right; color: var(--cyan); }
+.cvd-filter { position: absolute; width: 0; height: 0; overflow: hidden; }
+.tilt-wrap { perspective: 520px; display: grid; place-items: center; min-height: 230px; }
+.tilt { transition: transform .9s cubic-bezier(.2, .8, .2, 1); width: min(240px, 70vw); }
+.tilt.is-3d { transform: rotateX(62deg) rotateZ(-25deg) translateY(30px); filter: drop-shadow(0 18px 0 rgba(0,0,0,.18)); }
+.gray { filter: grayscale(1); }
+.viz svg.gray-t { transition: filter .5s; }
+@media (max-width: 640px) { .viz { padding: .6rem; } .stepbox { padding: .8rem; } }
+.vz-bar{transform-box:fill-box}
+.vz-bar--neg{transform-origin:right center}
+.stepdots span{background:var(--line)!important}
+.stepdots span.on{background:var(--grad)!important}
+.photo-fig img{height:auto}
+.keystat b .vz-count{display:inline;margin:0;font:inherit;color:inherit}
+.vz-ph img{height:auto!important;aspect-ratio:4/3!important}
+.vz-row{display:grid;grid-template-columns:minmax(6rem,10rem) 1fr;gap:.8rem;align-items:center;margin:.45rem 0;font-size:.88rem}
+.vz-row .vz-track{position:relative;height:2rem;background:var(--bg-2);border-radius:10px}
+.vz-row .vz-fill{position:absolute;left:0;top:0;bottom:0;border-radius:10px}
+.vz-mark{position:absolute;top:0;bottom:0;border-left:2px dashed #1d1d1f;opacity:.6;pointer-events:none}
+.vz-mark i{position:absolute;top:-1.1rem;font:600 .72rem var(--font);font-style:normal;color:var(--text);white-space:nowrap}
+.vz-marks{position:relative;margin:2.2rem 0 .2rem}
+.vz-marks .vz-ml{position:absolute;left:calc(var(--lw) + .8rem);right:0;top:-.3rem;bottom:0;pointer-events:none}
+.vz-pull{margin:0;align-self:center}
+@media(max-width:640px){.vz-row{grid-template-columns:5.6rem 1fr;gap:.5rem;font-size:.8rem}.vz-marks{--lw:5.6rem!important}}
+</style>
+<style id="vz-css">
+/* visual helpers (scoped: vz-*) */
+.vz-stack{display:flex;gap:4px;margin:.4rem 0 0}
+.vz-stack .vz-blk{border-radius:12px;padding:.7rem .3rem .55rem;text-align:center;color:#fff;min-width:0;transform-origin:left center;transition:transform .9s cubic-bezier(.2,.8,.2,1) var(--d,0s),filter .2s;cursor:default;outline-offset:2px}
+.vz-stack .vz-blk b{display:block;font:800 clamp(1.1rem,3.6vw,1.9rem)/1 var(--display,var(--font));letter-spacing:-.03em}
+.vz-stack .vz-blk span{display:block;font-size:clamp(.62rem,2vw,.78rem);opacity:.95;margin-top:.25rem;font-weight:600}
+.vz-blk:hover,.vz-blk:focus{filter:brightness(1.08)}
+.vz-a{background:var(--cyan)}.vz-a2{background:#3b95ec}.vz-b{background:var(--violet)}.vz-b2{background:#9378f8}
+.vz-amber{background:var(--amber)}.vz-lime{background:var(--lime)}.vz-pink{background:var(--pink)}
+.vz-brace{display:flex;gap:4px;font:700 .8rem var(--font);color:var(--muted);margin:0 0 .35rem}
+.vz-brace div{border-bottom:3px solid currentColor;padding-bottom:.25rem;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vz-brace .ca{color:var(--cyan)}.vz-brace .cb{color:var(--violet)}
+.vz-pre .vz-blk{transform:scaleX(0)}
+.vz-ring{transition:stroke-dasharray 1.1s cubic-bezier(.2,.8,.2,1) var(--d,0s)}
+.vz-pre .vz-ring{stroke-dasharray:0 100!important}
+.vz-bar{transform-origin:left center;transition:transform 1s cubic-bezier(.2,.8,.2,1) var(--d,0s)}
+.vz-pre .vz-bar{transform:scaleX(0)}
+.vz-legend{display:flex;flex-wrap:wrap;gap:.4rem 1.1rem;font-size:.85rem;color:var(--muted);margin-top:.8rem}
+.vz-legend i{display:inline-block;width:.8rem;height:.8rem;border-radius:4px;margin-right:.4rem;vertical-align:-1px}
+.vz-tip{position:fixed;z-index:60;pointer-events:none;background:#1d1d1f;color:#fff;font:500 .8rem/1.35 var(--font);padding:.45rem .7rem;border-radius:10px;max-width:15rem;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.vz-tip.on{opacity:1;transform:none}
+[data-tip]{cursor:pointer}
+.vz-flow{display:grid;grid-template-columns:1fr auto 1fr;gap:.8rem;align-items:center}
+.vz-node{border-radius:16px;padding:1rem 1.1rem;background:var(--bg-2);border:1px solid var(--line)}
+.vz-node b{display:block;font-size:1.05rem}
+.vz-node small{color:var(--muted)}
+.vz-arrow{font-size:1.6rem;color:var(--muted)}
+@media(max-width:640px){.vz-flow{grid-template-columns:1fr}.vz-arrow{transform:rotate(90deg);text-align:center}}
+@media(prefers-reduced-motion:reduce){.vz-blk,.vz-ring,.vz-bar{transition:none!important}}
+.keystat b .vz-count{display:inline;margin:0;font:inherit;color:inherit}
+.vz-ph img{height:auto!important;aspect-ratio:4/3!important}
+.split{align-items:start}
+.photo-fig img{height:auto}
+.chart-card svg[viewBox="0 0 200 200"]{max-width:290px;margin:0 auto}
+.vz-ticks{position:relative;height:1.2rem;font-size:.75rem;color:var(--muted);margin-top:.5rem}
+.vz-ticks span{position:absolute;transform:translateX(-50%)}
+</style>
+</head>
+<body data-week="07" data-title="Graphics &amp; Visuals in Technical Communication">
+
+<!-- hidden SVG filter for colour-vision simulation (Machado et al. 2009, deuteranopia) -->
+<svg class="cvd-filter" aria-hidden="true" focusable="false">
+  <filter id="deut" color-interpolation-filters="linearRGB">
+    <feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"/>
+  </filter>
+</svg>
+
+<main class="deck">
+
+  <!-- 1 · Title -->
+  <section class="slide slide--title" data-title="Welcome">
+    <div class="slide__kicker"><span class="tag">SMB31202</span><span class="tag">Online</span><span>16 – 22 Nov 2026</span></div>
+    <div class="week-no">07</div>
+    <h1>Graphics &amp; Visuals in <span class="grad-text">Technical Communication</span></h1>
+    <p class="slide__lead">This week you read charts and tables carefully, turn them into clear findings, choose the right visual for each question, and make visuals that are honest, readable for everyone, and properly credited. This is an online week, so every task has a “check your answer” straight after it.</p>
+    <p class="meta">Department of Languages &amp; General Studies · Faculty of Business and Communication (FPK) · Universiti Malaysia Perlis (UniMAP) · Semester 1, Session 2026/2027</p>
+  </section>
+
+  <!-- 2 · Outcomes -->
+  <section class="slide" data-title="Learning outcomes">
+    <div class="slide__kicker">01 · Outcomes</div>
+    <h2>By the end of this session, you will be able to…</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Part</th><th>Skill</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">A</span></td><td>Read a chart or a table carefully, and in the right order</td></tr>
+          <tr><td><span class="tag">A</span></td><td>Write findings from visual data, using accurate language of change and comparison</td></tr>
+          <tr><td><span class="tag tag--violet">B</span></td><td>Name the main types of visual and say what each one is good for</td></tr>
+          <tr><td><span class="tag tag--violet">B</span></td><td>Choose the right visual for the question you want to answer</td></tr>
+          <tr><td><span class="tag tag--pink">C</span></td><td>Spot a chart that misleads, even when every number in it is correct</td></tr>
+          <tr><td><span class="tag tag--pink">C</span></td><td>Make visuals everyone can read, including readers with colour vision deficiency</td></tr>
+          <tr><td><span class="tag tag--amber">D</span></td><td>Label, place and credit a visual correctly in a written document</td></tr>
+          <tr><td><span class="tag tag--lime">E</span></td><td>Choose and caption the visuals on your group poster</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figure class="chart-card vz mt">
+      <h3>The session at a glance</h3>
+      <div role="img" aria-label="Proportional bar of suggested time in minutes: Part A 55, Part B 35, Part C 35, Part D 30, Part E 20."><div class="vz-stack"><div class="vz-blk vz-a" style="flex:55 1 0;--d:0s" data-tip="Part A, Reading visual data: 55 minutes"><b>55</b><span>Part A</span></div><div class="vz-blk vz-b" style="flex:35 1 0;--d:0.1s" data-tip="Part B, Types and functions: 35 minutes"><b>35</b><span>Part B</span></div><div class="vz-blk vz-pink" style="flex:35 1 0;--d:0.2s" data-tip="Part C, Honest and accessible: 35 minutes"><b>35</b><span>Part C</span></div><div class="vz-blk vz-amber" style="flex:30 1 0;--d:0.3s" data-tip="Part D, Visuals in your text: 30 minutes"><b>30</b><span>Part D</span></div><div class="vz-blk vz-lime" style="flex:20 1 0;--d:0.4s" data-tip="Part E, Visuals on a poster: 20 minutes"><b>20</b><span>Part E</span></div></div></div>
+      <figcaption>Suggested minutes for each part. Block width is proportional to time. Tap a block for its title.</figcaption>
+    </figure>
+    <p class="small muted">Suggested time: Part A 55 min · Part B 35 min · Part C 35 min · Part D 30 min · Part E 20 min.</p>
+  </section>
+
+  <!-- 3 · Where this fits -->
+  <section class="slide" data-title="Where this fits">
+    <div class="slide__kicker">02 · Where this fits</div>
+    <h2>Two skills you already have, joined together</h2>
+    <ol class="steps" data-build>
+      <li><div><h3>Week 4</h3><p>You read academic texts carefully and made inferences: following an argument and working out meaning from context.</p></div></li>
+      <li><div><h3>Week 5</h3><p>You learned report structure and started writing from charts and tables.</p></div></li>
+      <li><div><h3>Week 6</h3><p>Conclusions, recommendations and citation.</p></div></li>
+      <li><div><h3>Week 7 · this week</h3><p>Read visual data, write clear findings, and make and credit visuals correctly.</p></div></li>
+    </ol>
+    <div class="callout callout--ok"><p><strong>Reading a visual and writing about it are two parts of the same skill.</strong> Reading visual information carefully is a reading skill. Writing about it is a writing skill. You use both at the same time.</p></div>
+  </section>
+
+  <!-- 4 · Part A -->
+  <section class="slide slide--part" data-title="Part A · Reading visual data">
+    <div class="part-letter">A</div>
+    <h2>Reading visual data</h2>
+    <p class="slide__lead">Turning non-linear text into linear text.</p>
+  </section>
+
+  <!-- 5 · Linear / non-linear -->
+  <section class="slide" data-title="Linear and non-linear text">
+    <div class="slide__kicker">04 · Two kinds of text</div>
+    <h2>Linear and non-linear text</h2>
+    <div class="grid grid-2">
+      <div class="card"><span class="tag">Linear</span><h3 class="mt">Read from start to finish</h3><p>One direction, sentence after sentence. <em>Reports, essays, letters.</em></p></div>
+      <div class="card card--accent"><span class="tag tag--violet">Non-linear</span><h3 class="mt">Read in different directions</h3><p>Your eye jumps around it. <em>Charts, tables, maps, diagrams, flowcharts, dashboards.</em></p></div>
+    </div>
+    <div class="split" style="margin:1.2rem 0">
+      <figure class="photo-fig vz-ph" style="margin:0"><img src="../assets/img/engineer-lab.jpg" alt="An engineer in a laboratory studying readings and equipment, switching between reading data and writing about it" loading="lazy" width="1200" height="1043"><figcaption>Engineers read non-linear data all day, then write it up as linear text.</figcaption></figure>
+      <p class="pull vz-pull">The skill is the transfer: non-linear in, linear out.<cite>Linear and non-linear text</cite></p>
+    </div>
+    <p>Engineers move between the two all day: you read a sensor dashboard and write a shift report; you read a test table and write a specification; you read a survey chart and brief a manager. <strong>The skill is the transfer: non-linear in, linear out.</strong></p>
+    <div class="sorter" data-xp="10" data-label="Linear or non-linear?">
+      <div class="sorter__pool">
+        <button class="chip" data-bin="lin">Report</button>
+        <button class="chip" data-bin="non">Bar chart</button>
+        <button class="chip" data-bin="lin">Letter</button>
+        <button class="chip" data-bin="non">Sensor dashboard</button>
+        <button class="chip" data-bin="non">Map</button>
+        <button class="chip" data-bin="lin">Essay</button>
+        <button class="chip" data-bin="non">Flowchart</button>
+        <button class="chip" data-bin="lin">Shift report</button>
+      </div>
+      <div class="sorter__bins">
+        <div class="bin" data-bin="lin"><span class="bin__label">Linear</span></div>
+        <div class="bin" data-bin="non"><span class="bin__label">Non-linear</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · Six steps -->
+  <section class="slide" data-title="Six steps to read a figure">
+    <div class="slide__kicker">05 · Method</div>
+    <h2>How to read a figure: six steps, in this order</h2>
+    <ol class="steps" data-build>
+      <li><div><h3>Read the title, units and period</h3><p>What is counted, in what unit, and when? Counts or rates? One year or several?</p></div></li>
+      <li><div><h3>Check the axes</h3><p>Does the value axis start at zero? If not, the differences may look bigger than they are.</p></div></li>
+      <li><div><h3>Find the biggest (and smallest)</h3><p>Which category is largest now?</p></div></li>
+      <li><div><h3>Find the biggest change</h3><p>As a number <em>and</em> as a percentage. They are not always the same category.</p></div></li>
+      <li><div><h3>Look for a break in the pattern</h3><p>Did the order change? Did one category pass another?</p></div></li>
+      <li><div><h3>Look for what goes the other way</h3><p>Which categories moved against the overall trend?</p></div></li>
+    </ol>
+    <div class="callout"><p><strong>Steps 4 and 5 are where the good sentences come from.</strong> A student who reports only totals writes a dull paragraph. A student who spots the change in order writes something a manager would want to read. Write the six steps on a card and keep it beside you for the rest of the session.</p></div>
+    <p class="illus">The original slide showed the six steps as an image. The step names here are rebuilt from the worked example on the next slide.</p>
+  </section>
+
+  <!-- 7 · Worked example -->
+  <section class="slide" data-title="Worked example: Figure 1">
+    <div class="slide__kicker">06 · Worked example</div>
+    <h2>Read this figure, one step at a time</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="fig1" role="img" aria-label="Grouped column chart comparing recorded injuries by cause in 2022 and 2024. Falls from height rose from 34 to 46, overtaking manual handling as the leading cause. Three of the five categories fell."></svg>
+        <p class="figcap">Figure 1: Recorded workplace injuries by cause, one construction firm, 2022 and 2024</p>
+      </div>
+      <div class="stepbox" id="fig1steps">
+        <div class="stepbox__n">The six steps applied</div>
+        <div class="stepdots"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <h3 id="fig1h">Press “Next step” to start</h3>
+        <p id="fig1p" class="muted">Each step highlights one thing on the chart.</p>
+        <div class="viz__bar"><button class="btn btn--sm" type="button" id="fig1prev">← Back</button><button class="btn btn--primary btn--sm" type="button" id="fig1next">Next step →</button></div>
+      </div>
+    </div>
+    <p class="illus">Data is fictional teaching material.</p>
+  </section>
+
+  <!-- 8 · Key point -->
+  <section class="slide" data-title="The key point of Figure 1">
+    <div class="slide__kicker">06 · The key point</div>
+    <h2>The total hides the story</h2>
+    <div class="grid grid-3">
+      <div class="card"><span class="num-badge">129 → 138</span><h3 class="mt">Total injuries</h3><p>A rise of <strong>9</strong>, or <strong>7.0%</strong>.</p></div>
+      <div class="card card--accent"><span class="num-badge">34 → 46</span><h3 class="mt">Falls from height</h3><p>A rise of <strong>12</strong>: bigger than the rise in the total.</p></div>
+      <div class="card"><span class="num-badge">3 of 5</span><h3 class="mt">Categories fell</h3><p>That is why the total moved <em>less</em> than its own largest part.</p></div>
+    </div>
+    <div class="grid grid-2 mt">
+      <figure class="chart-card vz" style="margin:0">
+        <h3>Change from 2022 to 2024</h3>
+        <svg viewBox="0 0 430 264" role="img" aria-label="Diverging bar chart of change in injuries from 2022 to 2024. Falls from height up 12, slips and trips up 4, electrical down 1, struck by object down 3, manual handling down 3."><line class="axis-l" x1="200" x2="200" y1="4" y2="234"/><text x="130" y="35" text-anchor="end" class="lbl-strong" style="font-size:15px">Falls from height</text><rect class="vz-bar" x="200" y="16" width="108" height="28" rx="8" fill="#d70015" data-tip="Falls from height: 34 to 46, up 12 (+35.3%)" style="--d:0.00s;transform-origin:left center"/><text x="316" y="35" style="font-size:14px;font-weight:700;fill:#d70015">▲ +12 (+35.3%)</text><text x="130" y="81" text-anchor="end" class="lbl-strong" style="font-size:15px">Slips and trips</text><rect class="vz-bar" x="200" y="62" width="36" height="28" rx="8" fill="#d70015" data-tip="Slips and trips: 19 to 23, up 4 (+21.1%)" style="--d:0.08s;transform-origin:left center"/><text x="244" y="81" style="font-size:14px;font-weight:700;fill:#d70015">▲ +4 (+21.1%)</text><text x="130" y="127" text-anchor="end" class="lbl-strong" style="font-size:15px">Electrical</text><rect class="vz-bar vz-bar--neg" x="191" y="108" width="9" height="28" rx="8" fill="#0071e3" data-tip="Electrical: 8 to 7, down 1 (−12.5%)" style="--d:0.16s"/><text x="208" y="127" style="font-size:14px;font-weight:700;fill:#0071e3">▼ −1 (−12.5%)</text><text x="130" y="173" text-anchor="end" class="lbl-strong" style="font-size:15px">Struck by object</text><rect class="vz-bar vz-bar--neg" x="173" y="154" width="27" height="28" rx="8" fill="#0071e3" data-tip="Struck by object: 27 to 24, down 3 (−11.1%)" style="--d:0.24s"/><text x="208" y="173" style="font-size:14px;font-weight:700;fill:#0071e3">▼ −3 (−11.1%)</text><text x="130" y="219" text-anchor="end" class="lbl-strong" style="font-size:15px">Manual handling</text><rect class="vz-bar vz-bar--neg" x="173" y="200" width="27" height="28" rx="8" fill="#0071e3" data-tip="Manual handling: 41 to 38, down 3 (−7.3%)" style="--d:0.32s"/><text x="208" y="219" style="font-size:14px;font-weight:700;fill:#0071e3">▼ −3 (−7.3%)</text><text x="200" y="256" text-anchor="middle" style="font-size:14px">0 = no change</text></svg>
+        <figcaption>One category rose a lot, one rose a little, three fell. Red ▲ = rise, blue ▼ = fall; the sign and arrow carry the meaning as well as the colour. Data is fictional teaching material.</figcaption>
+      </figure>
+      <figure class="chart-card vz" style="margin:0">
+        <h3>Who the 138 injuries in 2024 were</h3>
+        <div role="img" aria-label="Stacked bar of 2024 injuries, total 138: falls from height 46, manual handling 38, struck by object 24, slips and trips 23, electrical 7. Falls are one third of the total."><div class="vz-stack"><div class="vz-blk" style="flex:46 1 0;background:#d70015;color:#fff;--d:0.0s" data-tip="Falls from height: 46 of 138 injuries in 2024 (33.3%)"><b>46</b></div><div class="vz-blk" style="flex:38 1 0;background:#0071e3;color:#fff;--d:0.1s" data-tip="Manual handling: 38 of 138 injuries in 2024 (27.5%)"><b>38</b></div><div class="vz-blk" style="flex:24 1 0;background:#4a9af0;color:#fff;--d:0.2s" data-tip="Struck by object: 24 of 138 injuries in 2024 (17.4%)"><b>24</b></div><div class="vz-blk" style="flex:23 1 0;background:#8fbff5;color:#1d1d1f;--d:0.3s" data-tip="Slips and trips: 23 of 138 injuries in 2024 (16.7%)"><b>23</b></div><div class="vz-blk" style="flex:7 1 0;background:#c4dcf9;color:#1d1d1f;--d:0.4s" data-tip="Electrical: 7 of 138 injuries in 2024 (5.1%)"><b>7</b></div></div></div>
+        <div class="vz-legend"><span><i style="background:#d70015"></i>Falls from height 46</span><span><i style="background:#0071e3"></i>Manual handling 38</span><span><i style="background:#4a9af0"></i>Struck by object 24</span><span><i style="background:#8fbff5"></i>Slips and trips 23</span><span><i style="background:#c4dcf9"></i>Electrical 7</span></div>
+        <figcaption>Falls from height are <span class="vz-count" data-to="33.3">33.3</span>% of the total: one third. Block width is proportional to the count.</figcaption>
+      </figure>
+    </div>
+    <div class="quiz mt" data-xp="10" data-label="Which would you send to a safety manager?">
+      <p class="quiz__q">Which sentence reads the chart <em>and</em> finds the story?</p>
+      <div class="quiz__opts">
+        <button data-why="True, but this reads the chart and misses the story. The 7% average hides a 35% jump in one category.">“Injuries rose by 7%.”</button>
+        <button data-correct data-why="Yes. It gives the total, then the real problem, then the part that goes the other way.">“The overall rise of 7% hides the real problem: falls rose 35% and became the leading cause, while three of the other categories fell.”</button>
+        <button data-why="This describes every bar. It is a list, not a finding.">“Falls went from 34 to 46, struck by object from 27 to 24, manual handling from 41 to 38…”</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · Language of change -->
+  <section class="slide" data-title="The language of change">
+    <div class="slide__kicker">07 · Language</div>
+    <h2>The language of change</h2>
+    <p class="slide__lead">You need a verb, and usually an adverb. Vary them: using “increase” five times weakens your writing.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Direction</th><th>Verbs</th><th>Adverbs &amp; adjectives</th><th>Noun forms</th></tr></thead>
+        <tbody>
+          <tr><td>Up</td><td>rose · increased · grew · climbed</td><td>sharply · steeply · significantly · steadily · gradually · slightly · marginally</td><td>a rise · an increase · growth</td></tr>
+          <tr><td>Down</td><td>fell · decreased · declined · dropped</td><td>sharply · steeply · significantly · steadily · gradually · slightly · marginally</td><td>a fall · a decrease · a decline · a drop</td></tr>
+          <tr><td>No change</td><td>remained stable · held steady · levelled off · was unchanged</td><td>broadly · largely · relatively</td><td>stability · a plateau</td></tr>
+          <tr><td>Highest &amp; lowest</td><td>peaked at · reached a high of · fell to a low of</td><td>—</td><td>a peak · a high · a low</td></tr>
+          <tr><td>Up and down</td><td>fluctuated · varied</td><td>considerably · slightly</td><td>fluctuation · variation</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout--warn"><p>Learn the pairs: <strong>“rose sharply”</strong>, not “rose strongly”; <strong>“remained stable”</strong>, not “stayed same”. Avoid <strong>“dramatically”</strong> and <strong>“drastically”</strong> in a technical report: they judge rather than describe, and claim more than the data shows.</p></div>
+  </section>
+
+  <!-- 10 · Change drill -->
+  <section class="slide" data-title="Drill: language of change">
+    <div class="slide__kicker">07 · Drill</div>
+    <h2>Sort the words, then use them</h2>
+    <div class="sorter" data-xp="15" data-label="Which movement does each phrase describe?">
+      <div class="sorter__pool">
+        <button class="chip" data-bin="up">climbed</button>
+        <button class="chip" data-bin="down">declined</button>
+        <button class="chip" data-bin="flat">held steady</button>
+        <button class="chip" data-bin="peak">peaked at</button>
+        <button class="chip" data-bin="fluc">fluctuated</button>
+        <button class="chip" data-bin="up">grew</button>
+        <button class="chip" data-bin="down">dropped</button>
+        <button class="chip" data-bin="flat">levelled off</button>
+        <button class="chip" data-bin="peak">fell to a low of</button>
+        <button class="chip" data-bin="fluc">varied</button>
+        <button class="chip" data-bin="flat">was unchanged</button>
+        <button class="chip" data-bin="peak">reached a high of</button>
+      </div>
+      <div class="sorter__bins">
+        <div class="bin" data-bin="up"><span class="bin__label">↗ Up</span></div>
+        <div class="bin" data-bin="down"><span class="bin__label">↘ Down</span></div>
+        <div class="bin" data-bin="flat"><span class="bin__label">→ No change</span></div>
+        <div class="bin" data-bin="peak"><span class="bin__label">⛰ Peak / low</span></div>
+        <div class="bin" data-bin="fluc"><span class="bin__label">〰 Up and down</span></div>
+      </div>
+    </div>
+    <div class="gapfill mt" data-xp="15">
+      <p>Using Figure 1: Falls from height <input class="gap" data-answer="rose|increased|grew|climbed"> sharply, from 34 to 46. Electrical injuries <input class="gap" data-answer="fell|decreased|declined|dropped"> slightly, from 8 to 7. Falls from height <input class="gap" data-answer="overtook|passed|replaced"> manual handling as the leading cause.</p>
+    </div>
+    <div class="quiz mt" data-xp="5">
+      <p class="quiz__q">Which word should you avoid in a technical report?</p>
+      <div class="quiz__opts">
+        <button data-why="“Sharply” describes the speed of change. It is fine.">sharply</button>
+        <button data-correct data-why="Right. “Dramatically” judges rather than describes, and claims more than the data shows.">dramatically</button>
+        <button data-why="“Marginally” is a precise, careful adverb. It is fine.">marginally</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · Comparison -->
+  <section class="slide" data-title="Language of comparison">
+    <div class="slide__kicker">08 · Language</div>
+    <h2>The language of comparison and proportion</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>What you want to say</th><th>Patterns you can use</th></tr></thead>
+        <tbody>
+          <tr><td>A share of the whole</td><td>X accounted for 33% of the total · X represented one third of · X made up the largest share of</td></tr>
+          <tr><td>Comparing two figures</td><td>X was almost twice Y · X exceeded Y by 8 units · X was marginally higher than Y · Y was less than half of X</td></tr>
+          <tr><td>Putting things in order</td><td>X was the leading cause · X ranked second · X was the smallest category throughout</td></tr>
+          <tr><td><strong>When the order changes</strong></td><td>X overtook Y as the leading cause · X replaced Y in first place · the order of X and Y reversed</td></tr>
+          <tr><td>Speed of change</td><td>X rose by 12 (+35.3%) · X grew at twice the rate of Y · the increase in X outpaced that in Y</td></tr>
+          <tr><td>When you are not certain of the exact figure</td><td>approximately · just over · just under · around · roughly</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid grid-2">
+      <div class="quiz" data-xp="10">
+        <p class="quiz__q">Which pattern describes what happened to falls and manual handling in Figure 1?</p>
+        <div class="quiz__opts">
+          <button data-why="That is a share of the whole, not a change of order.">Falls accounted for 33% of the total.</button>
+          <button data-correct data-why="Yes. “When the order changes” is what makes a finding interesting.">Falls overtook manual handling as the leading cause.</button>
+          <button data-why="Falls was not the smallest category; electrical was.">Falls was the smallest category throughout.</button>
+        </div>
+      </div>
+      <div class="quiz" data-xp="10">
+        <p class="quiz__q">A bar chart has no data labels. A bar looks close to 45. What should you write?</p>
+        <div class="quiz__opts">
+          <button data-why="“45” is a claim the chart does not support.">“The value was 45.”</button>
+          <button data-correct data-why="Right. “Approximately 45” is honest.">“The value was approximately 45.”</button>
+          <button data-why="Too vague: the reader learns nothing.">“The value was high.”</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · Three patterns -->
+  <section class="slide" data-title="From figure to finding">
+    <div class="slide__kicker">09 · Writing</div>
+    <h2>From figure to finding: three sentence patterns</h2>
+    <ol class="steps" data-build>
+      <li><div><h3>The overall picture, then the detail</h3><div class="example">“Total recorded injuries rose by 7.0% between 2022 and 2024, from 129 to 138. This overall figure, <em>however, hides</em> large differences between categories.”</div></div></li>
+      <li><div><h3>The most important change, with the numbers</h3><div class="example">“The sharpest increase was in falls from height, which rose by 12 incidents (+35.3%) and overtook manual handling as the leading cause of injury.”</div></div></li>
+      <li><div><h3>The part that goes the other way</h3><div class="example">“Three of the five categories fell over the same period, with struck-by-object incidents down 11.1% and electrical injuries down 12.5%.”</div></div></li>
+      <li><div><h3>Put together, that is your findings section</h3><p>Three sentences, about 70 words: the overall movement, the most important change, and the part that goes the other way. This template works for almost any figure.</p></div></li>
+    </ol>
+    <p class="small muted">Pattern 1 uses “however, hides”: the linking move that tells the reader you understood the data instead of just reading it off.</p>
+  </section>
+
+  <!-- 13 · Practice 1 -->
+  <section class="slide" data-title="Practice 1: write the findings">
+    <div class="slide__kicker"><span class="tag tag--pink">Practice 1</span> Write the findings</div>
+    <h2>Use Figure 1. Three sentences, 60–80 words.</h2>
+    <div class="grid grid-2">
+      <div>
+        <div class="viz"><svg id="fig1mini" role="img" aria-label="Figure 1 again: injuries by cause, 2022 and 2024."></svg><p class="figcap">Figure 1 (again): sky blue = 2022, orange = 2024</p></div>
+        <div class="card">
+          <h3>Rules</h3>
+          <ul>
+            <li><strong>Do not describe every bar.</strong> Five categories across two years is ten numbers; you have room for four or five.</li>
+            <li>Do not use the same verb twice.</li>
+            <li>Every figure you give must be checkable against the chart.</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="write" data-min="60" data-max="80" data-xp="20" data-label="(a) Three findings sentences">
+          <p class="small muted">Use the three patterns: overall movement → most important change → the part that goes the other way.</p>
+          <textarea placeholder="Total recorded injuries…"></textarea>
+        </div>
+        <div class="write mt" data-min="15" data-xp="10" data-label="(b) One more sentence">
+          <p class="small muted">Which area worries you most, and why? Then (c): check every number you used against the figure.</p>
+          <textarea placeholder="The area of greatest concern is…"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · Practice 1 answer -->
+  <section class="slide" data-title="Practice 1: check your answer">
+    <div class="slide__kicker"><span class="tag tag--pink">Practice 1</span> Check your answer</div>
+    <h2>Compare with a model answer</h2>
+    <details class="reveal" data-xp="5">
+      <summary>Show the model answer (73 words) and part (b)</summary>
+      <div class="reveal__body">
+        <div class="example">Total recorded injuries rose by 7.0% between 2022 and 2024, from 129 to 138. This overall figure, however, hides large differences between categories. The sharpest increase was in falls from height, which rose by 12 incidents (+35.3%) and overtook manual handling as the leading cause. Three of the five categories fell over the same period, with struck-by-object incidents down 11.1% and electrical injuries down 12.5%.</div>
+        <p><strong>Part (b):</strong></p>
+        <div class="example">“The area of greatest concern is falls from height. It is both the fastest-growing category and now the largest, and it is the type of accident most likely to cause serious injury.”</div>
+        <p class="small muted">The last clause of part (b) brings in knowledge from outside the chart. That shows interpretation, not just reading.</p>
+      </div>
+    </details>
+    <h3 class="mt">Check your own work</h3>
+    <ul class="checklist" data-xp="10">
+      <li>I gave the overall change AND at least one category.</li>
+      <li>I used both actual numbers and percentages.</li>
+      <li>I mentioned the categories that fell, not only the ones that rose.</li>
+      <li>All my numbers are correct.</li>
+    </ul>
+  </section>
+
+  <!-- 15 · Comparison table -->
+  <section class="slide" data-title="Reading a comparison table">
+    <div class="slide__kicker">12 · Tables</div>
+    <h2>Reading a comparison table</h2>
+    <p class="pull" style="margin-bottom:1.5rem">The chart tells you what the problem is. The table tells you what you could do about it.<cite>Reading a comparison table</cite></p>
+    <div class="table-wrap">
+      <table>
+        <caption>Table 1: Proposed safety measures</caption>
+        <thead><tr><th>Measure</th><th class="num">Cost</th><th class="num">Expected fall in falls</th><th class="num">Time to install</th><th>Where it applies</th></tr></thead>
+        <tbody>
+          <tr><td>Edge protection on all scaffolds</td><td class="num">RM 210,000</td><td class="num">40–50%</td><td class="num">5 months</td><td>All sites</td></tr>
+          <tr><td>Compulsory fall-arrest training</td><td class="num">RM 60,000</td><td class="num">20–25%</td><td class="num">3 months</td><td>All workers</td></tr>
+          <tr><td>Wearable fatigue and position sensors</td><td class="num">RM 145,000</td><td class="num">10–15%</td><td class="num">8 months</td><td>High-rise sites only</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Reading a comparison table is a different skill from reading a chart. <strong>The chart tells you what the problem is. The table tells you what you could do about it.</strong></p>
+    <div class="quiz" data-xp="10">
+      <p class="quiz__q">Which column matters most? (Think about what Figure 1 showed.)</p>
+      <div class="quiz__opts">
+        <button data-why="Cost matters, but judging on cost alone gives a generic answer that ignores the problem.">Cost</button>
+        <button data-correct data-why="Yes. Figure 1 showed falls are the fastest-growing and now the largest category, so each measure is judged first on how much it reduces falls. You only know this because you read the figure first.">Expected fall in falls</button>
+        <button data-why="Coverage matters less than how much each measure reduces the main problem.">Where it applies</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 · Join -->
+  <section class="slide" data-title="Joining the figure and the table">
+    <div class="slide__kicker">13 · Figure + table</div>
+    <h2>The figure shows the problem. The table gives the options. Your sentence joins them.</h2>
+    <div class="grid grid-2">
+      <div class="card card--accent">
+        <h3>The join</h3>
+        <p>The figure showed that falls from height are the fastest-growing and now the largest category. So every measure in the table has to be judged <strong>first on how much it reduces falls</strong>, not on cost alone, and not on how many people it covers.</p>
+      </div>
+      <div class="write" data-min="40" data-xp="20" data-label="Your recommendation">
+        <p class="small muted">Using Figure 1 and Table 1, write a short recommendation. Which measure first, which next, which later, and why?</p>
+        <textarea placeholder="It is recommended that…"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 · Model recommendation -->
+  <section class="slide" data-title="Model recommendation">
+    <div class="slide__kicker">13 · Check your answer</div>
+    <h2>A model recommendation</h2>
+    <details class="reveal" data-xp="5">
+      <summary>Show the model recommendation</summary>
+      <div class="reveal__body">
+        <div class="example">“It is recommended that compulsory fall-arrest training be introduced first. At RM 60,000 and three months it is the cheapest and fastest of the three options, and it addresses falls from height, which the data show to be the main cause of the increase. Edge protection should follow in the next financial year, as it gives the largest reduction but costs considerably more. Wearable sensors should be delayed: they cost more than training, take the longest, give the smallest reduction, and apply to high-rise sites only.”</div>
+      </div>
+    </details>
+    <div class="grid grid-3">
+      <div class="card"><h3>Value and speed</h3><p>Training is first for value and speed, <strong>not</strong> because it works best. Edge protection reduces falls more, but costs 3.5 times as much and takes nearly twice as long.</p></div>
+      <div class="card"><h3>A sequence</h3><p>A sequence beats picking one winner.</p></div>
+      <div class="card"><h3>Three grounds</h3><p>The delay is justified on three grounds at once. That is what a strong justification looks like.</p></div>
+    </div>
+    <div class="callout callout--ok"><p>Arguing for edge protection first, because falls are the most serious kind of injury and worth the money, is also right, <strong>as long as you say so</strong>. The justification earns the marks, not the choice.</p></div>
+  </section>
+
+  <!-- 18 · Useful language -->
+  <section class="slide" data-title="Language for linking and recommending">
+    <div class="slide__kicker">Useful language</div>
+    <h2>Link, compare, recommend, justify</h2>
+    <div class="grid grid-2">
+      <div class="card"><span class="tag">Link the visuals</span><div class="example mt">“Figure 1 shows that water use increased, while Table 1 presents three possible measures.”</div></div>
+      <div class="card"><span class="tag tag--violet">Compare options</span><div class="example mt">“The leak repair programme offers the highest estimated saving.”</div><div class="example">“The training option is cheaper and faster to implement.”</div></div>
+      <div class="card"><span class="tag tag--pink">Recommend</span><div class="example mt">“It is recommended that the company implement …”</div><div class="example">“The company should implement X first, followed by Y.”</div></div>
+      <div class="card"><span class="tag tag--amber">Justify</span><div class="example mt">“This option is suitable because …”</div><div class="example">“Although it costs more, it directly targets the main problem.”</div></div>
+    </div>
+    <div class="sorter" data-xp="15" data-label="What is each sentence doing?">
+      <div class="sorter__pool">
+        <button class="chip" data-bin="link">“Figure 1 shows the problem, while Table 1 lists the options.”</button>
+        <button class="chip" data-bin="comp">“Training is cheaper and faster than edge protection.”</button>
+        <button class="chip" data-bin="rec">“The company should introduce training first, followed by edge protection.”</button>
+        <button class="chip" data-bin="just">“Although it costs more, edge protection directly targets the main problem.”</button>
+      </div>
+      <div class="sorter__bins">
+        <div class="bin" data-bin="link"><span class="bin__label">Link</span></div>
+        <div class="bin" data-bin="comp"><span class="bin__label">Compare</span></div>
+        <div class="bin" data-bin="rec"><span class="bin__label">Recommend</span></div>
+        <div class="bin" data-bin="just"><span class="bin__label">Justify</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19 · What weakens -->
+  <section class="slide" data-title="What weakens writing about data">
+    <div class="slide__kicker">14 · Common faults</div>
+    <h2>What weakens writing about visual data</h2>
+    <div class="flip-grid" data-xp="10">
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">01</span><h4 class="mt">Describing every number</h4></div><div class="flip__back"><p>You are writing a report, not a list. Choose only the important information.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">02</span><h4 class="mt">Only a percentage, or only an amount</h4></div><div class="flip__back"><p>“Landscaping rose 22.7%” tells the reader nothing until they know it rose by 5 units. Use both when they help.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">03</span><h4 class="mt">A number the chart does not show</h4></div><div class="flip__back"><p>If there are no data labels, write “approximately”.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">04</span><h4 class="mt">“The figure below”</h4></div><div class="flip__back"><p>Refer by number: “Figure 1 shows…”. Layout changes when a document is edited, but numbers do not.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">05</span><h4 class="mt">Spoken language</h4></div><div class="flip__back"><p>“I think they should…” belongs in discussion, not in a formal report. See Week 6.</p></div></div>
+    </div>
+    <div class="quiz" data-xp="10">
+      <p class="quiz__q">Which sentence is best for a formal report?</p>
+      <div class="quiz__opts">
+        <button data-why="Refers by position (“below”) and uses spoken language (“we can see”).">“As we can see in the figure below, falls went up a lot.”</button>
+        <button data-correct data-why="Refers by number, and gives the amount and the percentage.">“Figure 1 shows that falls from height rose by 12 incidents (+35.3%).”</button>
+        <button data-why="Spoken language, and no numbers.">“I think falls are the biggest problem now.”</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 · Part B -->
+  <section class="slide slide--part" data-title="Part B · Types &amp; functions">
+    <div class="part-letter">B</div>
+    <h2>Types &amp; functions of visuals</h2>
+    <p class="slide__lead">Choosing the right one for the question you want to answer.</p>
+  </section>
+
+  <!-- 21 · Functions -->
+  <section class="slide" data-title="What visuals do for a reader">
+    <div class="slide__kicker">16 · Functions</div>
+    <h2>What visuals do for a reader</h2>
+    <div class="flip-grid" data-xp="10">
+      <div class="flip"><div class="flip__front"><span class="tag">01</span><h4 class="mt">Attract attention</h4></div><div class="flip__back"><p>A reader's eye goes to a graphic before a block of text.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag">02</span><h4 class="mt">Emphasise</h4></div><div class="flip__back"><p>A visual shows which point matters most, more efficiently than bold type or a heading.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag">03</span><h4 class="mt">Clarify</h4></div><div class="flip__back"><p>Some relationships cannot be said in words at all: a sequence, a spatial arrangement, a distribution.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag">04</span><h4 class="mt">Save space</h4></div><div class="flip__back"><p>A table of twelve figures takes less room than the sentence describing them, and is more accurate.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag">05</span><h4 class="mt">Enable comparison</h4></div><div class="flip__back"><p>Side-by-side quantities are seen instantly. This is what charts are actually for.</p></div></div>
+    </div>
+    <p class="small muted">Tap every card to earn the XP.</p>
+  </section>
+
+  <!-- 22 · Four types -->
+  <section class="slide" data-title="The four you will use most">
+    <div class="slide__kicker">18 · Four common types</div>
+    <h2>The four you will use most</h2>
+    <p>Each one answers a different question. Choosing the wrong one is the most common fault in student posters. <strong>Before you flip, say what each visual is FOR.</strong></p>
+    <div class="flip-grid" data-xp="10">
+      <div class="flip"><div class="flip__front"><h4>Table</h4><div class="viz mini" style="margin:.5rem 0 0;padding:.4rem"><svg id="mini-table" aria-hidden="true"></svg></div></div><div class="flip__back"><p><strong>“What are the exact values?”</strong></p><p class="small">Exact values, many variables at once, mixed units. Shown: part of Table 2.</p></div></div>
+      <div class="flip"><div class="flip__front"><h4>Bar chart</h4><div class="viz mini" style="margin:.5rem 0 0;padding:.4rem"><svg id="mini-bar" aria-hidden="true"></svg></div></div><div class="flip__back"><p><strong>“Which is bigger?”</strong></p><p class="small">Comparing amounts across categories and showing order. Shown: Figure 1, 2024.</p></div></div>
+      <div class="flip"><div class="flip__front"><h4>Line graph</h4><div class="viz mini" style="margin:.5rem 0 0;padding:.4rem"><svg id="mini-line" aria-hidden="true"></svg></div></div><div class="flip__back"><p><strong>“How has it changed over time?”</strong></p><p class="small">Trends, and supporting a prediction. Shown: Table 2 totals, 2021–2024.</p></div></div>
+      <div class="flip"><div class="flip__front"><h4>Pie chart</h4><div class="viz mini" style="margin:.5rem 0 0;padding:.4rem"><svg id="mini-pie" aria-hidden="true"></svg></div></div><div class="flip__back"><p><strong>“How is one whole divided?”</strong></p><p class="small">A few large parts only. Shown: Figure 1, 2024 shares (falls = one third).</p></div></div>
+    </div>
+    <p class="small muted">Which of the four did you use most in Week 5? Usually it is the bar chart, whatever the question.</p>
+  </section>
+
+  <!-- 23 · Choosing -->
+  <section class="slide" data-title="Choosing the right visual">
+    <div class="slide__kicker">19 · Decision guide</div>
+    <h2>Choosing the right visual: start from the question</h2>
+    <div class="decide__root">What does your reader want to know?</div>
+    <div class="decide" id="decide">
+      <button type="button">What are the exact values? <b>→ Table</b></button>
+      <button type="button">Which category is bigger? <b>→ Bar chart</b></button>
+      <button type="button">How did it change over time? <b>→ Line graph</b></button>
+      <button type="button">What share of one whole does each part take (five parts or fewer)? <b>→ Pie chart</b></button>
+      <button type="button">In what order do things happen, and where are the decisions? <b>→ Flowchart</b></button>
+      <button type="button">How do the parts fit together? <b>→ Exploded diagram</b></button>
+      <button type="button">What is inside something that stays whole? <b>→ Cutaway diagram</b></button>
+      <button type="button">How are the parts of a system connected? <b>→ Block diagram</b></button>
+      <button type="button">What does it actually look like on site? <b>→ Photograph (credited)</b></button>
+    </div>
+    <p class="small muted mt">Tap each question to reveal its visual. Work backwards too: pick a visual from your Week 5 work and name the question it was answering. For the poster, choose your two types from <strong>two different branches</strong>: two bar charts is one type, not two.</p>
+    <p class="illus">The original was a flowchart image. This guide is rebuilt from the deck's own “good at / bad at” table and the diagram types in Part B.</p>
+  </section>
+
+  <!-- 24 · Choosing quiz -->
+  <section class="slide" data-title="Quick check: which visual?">
+    <div class="slide__kicker">19 · Check</div>
+    <h2>Which visual answers the question?</h2>
+    <div class="grid grid-2">
+      <div class="quiz" data-xp="10">
+        <p class="quiz__q">How did total foreign-language registrations change from 2021 to 2024?</p>
+        <div class="quiz__opts">
+          <button data-why="A pie shows one whole at one moment, not change.">Pie chart</button>
+          <button data-correct data-why="Change over time is what a line graph is for.">Line graph</button>
+          <button data-why="A flowchart shows a process, not quantities.">Flowchart</button>
+        </div>
+      </div>
+      <div class="quiz" data-xp="10">
+        <p class="quiz__q">Three safety measures compared on cost, effect, time and coverage, with exact values.</p>
+        <div class="quiz__opts">
+          <button data-correct data-why="Exact values and mixed units: a (verbal) table, like Table 1.">Table</button>
+          <button data-why="A bar chart handles one measure across categories, not four mixed units.">Bar chart</button>
+          <button data-why="A pie cannot show cost, months and percentages together.">Pie chart</button>
+        </div>
+      </div>
+      <div class="quiz" data-xp="10">
+        <p class="quiz__q">A technician must take a valve apart and put it back together.</p>
+        <div class="quiz__opts">
+          <button data-why="A cutaway shows what is inside a whole object, not how parts come apart.">Cutaway diagram</button>
+          <button data-why="A block diagram shows connections in a system, not physical parts.">Block diagram</button>
+          <button data-correct data-why="Exploded diagrams are for assembling or taking apart.">Exploded diagram</button>
+        </div>
+      </div>
+      <div class="quiz" data-xp="10">
+        <p class="quiz__q">Which of five injury causes was the largest in 2024?</p>
+        <div class="quiz__opts">
+          <button data-why="A line graph is for change over time, not comparing categories.">Line graph</button>
+          <button data-correct data-why="Comparing amounts across categories and showing order: a bar chart.">Bar chart</button>
+          <button data-why="A photograph shows what something looks like, not amounts.">Photograph</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 25 · Tables three kinds -->
+  <section class="slide" data-title="Tables: three kinds">
+    <div class="slide__kicker">20 · Tables</div>
+    <h2>Tables: three kinds</h2>
+    <div class="tabs">
+      <div class="tabs__bar"><button data-tab="inf">1 · Informal</button><button data-tab="for">2 · Formal</button><button data-tab="ver">3 · Verbal</button></div>
+      <div class="tabs__panel card" data-panel="inf">
+        <h3>Informal table: no ruled lines, flows with the text, no table number</h3>
+        <p>Over three months James lost 8 kg of body mass overall. For every kilogram of fat he lost, he gained about three quarters of a kilogram of muscle.</p>
+        <div class="informal"><span>Fat lost</span><span>14 kg</span><span>Muscle gained</span><span>10.5 kg</span><span>Net change in mass</span><span>−3.5 kg</span></div>
+        <p class="small muted mt">Check the arithmetic: 10.5 ÷ 14 = 0.75, so “three quarters” is right. An earlier version said 6 kg (6 ÷ 14 = 0.43) and did not match its own sentence. Readers do check.</p>
+      </div>
+      <div class="tabs__panel card" data-panel="for">
+        <h3>Formal table: ruled, numbered, caption above, referred to by number in the text</h3>
+        <p>Used for numbers a reader may need to read exactly. See the next slide.</p>
+      </div>
+      <div class="tabs__panel card" data-panel="ver">
+        <h3>Verbal table: ruled rows and columns containing words rather than numbers</h3>
+        <p>Used to line categories up against descriptions: causes against effects, options against criteria.</p>
+      </div>
+    </div>
+    <div class="quiz mt" data-xp="10">
+      <p class="quiz__q">Table 1 (the three safety measures) is which kind?</p>
+      <div class="quiz__opts">
+        <button data-why="It has a number, a caption and ruled lines, so it is not informal.">An informal table</button>
+        <button data-correct data-why="Yes. It lines options up against criteria: a verbal table with some numerical columns.">A verbal table with some numerical columns</button>
+        <button data-why="It contains words (measures, where it applies) as well as numbers.">A purely numerical table</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 26 · Formal table -->
+  <section class="slide" data-title="Formal table conventions">
+    <div class="slide__kicker">21 · Formal table</div>
+    <h2>Formal table: the conventions</h2>
+    <div class="table-wrap">
+      <table>
+        <caption>Table 2: Students registered for foreign language courses at UniMAP, 2021–2024</caption>
+        <thead><tr><th>Year</th><th class="num">Mandarin</th><th class="num">Japanese</th><th class="num">Thai</th><th class="num">German</th><th class="num">Korean</th><th class="num">Arabic</th><th class="num">Total</th></tr></thead>
+        <tbody>
+          <tr><td>2021</td><td class="num">70</td><td class="num">101</td><td class="num">80</td><td class="num">55</td><td class="num">90</td><td class="num">51</td><td class="num">447</td></tr>
+          <tr><td>2022</td><td class="num">77</td><td class="num">124</td><td class="num">64</td><td class="num">86</td><td class="num">78</td><td class="num">68</td><td class="num">497</td></tr>
+          <tr><td>2023</td><td class="num">130</td><td class="num">118</td><td class="num">100</td><td class="num">113</td><td class="num">116</td><td class="num">89</td><td class="num">666</td></tr>
+          <tr><td>2024</td><td class="num">98</td><td class="num">136</td><td class="num">110</td><td class="num">125</td><td class="num">124</td><td class="num">100</td><td class="num">693</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="grid grid-2">
+      <ul class="small">
+        <li>The caption goes <strong>ABOVE a table</strong>, and <strong>BELOW a figure</strong>. Students reverse this rule most often.</li>
+        <li>Tables have their own number sequence, separate from figures.</li>
+        <li>The caption is specific: it names the population, the place and the period.</li>
+        <li>A total column makes the table easier to read.</li>
+      </ul>
+      <div class="quiz" data-xp="10">
+        <p class="quiz__q">Which language breaks the pattern between 2023 and 2024?</p>
+        <div class="quiz__opts">
+          <button data-why="Japanese rose from 118 to 136.">Japanese</button>
+          <button data-correct data-why="Right. Mandarin fell from 130 to 98 while every other language rose.">Mandarin</button>
+          <button data-why="Arabic rose from 89 to 100.">Arabic</button>
+        </div>
+      </div>
+    </div>
+    <div class="quiz mt" data-xp="10">
+      <p class="quiz__q">Which language grew most between 2021 and 2024?</p>
+      <div class="quiz__opts">
+        <button data-why="Arabic nearly doubled (51 → 100, +96%), but check German.">Arabic</button>
+        <button data-correct data-why="German: 55 → 125, a rise of 70 (+127%). It is the biggest rise both as a number and as a percentage. (Arabic is second in percentage terms: +96%.)">German</button>
+        <button data-why="Japanese rose by 35 (+35%), much less than German.">Japanese</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 27 · Good / bad -->
+  <section class="slide" data-title="What each type is good and bad at">
+    <div class="slide__kicker">22 · Strengths and limits</div>
+    <h2>What each type is good and bad at</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th></th><th>Good at</th><th>Bad at</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Tables</strong></td><td>Exact values · many variables at once · mixed units · a lot of data in a small space</td><td>Showing shape or trend · quick visual impact</td></tr>
+          <tr><td><strong>Bar charts</strong></td><td>Comparing amounts across categories · showing order</td><td>Continuous change · more than about eight categories</td></tr>
+          <tr><td><strong>Line graphs</strong></td><td>Change over time · showing trends · supporting a prediction</td><td>Comparing categories · more than three or four crossing lines</td></tr>
+          <tr><td><strong>Pie charts</strong></td><td>One whole divided into a few large parts</td><td>Comparing two pies · more than five slices · anything exact</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="sorter" data-xp="15" data-label="Which type is BAD at this?">
+      <div class="sorter__pool">
+        <button class="chip" data-bin="pie">More than five slices</button>
+        <button class="chip" data-bin="line">More than three or four crossing lines</button>
+        <button class="chip" data-bin="bar">More than about eight categories</button>
+        <button class="chip" data-bin="tab">Quick visual impact</button>
+        <button class="chip" data-bin="pie">Comparing two of them side by side</button>
+        <button class="chip" data-bin="line">Comparing categories</button>
+      </div>
+      <div class="sorter__bins">
+        <div class="bin" data-bin="tab"><span class="bin__label">Table</span></div>
+        <div class="bin" data-bin="bar"><span class="bin__label">Bar chart</span></div>
+        <div class="bin" data-bin="line"><span class="bin__label">Line graph</span></div>
+        <div class="bin" data-bin="pie"><span class="bin__label">Pie chart</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 28 · Flowcharts -->
+  <section class="slide" data-title="Flowcharts">
+    <div class="slide__kicker">23 · Diagrams</div>
+    <h2>Flowcharts</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg viewBox="0 0 560 500" role="img" aria-label="Flowchart: chart ready, print in black and white, decision: is every series still clear? Yes leads to add to poster and done. No leads to add a second channel, then back to print in black and white.">
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+          <g fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#arr)">
+            <line x1="250" y1="66" x2="250" y2="98"/>
+            <line x1="250" y1="150" x2="250" y2="178"/>
+            <line x1="250" y1="292" x2="250" y2="330"/>
+            <line x1="250" y1="382" x2="250" y2="420"/>
+            <line x1="370" y1="235" x2="408" y2="235"/>
+            <polyline points="482,190 482,124 382,124"/>
+          </g>
+          <ellipse cx="250" cy="40" rx="120" ry="26" fill="rgba(0,113,227,.10)" stroke="#0071e3" stroke-width="2"/>
+          <text x="250" y="45" text-anchor="middle" font-size="15">Chart is ready</text>
+          <rect x="118" y="100" width="264" height="50" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
+          <text x="250" y="130" text-anchor="middle" font-size="15">Print it in black and white</text>
+          <polygon points="250,180 370,235 250,290 130,235" fill="rgba(255,194,75,.12)" stroke="#b25e00" stroke-width="2"/>
+          <text x="250" y="230" text-anchor="middle" font-size="14">Is every series</text>
+          <text x="250" y="248" text-anchor="middle" font-size="14">still clear?</text>
+          <text x="262" y="316" font-size="13" font-weight="700" fill="#1a8f3c">Yes</text>
+          <text x="376" y="226" font-size="13" font-weight="700" fill="#d70015">No</text>
+          <rect x="410" y="192" width="145" height="88" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
+          <text x="482" y="218" text-anchor="middle" font-size="13">Add a second</text>
+          <text x="482" y="236" text-anchor="middle" font-size="13">channel: shape,</text>
+          <text x="482" y="254" text-anchor="middle" font-size="13">line style or</text>
+          <text x="482" y="272" text-anchor="middle" font-size="13">direct label</text>
+          <rect x="118" y="332" width="264" height="50" rx="4" fill="rgba(110,79,246,.10)" stroke="#6e4ff6" stroke-width="2"/>
+          <text x="250" y="362" text-anchor="middle" font-size="15">Add it to the poster</text>
+          <ellipse cx="250" cy="448" rx="80" ry="26" fill="rgba(0,113,227,.10)" stroke="#0071e3" stroke-width="2"/>
+          <text x="250" y="453" text-anchor="middle" font-size="15">Done</text>
+        </svg>
+        <p class="figcap">Example: the greyscale test from Part C, drawn as a flowchart</p>
+      </div>
+      <div>
+        <div class="card">
+          <h3>The key</h3>
+          <ul>
+            <li><strong>Rounded oval:</strong> start or end</li>
+            <li><strong>Rectangle:</strong> a step (process)</li>
+            <li><strong>Diamond:</strong> a decision, with <strong>two exits</strong> (yes / no)</li>
+            <li><strong>Arrow:</strong> the direction of flow</li>
+          </ul>
+        </div>
+        <div class="quiz mt" data-xp="10">
+          <p class="quiz__q">A diamond has only one arrow leaving it. What is wrong?</p>
+          <div class="quiz__opts">
+            <button data-why="Arrows can point any way. The problem is the number of exits.">The arrow should point down</button>
+            <button data-correct data-why="Right. A decision needs two exits. A diamond with one exit is not a decision.">It is not a decision: a diamond needs two exits</button>
+            <button data-why="Shape choice matters: the diamond means a decision.">Nothing, it is fine</button>
+          </div>
+        </div>
+        <p class="small muted">Activity: draw the flowchart for one process in your own poster topic. Five minutes, one A4 sheet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 29 · Exploded -->
+  <section class="slide" data-title="Exploded diagrams">
+    <div class="slide__kicker">24 · Diagrams</div>
+    <h2>Exploded diagrams</h2>
+    <p class="slide__lead">Use one when the reader has to assemble or take apart the object.</p>
+    <figure class="photo-fig"><img src="../assets/img/machinery.jpg" alt="Close-up of industrial machinery with bolts, plates and fittings that a technician might need to take apart and reassemble" loading="lazy" width="1200" height="1043" style="aspect-ratio:21/9"><figcaption>Real parts, bolted in order: an exploded diagram shows the order to take them apart.</figcaption></figure>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="explode" viewBox="0 0 460 380" role="img" aria-label="Exploded diagram of a bolted joint: bolt, washer, plate A, plate B, washer and nut pulled apart along one vertical axis, in assembly order, each labelled.">
+          <line x1="180" y1="6" x2="180" y2="372" stroke="#6e6e73" stroke-dasharray="6 5" stroke-width="1.2"/>
+          <g class="xp-part" data-off="-105">
+            <rect x="140" y="125" width="80" height="25" rx="3" fill="#56B4E9"/>
+            <rect x="166" y="150" width="28" height="112" fill="#56B4E9"/>
+            <g stroke="#f5f5f7" stroke-width="1.5"><line x1="166" y1="200" x2="194" y2="206"/><line x1="166" y1="212" x2="194" y2="218"/><line x1="166" y1="224" x2="194" y2="230"/><line x1="166" y1="236" x2="194" y2="242"/><line x1="166" y1="248" x2="194" y2="254"/></g>
+          </g>
+          <g class="xp-part" data-off="25"><rect x="146" y="150" width="68" height="8" rx="2" fill="#F0E442"/></g>
+          <g class="xp-part" data-off="42"><rect x="90" y="158" width="180" height="30" fill="#009E73"/></g>
+          <g class="xp-part" data-off="67"><rect x="90" y="188" width="180" height="30" fill="#0072B2"/></g>
+          <g class="xp-part" data-off="87"><rect x="146" y="218" width="68" height="8" rx="2" fill="#F0E442"/></g>
+          <g class="xp-part" data-off="104"><rect x="150" y="226" width="60" height="24" rx="3" fill="#E69F00"/></g>
+          <g id="xp-labels" style="opacity:0;transition:opacity .5s .5s" font-size="13">
+            <g stroke="#6e6e73" stroke-width="1"><line x1="222" y1="32" x2="320" y2="32"/><line x1="216" y1="179" x2="320" y2="179"/><line x1="272" y1="215" x2="320" y2="215"/><line x1="272" y1="270" x2="320" y2="270"/><line x1="216" y1="309" x2="320" y2="309"/><line x1="212" y1="342" x2="320" y2="342"/></g>
+            <text x="326" y="36">① Hex bolt</text><text x="326" y="183">② Washer</text><text x="326" y="219">③ Plate A</text><text x="326" y="274">④ Plate B</text><text x="326" y="313">⑤ Washer</text><text x="326" y="346">⑥ Hex nut</text>
+          </g>
+        </svg>
+        <div class="viz__bar"><button class="btn btn--primary btn--sm" type="button" id="explodeBtn">Explode ↕</button><span class="illus" style="margin:0">Illustrative example drawn for this page</span></div>
+      </div>
+      <div>
+        <div class="callout"><p>The parts are pulled apart along <strong>a single axis</strong>, in <strong>assembly order</strong>, and <strong>each one is labelled</strong>. That single-axis rule is what makes it an exploded diagram and not a scattered pile of parts.</p></div>
+        <div class="quiz" data-xp="10">
+          <p class="quiz__q">What turns a drawing of loose parts into an exploded diagram?</p>
+          <div class="quiz__opts">
+            <button data-why="Colour helps, but it is not the defining rule.">Every part is a different colour</button>
+            <button data-correct data-why="Yes: one axis, in assembly order, every part labelled.">Parts move apart along one axis, in assembly order, and are labelled</button>
+            <button data-why="The parts are pulled apart, not cut open. Cut open is a cutaway.">A quarter of each part is cut away</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 30 · Cutaway -->
+  <section class="slide" data-title="Cutaway diagrams">
+    <div class="slide__kicker">25 · Diagrams</div>
+    <h2>Cutaway diagrams</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="cutaway" viewBox="0 0 440 320" role="img" aria-label="Cutaway diagram of a layered storage vessel. The same quarter is removed from every layer, showing outer casing, insulation, inner wall and contents."></svg>
+        <div class="viz__bar"><button class="btn btn--primary btn--sm" type="button" id="cutBtn">Remove the quarter</button><span class="illus" style="margin:0">Illustrative vessel drawn for this page</span></div>
+      </div>
+      <div>
+        <div class="callout"><p>The <strong>same quarter</strong> is removed from <strong>every layer</strong>, so the reader sees the cut faces while the outer shape stays readable.</p></div>
+        <div class="grid grid-2">
+          <div class="card"><h3>Exploded</h3><p>Shows how parts <strong>fit together</strong>.</p></div>
+          <div class="card card--accent"><h3>Cutaway</h3><p>Shows what is <strong>inside</strong> something that stays whole.</p></div>
+        </div>
+        <div class="quiz" data-xp="10">
+          <p class="quiz__q">A report must show the layers inside a sealed tank wall. Which diagram?</p>
+          <div class="quiz__opts">
+            <button data-correct data-why="Right. The tank stays whole; you need to see inside it.">Cutaway</button>
+            <button data-why="Exploded is for assembly. The tank is not taken apart.">Exploded</button>
+            <button data-why="A flowchart shows a process, not physical layers.">Flowchart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 31 · Block -->
+  <section class="slide" data-title="Block diagrams">
+    <div class="slide__kicker">26 · Diagrams</div>
+    <h2>Block diagrams</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="blockd" viewBox="0 0 600 320" role="img" aria-label="Block diagram of a temperature control loop: setpoint to controller, controller to heater, heater to tank, tank to sensor, sensor back to controller."></svg>
+        <div class="viz__bar"><button class="btn btn--primary btn--sm" type="button" id="blockBtn">🔀 Move the blocks</button><span class="illus" style="margin:0">Illustrative control loop</span></div>
+      </div>
+      <div>
+        <p>This is the diagram type you will meet most in your own engineering discipline. Each block is a component or a function; each arrow is a connection or a signal.</p>
+        <div class="callout callout--ok"><p><strong>The key idea:</strong> position on the page carries no physical meaning. Only the connections do. Press “Move the blocks”: the layout changes, but the diagram still says exactly the same thing.</p></div>
+        <div class="quiz" data-xp="10">
+          <p class="quiz__q">In a block diagram, what carries the meaning?</p>
+          <div class="quiz__opts">
+            <button data-why="Position carries no physical meaning in a block diagram.">Where each block sits on the page</button>
+            <button data-correct data-why="Yes: only the connections carry meaning.">The connections between the blocks</button>
+            <button data-why="Block size is not meaningful either.">The size of each block</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 32 · Part C -->
+  <section class="slide slide--part" data-title="Part C · Honest &amp; accessible">
+    <div class="part-letter">C</div>
+    <h2>Honest &amp; accessible visuals</h2>
+    <p class="slide__lead">A chart can be completely accurate and still mislead.</p>
+  </section>
+
+  <!-- 33 · Same data twice -->
+  <section class="slide" data-title="The same data, twice">
+    <div class="slide__kicker">28 · Axis honesty</div>
+    <h2>The same data, twice</h2>
+    <p>Quarterly recycling rate at one factory. Both versions plot exactly the same four numbers. Switch the axis and watch.</p>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="trunc" role="img" aria-label="Bar chart of quarterly recycling rate. The y-axis can be switched between starting at zero and starting at 60."></svg>
+        <div class="viz__bar"><button class="btn btn--sm is-on" type="button" data-axis="0">Axis from 0</button><button class="btn btn--sm" type="button" data-axis="60">Axis from 60</button></div>
+        <p class="illus">Illustrative values (61, 62, 63, 65%): the deck's chart gave no figures.</p>
+      </div>
+      <div>
+        <div class="callout callout--warn"><p><strong>The rule.</strong> On a <strong>bar</strong> chart the value axis must start at zero, because the length of the bar stands for the value. On a <strong>line</strong> graph a cut axis is acceptable, because the line stands for change rather than amount, but the cut must be visible and labelled.</p></div>
+        <div class="quiz" data-xp="10">
+          <p class="quiz__q">You are the manager. Which version do you want to see?</p>
+          <div class="quiz__opts">
+            <button data-why="This makes Q4 look about five times Q1. The real change is four percentage points.">Axis from 60: the improvement is easy to see</button>
+            <button data-correct data-why="Right. Now compare it with the one you would use to present your own results. The gap between those two answers is the lesson.">Axis from 0: the bars show the true size</button>
+          </div>
+        </div>
+        <p class="small muted">Source: Cairo, A. (2019). <i>How charts lie</i>. W. W. Norton.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 34 · 3D -->
+  <section class="slide" data-title="Perspective distorts">
+    <div class="slide__kicker">29 · 3-D</div>
+    <h2>Perspective is not decoration: it distorts</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <div class="tilt-wrap"><svg id="pie3d" class="tilt" viewBox="0 0 220 220" role="img" aria-label="Pie chart with four equal slices of 25 percent each, shown flat or tilted in 3-D."></svg></div>
+        <div class="viz__bar"><button class="btn btn--sm is-on" type="button" data-pie="2d">Flat</button><button class="btn btn--sm" type="button" data-pie="3d">Tilted 3-D</button></div>
+      </div>
+      <div>
+        <p>Both views show <strong>four slices of exactly 25%</strong>. In the 3-D version, the slices at the front look clearly larger.</p>
+        <div class="callout callout--bad"><p>There is no case for a 3-D pie chart in a technical document. The same applies to 3-D bars, and to any chart with a shadow or a tilt. “It looks more professional”? It makes the reader work harder and trust you less.</p></div>
+        <div class="quiz" data-xp="10">
+          <p class="quiz__q">Why does the tilted pie mislead?</p>
+          <div class="quiz__opts">
+            <button data-why="The numbers are the same; the drawing changes how big they look.">The numbers are wrong</button>
+            <button data-correct data-why="Yes. Perspective makes the nearer slices take up more area.">Perspective makes the front slices look bigger</button>
+            <button data-why="The colours are the same in both views.">The colours change</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 35 · Three more ways -->
+  <section class="slide" data-title="Three more ways a chart misleads">
+    <div class="slide__kicker">30 · Misleading</div>
+    <h2>Three more ways a chart misleads</h2>
+    <div class="grid grid-3">
+      <div class="card"><span class="num-badge">01</span><h3 class="mt">A convenient starting point</h3><p>Starting the series at an unusually low point makes any later rise look bigger than it is. Show the full relevant series.</p></div>
+      <div class="card"><span class="num-badge">02</span><h3 class="mt">Two different scales</h3><p>Two lines on two different scales can be made to look connected just by choosing the scales. Use them only when necessary, and explain why.</p></div>
+      <div class="card"><span class="num-badge">03</span><h3 class="mt">Area for one number</h3><p>If both width and height double, the area becomes <strong>four</strong> times larger for twice the value. Readers judge area, not width.</p>
+        <div class="viz" style="margin:.5rem 0 0;padding:.5rem"><svg viewBox="0 0 260 120" role="img" aria-label="A square for value 1, a square with doubled width and height for value 2 which has four times the area, and an honest square with double the area.">
+          <rect x="10" y="70" width="40" height="40" fill="#56B4E9"/><text x="30" y="64" text-anchor="middle" font-size="11">1</text>
+          <rect x="65" y="30" width="80" height="80" fill="#D55E00"/><text x="105" y="24" text-anchor="middle" font-size="11">“2” (×4 area)</text>
+          <rect x="165" y="53" width="57" height="57" fill="#009E73"/><text x="193" y="47" text-anchor="middle" font-size="11">2 (honest)</text>
+        </svg></div>
+      </div>
+    </div>
+    <div class="callout callout--ok"><p><strong>The test:</strong> would the people represented by the data recognise the chart as a fair picture of their results?</p></div>
+    <p class="small muted">Two-scale charts appear constantly in news graphics. Now you know they are a known trap.</p>
+  </section>
+
+  <!-- 36 · Practice 2 -->
+  <section class="slide" data-title="Practice 2: what is wrong?">
+    <div class="slide__kicker"><span class="tag tag--pink">Practice 2</span> Spot the problems</div>
+    <h2>What is wrong with this figure?</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <p class="figcap figcap--top" style="color:var(--text)">Reported causes of production downtime, one plant, 2024</p>
+        <svg id="badpie" role="img" aria-label="A pie chart with eight slices, a legend, no values and no units."></svg>
+        <p class="illus">Illustrative values and cause names: the deck's chart was an image.</p>
+      </div>
+      <div>
+        <div class="card"><h3>List every problem you can find</h3><p>Here is one to start you off: <strong>there are more than five categories.</strong> What else? How would you redraw it? (The colours are already colour-blind-safe, so colour is not a fault here.)</p></div>
+        <div class="write mt" data-min="15" data-xp="15" data-label="Your list of problems">
+          <textarea placeholder="1. More than five slices&#10;2. …"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 37 · Practice 2 answer -->
+  <section class="slide" data-title="Practice 2: six problems">
+    <div class="slide__kicker"><span class="tag tag--pink">Practice 2</span> Check your answer</div>
+    <h2>Six problems. How many did you find?</h2>
+    <div class="flip-grid" data-xp="10">
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">1</span><h4 class="mt">Too many slices</h4></div><div class="flip__back"><p>Eight slices. Beyond about five, the eye cannot compare neighbouring sectors. The 12%, 11% and 9% slices look the same.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">2</span><h4 class="mt">No values</h4></div><div class="flip__back"><p>A pie chart without labels cannot be read exactly, so the reader has to guess.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">3</span><h4 class="mt">“Other”</h4></div><div class="flip__back"><p>An “Other” category with nothing explained. What is in it?</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">4</span><h4 class="mt">No units</h4></div><div class="flip__back"><p>Percentage of downtime hours? Percentage of incidents? Those give very different pictures.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">5</span><h4 class="mt">No source or context</h4></div><div class="flip__back"><p>No period beyond the year. Which plant? Which lines? Measured how?</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--red">6</span><h4 class="mt">Wrong chart type</h4></div><div class="flip__back"><p>The reader's real question is “which causes should we tackle first?” That is a question about <strong>order</strong>, so a sorted bar chart is clearer.</p></div></div>
+    </div>
+    <p class="small muted">Most groups find three or four of the six. Problem 6 is the one people almost never reach on their own.</p>
+  </section>
+
+  <!-- 38 · Redrawn -->
+  <section class="slide" data-title="Practice 2: redrawn">
+    <div class="slide__kicker"><span class="tag tag--pink">Practice 2</span> The same data, redrawn</div>
+    <h2>From pie to sorted bar chart</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="redraw" role="img" aria-label="The downtime data redrawn as a sorted horizontal bar chart with values labelled; the top three causes are highlighted."></svg>
+        <p class="figcap" id="redrawCap">Reported causes of production downtime, one plant, 2024</p>
+        <div class="viz__bar"><button class="btn btn--primary btn--sm" type="button" id="redrawBtn">Redraw it ↻</button></div>
+        <p class="illus">Illustrative values, as on the previous slide.</p>
+      </div>
+      <div>
+        <p>A sorted horizontal bar chart, values labelled, units in the axis title. The question “what do we tackle first?” is now answered at a glance.</p>
+        <ul class="checklist" data-xp="10">
+          <li>Sorted largest to smallest</li>
+          <li>Values labelled, so no guessing</li>
+          <li>The top three highlighted, because they carry 56% of the problem</li>
+          <li>The caption states the finding, not just the topic (Week 6)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 39 · Colour purposes -->
+  <section class="slide" data-title="Colour: what it is for">
+    <div class="slide__kicker">34 · Colour</div>
+    <h2>Colour: what it is for</h2>
+    <div class="grid grid-3">
+      <div class="card"><h3>Organising</h3><p>Grouping related items, showing levels.</p></div>
+      <div class="card"><h3>Signalling</h3><p>Drawing attention to the one thing that matters.</p></div>
+      <div class="card"><h3>Carrying meaning</h3><p>As in a chart series or a heat map.</p></div>
+    </div>
+    <div class="card mt">
+      <h3>Guidelines</h3>
+      <ul>
+        <li>Choose a small set of colours and use them the same way in every visual in the document.</li>
+        <li>Use colour sparingly. If everything is highlighted, nothing is.</li>
+        <li>Keep dark text on light backgrounds. Light text on dark is harder to read, and worse when printed.</li>
+        <li>Bars, lines and slices should differ in colour from the axes and gridlines.</li>
+        <li>Always give a key, or better, <strong>label the series directly</strong> on the chart. Direct labelling removes the back-and-forth eye movement a legend forces.</li>
+      </ul>
+    </div>
+    <div class="quiz" data-xp="5">
+      <p class="quiz__q">What is better than a legend?</p>
+      <div class="quiz__opts">
+        <button data-why="More colours make the reader work harder.">Using more colours</button>
+        <button data-correct data-why="Yes. A name at the end of each line means no back-and-forth to a legend.">Putting each series name directly on the chart</button>
+        <button data-why="Removing the key leaves the reader guessing.">No key at all</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 40 · CVD -->
+  <section class="slide" data-title="Why the palette matters">
+    <div class="slide__kicker">35 · Colour vision deficiency</div>
+    <h2>Why the palette matters</h2>
+    <p>About <strong>8% of men</strong> have a colour vision deficiency, most often red–green. Switch the simulation on and compare.</p>
+    <div class="keystats vz">
+      <div class="keystat"><b><span class="vz-count" data-to="8">8</span>%</b><span>of men have a colour vision deficiency</span></div>
+      <div class="keystat"><b>4.5:1</b><span>WCAG contrast for normal text</span></div>
+      <div class="keystat"><b>3:1</b><span>for large text and chart lines and bars</span></div>
+    </div>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0"><svg id="cvdA" role="img" aria-label="Line chart with four lines in red, green, blue and grey."></svg><p class="figcap">Red–green palette</p></div>
+      <div class="viz" style="margin:0"><svg id="cvdB" role="img" aria-label="Line chart with four lines in the Okabe–Ito palette."></svg><p class="figcap">Okabe–Ito palette</p></div>
+    </div>
+    <div class="viz__bar"><button class="btn btn--sm is-on" type="button" data-cvd="off">Typical colour vision</button><button class="btn btn--sm" type="button" data-cvd="on">Simulate deuteranopia (red–green)</button><span class="illus" style="margin:0">Illustrative lines A–D</span></div>
+    <p class="small muted mt">With deuteranopia, lines A and B on the left collapse into the same olive colour. All four Okabe–Ito colours stay distinguishable. Okabe–Ito hex values: <code>E69F00</code> orange · <code>56B4E9</code> sky blue · <code>009E73</code> bluish green · <code>F0E442</code> yellow · <code>0072B2</code> blue · <code>D55E00</code> vermillion · <code>CC79A7</code> reddish purple · plus black. Source: Wong, B. (2011). Points of view: Color blindness. <i>Nature Methods, 8</i>(6), 441.</p>
+  </section>
+
+  <!-- 41 · Second channel -->
+  <section class="slide" data-title="Never let colour be the only channel">
+    <div class="slide__kicker">36 · Second channel</div>
+    <h2>Never let colour be the only channel</h2>
+    <p class="slide__lead">Add a second channel: shape, pattern, line style, direct labels, or position.</p>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0"><svg id="chanA" class="gray-t" role="img" aria-label="Two lines told apart only by colour, with a legend."></svg><p class="figcap">Colour only</p></div>
+      <div class="viz" style="margin:0"><svg id="chanB" class="gray-t" role="img" aria-label="Two lines told apart by colour, marker shape, line style and direct labels."></svg><p class="figcap">Colour + shape + line style + direct labels</p></div>
+    </div>
+    <div class="viz__bar"><button class="btn btn--primary btn--sm" type="button" id="grayBtn">🖨 Print in black and white</button><span class="illus" style="margin:0">Illustrative data</span></div>
+    <div class="callout callout--ok mt"><p><strong>The greyscale test takes ten seconds.</strong> Treat it as a hard requirement for your poster before you print. Even two colour-blind-safe colours (orange and sky blue here) can turn into the same grey.</p></div>
+  </section>
+
+  <!-- 42 · Contrast -->
+  <section class="slide" data-title="Contrast">
+    <div class="slide__kicker">37 · Contrast</div>
+    <h2>Contrast: what passes and what does not</h2>
+    <p>WCAG 2.1 asks for at least <strong>4.5:1</strong> for normal text, and <strong>3:1</strong> for large text and for non-text parts such as chart lines and bars.</p>
+<figure class="chart-card vz">
+      <h3>Contrast ratios against the thresholds</h3>
+      <div role="img" aria-label="Bar chart of contrast ratios on a white background: black 21.0, Okabe-Ito blue 5.2, light grey 2.3, Okabe-Ito orange 2.3. Dashed lines mark the 3 to 1 and 4.5 to 1 thresholds. Black and blue pass; light grey and orange fail.">
+        <div class="vz-marks" style="--lw:10rem">
+          <div class="vz-ml"><div class="vz-mark" style="left:14.29%"><i style="right:4px">3:1</i></div><div class="vz-mark" style="left:21.43%"><i style="left:4px">4.5:1</i></div></div>
+          <div class="vz-row"><span>Black text on white</span><div class="vz-track" data-tip="21.0:1 passes body text and large text"><div class="vz-fill vz-bar" style="width:100.00%;background:#1a8f3c;--d:0.0s"></div><span style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#fff;white-space:nowrap">21.0:1 ✓ pass</span></div></div><div class="vz-row"><span>Okabe–Ito blue on white</span><div class="vz-track" data-tip="5.2:1 passes body text and large text"><div class="vz-fill vz-bar" style="width:24.76%;background:#1a8f3c;--d:0.1s"></div><span style="position:absolute;left:calc(24.76% + .5rem);top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#1a8f3c;white-space:nowrap">5.2:1 ✓ pass</span></div></div><div class="vz-row"><span>Light grey on white</span><div class="vz-track" data-tip="2.3:1 fails both thresholds"><div class="vz-fill vz-bar" style="width:10.95%;background:#d70015;--d:0.2s"></div><span style="position:absolute;left:calc(10.95% + .5rem);top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#d70015;white-space:nowrap">2.3:1 ✗ fail</span></div></div><div class="vz-row"><span>Okabe–Ito orange on white</span><div class="vz-track" data-tip="2.3:1 fails both thresholds"><div class="vz-fill vz-bar" style="width:10.95%;background:#d70015;--d:0.3s"></div><span style="position:absolute;left:calc(10.95% + .5rem);top:50%;transform:translateY(-50%);font:700 .82rem var(--font);color:#d70015;white-space:nowrap">2.3:1 ✗ fail</span></div></div>
+        </div>
+      </div>
+      <figcaption>The same four swatches as below, on one linear scale from 0 to 21. Light grey and orange sit under both dashed lines (3:1 and 4.5:1).</figcaption>
+    </figure>
+    <div class="swatches" id="swatches"></div>
+    <div class="card mt">
+      <h3>Try your own colours</h3>
+      <div class="checker"><label>Text <input type="color" id="fgC" value="#E69F00"></label><label>Background <input type="color" id="bgC" value="#FFFFFF"></label><div id="ckOut" class="swatch" style="flex:1;min-width:200px"></div></div>
+    </div>
+    <p class="small muted">Light grey and orange both look readable on a bright screen, and both fail on a projector or in print. This is why accent colours belong in headings and graphics, not body text. Source: W3C (2018), <i>Web Content Accessibility Guidelines 2.1</i>.</p>
+  </section>
+
+  <!-- 43 · Alt text -->
+  <section class="slide" data-title="Alt text">
+    <div class="slide__kicker">38 · Alt text</div>
+    <h2>Describing a figure for someone who cannot see it</h2>
+    <p>This is called <strong>alt text</strong>. It is also a good test of whether you understood your own chart.</p>
+    <div class="quiz" data-xp="10">
+      <p class="quiz__q">Which is the right alt text for Figure 1?</p>
+      <div class="quiz__opts">
+        <button data-why="Too short: no use to the reader.">“Bar chart of injuries.”</button>
+        <button data-why="Too long: a list, not a description.">“Bar chart. Falls from height 2022 34, 2024 46. Struck by object 2022 27, 2024 24. Manual handling 2022 41, 2024 38. Electrical 2022 8, 2024 7. Slips and trips 2022 19, 2024 23.”</button>
+        <button data-correct data-why="Right: type, axes, then the main point. It is almost the findings paragraph from Part A: the same skill.">“Grouped column chart comparing recorded injuries by cause in 2022 and 2024. Falls from height rose from 34 to 46, overtaking manual handling as the leading cause. Three of the five categories fell over the period.”</button>
+      </div>
+    </div>
+    <div class="callout mt"><p><strong>The pattern:</strong> chart type → what the axes show → the one thing you want the reader to take away.</p></div>
+  </section>
+
+  <!-- 44 · Junk -->
+  <section class="slide" data-title="Remove what is not doing work">
+    <div class="slide__kicker">39 · Chart junk</div>
+    <h2>Remove what is not doing work</h2>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="junk" role="img" aria-label="Bar chart of 2024 injuries by cause, with decorative elements that can be removed one at a time."></svg>
+        <p class="figcap">Recorded injuries by cause, 2024 (Figure 1 data)</p>
+        <div class="viz__bar"><button class="btn btn--primary btn--sm" type="button" id="junkBtn">Remove next ✂</button><button class="btn btn--sm" type="button" id="junkReset">↺ Reset</button></div>
+      </div>
+      <div>
+        <p><strong>The test:</strong> cover each element in turn and ask whether the chart still communicates. If yes, delete it.</p>
+        <ol class="small" id="junkList">
+          <li>Heavy border</li>
+          <li>Background fill</li>
+          <li>Hatching on the bars</li>
+          <li>A legend for a single series</li>
+          <li>Dotted gridlines</li>
+          <li>Four colours for one variable → one colour, one highlight on the point being made, values labelled</li>
+        </ol>
+        <p class="small muted">None of the removed elements carries information.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 45 · Colour meanings -->
+  <section class="slide" data-title="Colour across cultures">
+    <div class="slide__kicker">40 · Culture</div>
+    <h2>Colour means different things in different places</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Colour</th><th>Common associations</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Red</strong></td><td>Western: danger, warning, loss · Chinese: prosperity, celebration · Some East Asian markets: rising prices, the opposite of the Western convention</td></tr>
+          <tr><td><strong>White</strong></td><td>Western: purity, cleanliness · Much of Asia: mourning</td></tr>
+          <tr><td><strong>Black</strong></td><td>Western: death, formality · Elsewhere often authority or maturity</td></tr>
+          <tr><td><strong>Green</strong></td><td>Widely: environment, safety, permission · Also strong religious associations in some places</td></tr>
+          <tr><td><strong>Yellow</strong></td><td>Western: caution · Elsewhere: royalty, sacredness, or mourning</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="quiz" data-xp="10">
+      <p class="quiz__q">In several East Asian stock markets, a price shown in red has…</p>
+      <div class="quiz__opts">
+        <button data-why="That is the Western convention. It reverses in several East Asian markets.">fallen</button>
+        <button data-correct data-why="Right. Red means rising prices there, the opposite of the Western convention.">risen</button>
+        <button data-why="Red carries a clear meaning in these markets.">not changed</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 46 · Part D -->
+  <section class="slide slide--part" data-title="Part D · Visuals in your text">
+    <div class="part-letter">D</div>
+    <h2>Integrating visuals with written text</h2>
+    <p class="slide__lead">A visual with no number, no caption and no source is not evidence.</p>
+  </section>
+
+  <!-- 47 · Caption placement -->
+  <section class="slide" data-title="Where the caption goes">
+    <div class="slide__kicker">42 · Captions</div>
+    <h2>Where the caption goes</h2>
+    <div class="grid grid-2">
+      <div class="paper">
+        <p style="text-align:center"><strong>▲ Table caption ABOVE</strong></p>
+        <table><caption>Table 1: Proposed safety measures</caption><thead><tr><th>Measure</th><th>Cost</th></tr></thead><tbody><tr><td>Edge protection</td><td>RM 210,000</td></tr><tr><td>Fall-arrest training</td><td>RM 60,000</td></tr></tbody></table>
+      </div>
+      <div class="paper">
+        <svg id="capFig" viewBox="0 0 300 110" aria-hidden="true"></svg>
+        <p style="text-align:center;font-size:.85rem">Figure 1: Recorded workplace injuries by cause, one construction firm, 2022 and 2024</p>
+        <p style="text-align:center"><strong>▼ Figure caption BELOW</strong></p>
+      </div>
+    </div>
+    <div class="card mt">
+      <h3>And the rest of the rules</h3>
+      <ul class="small">
+        <li>Tables and figures have separate number sequences.</li>
+        <li>Everything that is not a table is a Figure: charts, photos, diagrams, maps.</li>
+        <li>Number in order. Figure 3 cannot appear before Figure 2.</li>
+        <li>Captions must be specific enough for the visual to stand alone.</li>
+        <li>Refer by number, never by position: “Figure 1 shows…”, not “the figure below”.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 48 · Caption drill -->
+  <section class="slide" data-title="Drill: above or below?">
+    <div class="slide__kicker">42 · Drill</div>
+    <h2>Above or below? Thirty seconds of drilling</h2>
+    <div class="sorter" data-xp="15" data-label="Where does the caption go (general report convention)?">
+      <div class="sorter__pool">
+        <button class="chip" data-bin="above">Table 2: Students registered for foreign language courses</button>
+        <button class="chip" data-bin="below">Figure 1: Recorded workplace injuries by cause</button>
+        <button class="chip" data-bin="below">A photograph of a scaffold</button>
+        <button class="chip" data-bin="below">A site map</button>
+        <button class="chip" data-bin="above">Table 1: Proposed safety measures</button>
+        <button class="chip" data-bin="below">A flowchart of the inspection process</button>
+      </div>
+      <div class="sorter__bins">
+        <div class="bin" data-bin="above"><span class="bin__label">▲ Above</span></div>
+        <div class="bin" data-bin="below"><span class="bin__label">▼ Below</span></div>
+      </div>
+    </div>
+    <div class="quiz mt" data-xp="10">
+      <p class="quiz__q">A photograph is in your report. What is it numbered as?</p>
+      <div class="quiz__opts">
+        <button data-why="Photographs are not tables.">Table</button>
+        <button data-why="There is no separate “Photo” sequence.">Photo 1</button>
+        <button data-correct data-why="Right. Everything that is not a table is a Figure.">Figure</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 49 · APA 7 -->
+  <section class="slide" data-title="APA 7 figure format">
+    <div class="slide__kicker">43 · APA 7</div>
+    <h2>APA 7 figure format</h2>
+    <p>APA changed this at the 7th edition. Anything you find online in the old one-line style is out of date.</p>
+    <div class="grid grid-2">
+      <div class="paper">
+        <p><strong>Figure 1</strong> <span class="small" style="color:#666;font-family:var(--mono)">← number, bold, ABOVE</span></p>
+        <p><i>Recorded Workplace Injuries by Cause, One Construction Firm, 2022 and 2024</i> <span class="small" style="color:#666;font-family:var(--mono)">← title, italic</span></p>
+        <svg id="apaFig" viewBox="0 0 300 110" aria-hidden="true"></svg>
+        <p class="small"><i>Note.</i> Data from [Author] (Year). <span style="color:#666;font-family:var(--mono)">← note BELOW</span></p>
+      </div>
+      <div>
+        <div class="paper">
+          <p class="small"><strong>Old APA 6 style: do not use</strong></p>
+          <p class="old small">Figure X. Descriptive caption of image. From Image title, by Creator's Name, Year of creation, Database/URL.</p>
+        </div>
+        <div class="callout mt"><p>APA 7 puts the figure number and title <strong>above</strong> the image, the opposite of the general convention on the previous slide. The general convention is for technical reports; APA 7 is one publisher's house style. Follow whichever your programme specifies, and be consistent.</p></div>
+        <div class="quiz" data-xp="10">
+          <p class="quiz__q">In APA 7, where does “<i>Note.</i> Data from…” go?</p>
+          <div class="quiz__opts">
+            <button data-why="The number and title go above; the note does not.">Above the figure, with the title</button>
+            <button data-correct data-why="Right. Number and title above, note below.">Below the figure</button>
+            <button data-why="APA 7 puts it with the figure, not in the reference list only.">Only in the reference list</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 50 · IEEE -->
+  <section class="slide" data-title="IEEE figure and table format">
+    <div class="slide__kicker">44 · IEEE</div>
+    <h2>IEEE figure and table format</h2>
+    <div class="grid grid-2">
+      <div class="paper">
+        <table><caption><span class="sc">TABLE I</span><br><span class="sc">Proposed Safety Measures</span></caption><thead><tr><th>Measure</th><th>Cost</th><th>Time</th></tr></thead><tbody><tr><td>Edge protection</td><td>RM 210,000</td><td>5 months</td></tr><tr><td>Fall-arrest training</td><td>RM 60,000</td><td>3 months</td></tr></tbody></table>
+        <p class="small" style="font-family:var(--mono);color:#666">▲ Tables: Roman numerals, caption ABOVE</p>
+      </div>
+      <div class="paper">
+        <svg id="ieeeFig" viewBox="0 0 300 110" aria-hidden="true"></svg>
+        <p class="small">Fig. 1. Recorded workplace injuries by cause, one construction firm, 2022 and 2024. Data from [3].</p>
+        <p class="small" style="font-family:var(--mono);color:#666">▼ Figures: ordinary numerals, “Fig.”, caption BELOW</p>
+      </div>
+    </div>
+    <div class="quiz mt" data-xp="10">
+      <p class="quiz__q">In IEEE style, how is the second table in your report labelled?</p>
+      <div class="quiz__opts">
+        <button data-why="Tables use Roman numerals in IEEE.">TABLE 2</button>
+        <button data-correct data-why="Right. Tables use Roman numerals; figures use ordinary numerals. Most people assume both use the same.">TABLE II</button>
+        <button data-why="“Fig.” is for figures, not tables.">Fig. 2</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 51 · Crediting -->
+  <section class="slide" data-title="Crediting a visual">
+    <div class="slide__kicker">45 · Credit</div>
+    <h2>Crediting a visual you did not make</h2>
+    <div class="tabs">
+      <div class="tabs__bar"><button data-tab="c1">Copied</button><button data-tab="c2">Redrew from data</button><button data-tab="c3">Changed</button><button data-tab="c4">Your own</button><button data-tab="c5">Stock / icons</button><button data-tab="c6">Screenshot</button></div>
+      <div class="tabs__panel card" data-panel="c1"><h3>You copied someone's chart or photograph</h3><p>Reproduce it, credit it underneath, and give the full reference. Check first whether the licence allows you to reproduce it at all.</p></div>
+      <div class="tabs__panel card" data-panel="c2"><h3>You redrew their chart from their data</h3><p>Credit the data: <code>Data from [3]</code> or <code><i>Note.</i> Data from ILO (2024).</code> You made the figure; they made the data.</p></div>
+      <div class="tabs__panel card" data-panel="c3"><h3>You changed their diagram</h3><p><code>Adapted from [5]</code> or <code><i>Note.</i> Adapted from …</code>. Say what you changed if it matters.</p></div>
+      <div class="tabs__panel card" data-panel="c4"><h3>You made it yourself from your own data</h3><p>No source credit needed, but still number it, caption it, and say where the data came from.</p></div>
+      <div class="tabs__panel card" data-panel="c5"><h3>It is a stock photograph or an icon set</h3><p>Check the licence. Many require attribution; some do not allow use in printed materials.</p></div>
+      <div class="tabs__panel card" data-panel="c6"><h3>It is a screenshot of software</h3><p>Credit the software and the version. Some licences restrict screenshots in publications.</p></div>
+    </div>
+    <div class="quiz mt" data-xp="10">
+      <p class="quiz__q">You built your own bar chart using numbers from an ILO report. What do you write?</p>
+      <div class="quiz__opts">
+        <button data-why="You made the chart, but the data is theirs: it must be credited.">Nothing. I made the chart.</button>
+        <button data-correct data-why="Right. You made the figure; they made the data.">“Note. Data from ILO (2024).”</button>
+        <button data-why="This claims the whole figure is borrowed, which is not true either.">“Figure copied from ILO (2024).”</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 52 · AI images -->
+  <section class="slide" data-title="AI-generated images">
+    <div class="slide__kicker">46 · Generative AI</div>
+    <h2>AI-generated images in technical documents</h2>
+    <div class="grid grid-2">
+      <div class="card"><span class="tag tag--red">Not acceptable</span>
+        <ul class="mt">
+          <li><strong>As evidence.</strong> An AI image of a process, a part or a site shows nothing that exists, so it cannot support a claim.</li>
+          <li><strong>As a chart or data figure.</strong> Never let a generative tool draw your data. The numbers will not be yours.</li>
+          <li>Where a publisher forbids them. Many journals now do.</li>
+          <li>Where the image shows a real person, a real site or a real product.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="card"><span class="tag tag--amber">Maybe: check with your lecturer first</span><p class="mt">Purely decorative or conceptual illustration, clearly labelled as such, where nothing depends on it being real.</p></div>
+        <div class="card mt"><span class="tag tag--lime">If you use one, cite it and declare it</span>
+          <p class="small mt"><strong>APA reference:</strong> OpenAI. (2025). <i>DALL·E</i> [Image model]. https://openai.com/</p>
+          <p class="small"><strong>APA figure note:</strong> <i>Note.</i> Image generated using the prompt “[your exact prompt]”, by OpenAI, DALL·E, 2025 (https://openai.com/).</p>
+          <p class="small"><strong>IEEE:</strong> [8] DALL·E. OpenAI. Accessed: Aug. 18, 2026. [Online]. Available: https://openai.com/</p>
+        </div>
+      </div>
+    </div>
+    <div class="quiz mt" data-xp="10">
+      <p class="quiz__q">Why can't an AI image of “a worker wearing a safety harness” support your safety report?</p>
+      <div class="quiz__opts">
+        <button data-why="Quality is not the problem.">It is low resolution</button>
+        <button data-correct data-why="Right. It shows nothing that exists, so it proves nothing about safety practice anywhere. Under the MOHE 2024 guideline, declaring AI use is a requirement.">It shows nothing that really exists, so it is not evidence</button>
+        <button data-why="Colour is not the issue.">It is in colour</button>
+      </div>
+    </div>
+    <p class="small muted">Put the exact prompt in the note: the same prompt produces a different image every time.</p>
+  </section>
+
+  <!-- 53 · Placing -->
+  <section class="slide" data-title="Placing a visual in your text">
+    <div class="slide__kicker">47 · Placement</div>
+    <h2>Placing a visual in your text: introduce, show, explain</h2>
+    <ol class="steps" data-build>
+      <li><div><h3>Introduce it before it appears</h3><div class="example">“Figure 1 compares recorded injuries by cause for 2022 and 2024.”</div><p class="small muted">The reader should know what they are about to look at.</p></div></li>
+      <li><div><h3>Show it close to the text that discusses it</h3><p>Less than half a page: on the same page. More than half a page: immediately after. Complex or extra material: in an appendix, with the page number given.</p></div></li>
+      <li><div><h3>Explain the main point afterwards</h3><div class="example">“As Figure 1 shows, falls from height became the leading cause.”</div><p class="small muted">A visual dropped in with no follow-up text is decoration.</p></div></li>
+    </ol>
+    <div class="callout"><p><strong>One visual, one point.</strong> If your figure supports three arguments at once, it probably needs to be three figures. Most students do only the middle step.</p></div>
+  </section>
+
+  <!-- 54 · Production -->
+  <section class="slide" data-title="Production quality">
+    <div class="slide__kicker">48 · Production</div>
+    <h2>Production quality</h2>
+    <div class="keystats vz">
+      <div class="keystat"><b><span class="vz-count" data-to="300">300</span></b><span>dpi at final size, at least</span></div>
+      <div class="keystat"><b>1 m</b><span>away: axis labels should still be readable</span></div>
+      <div class="keystat"><b><span class="vz-count" data-to="3">3</span> s</b><span>for a caption to make the meaning clear</span></div>
+    </div>
+    <div class="grid grid-2">
+      <div class="card"><h3>At least 300 dpi at final size</h3><p>A poster is printed large. An image that looks fine on screen at 800 pixels wide will be visibly blocky at A1.</p></div>
+      <div class="card"><h3>Vector for charts and diagrams</h3><p>SVG, EMF, PDF. Vector art stays sharp at any size. Export the chart from Excel or your plotting tool rather than taking a screenshot.</p></div>
+      <div class="card card--accent"><h3>Never screenshot, then enlarge</h3><p>Most poor poster figures are enlarged screenshots.</p></div>
+      <div class="card"><h3>Readable at final size</h3><p>Axis labels on a printed poster should be readable from about a metre away.</p></div>
+    </div>
+    <div class="callout"><p><strong>Save the file that made the chart, not only the picture.</strong> You will need to change it. Native charts in this deck once lost their axis labels after a round-trip between programs; the source files saved the day.</p></div>
+    <div class="quiz" data-xp="10">
+      <p class="quiz__q">Your chart looks sharp on screen. What is the best way to put it on an A1 poster?</p>
+      <div class="quiz__opts">
+        <button data-why="An enlarged screenshot becomes blocky at A1.">Take a screenshot and stretch it</button>
+        <button data-correct data-why="Vector stays sharp at any size.">Export it from the plotting tool as SVG or PDF</button>
+        <button data-why="Compression makes it worse, not better.">Save it as a small JPEG</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 55 · Part E -->
+  <section class="slide slide--part" data-title="Part E · Visuals on a poster">
+    <div class="part-letter">E</div>
+    <h2>Visual aids on a poster</h2>
+    <p class="slide__lead">Applying all of the above to your group poster.</p>
+  </section>
+
+  <!-- 56 · Poster choice -->
+  <section class="slide" data-title="Choosing visuals for your poster">
+    <div class="slide__kicker">50 · Poster</div>
+    <h2>Match the visual to the job it has to do</h2>
+    <p>Your poster has three problems and three solutions. Sort each reader question to the visual that answers it.</p>
+    <div class="sorter" data-xp="20" data-label="Poster visual matching">
+      <div class="sorter__pool">
+        <button class="chip" data-bin="bar">Intro: How big is this problem, and is it getting worse?</button>
+        <button class="chip" data-bin="bar|table">Problems: How do the three problems compare in size?</button>
+        <button class="chip" data-bin="photo">Problems: What does this actually look like on site?</button>
+        <button class="chip" data-bin="flow">Problems: Where in the process does it go wrong?</button>
+        <button class="chip" data-bin="table">Solutions: How do the three solutions compare on cost and effect?</button>
+        <button class="chip" data-bin="flow">Solutions: In what order should they happen?</button>
+        <button class="chip" data-bin="big">Conclusion: What is the one number I should remember?</button>
+      </div>
+      <div class="sorter__bins">
+        <div class="bin" data-bin="bar"><span class="bin__label">Bar chart or line graph (cited)</span></div>
+        <div class="bin" data-bin="table"><span class="bin__label">Verbal table</span></div>
+        <div class="bin" data-bin="photo"><span class="bin__label">Photograph (credited, real)</span></div>
+        <div class="bin" data-bin="flow"><span class="bin__label">Flowchart / process diagram / timeline</span></div>
+        <div class="bin" data-bin="big"><span class="bin__label">A single large figure</span></div>
+      </div>
+    </div>
+    <p class="small muted mt">Choose two rows for your own poster and note them for your next supervision. The verbal table for Solutions is worth pushing: it forces the criteria-based comparison from Week 6 and shows three options clearly in a small space.</p>
+  </section>
+
+  <!-- 57 · Layout -->
+  <section class="slide" data-title="Layout and reading path">
+    <div class="slide__kicker">51 · Layout</div>
+    <h2>Layout and reading path</h2>
+    <figure class="photo-fig"><img src="../assets/img/sticky-notes.jpg" alt="Colourful sticky notes arranged in columns on a wall, like the sections of a poster laid out in reading order" loading="lazy" width="1200" height="1043" style="aspect-ratio:21/9"><figcaption>Sections in columns, read in order: sketch your poster with notes before you design it.</figcaption></figure>
+    <div class="grid grid-2">
+      <div class="viz" style="margin:0">
+        <svg id="poster" viewBox="0 0 360 500" role="img" aria-label="Poster sketch with a title band and three columns. Numbered arrows show the reading path down column one, then column two, then column three. The bottom band is left empty."></svg>
+        <div class="viz__bar"><button class="btn btn--primary btn--sm" type="button" id="pathBtn">Show the reading path</button></div>
+      </div>
+      <div>
+        <p>Most readers go <strong>down the first column, then the second, then the third</strong>. Put your sections in that order.</p>
+        <p>The empty band at the bottom of the sketch is deliberate: it shows what about <strong>70% coverage</strong> looks like. White space is part of the design.</p>
+        <h3>Two quick tests before you print</h3>
+        <ul class="checklist" data-xp="10">
+          <li>Stand two metres back: is the topic clear?</li>
+          <li>Print in black and white: is every visual still readable?</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 58 · Captions on poster -->
+  <section class="slide" data-title="Captions and credits on a poster">
+    <div class="slide__kicker">52 · Poster captions</div>
+    <h2>Captions and credits on a poster</h2>
+    <ul>
+      <li>Every visual needs a <strong>number, a caption and a source</strong>, the same as in a report.</li>
+      <li>Put the credit <strong>directly underneath</strong> the visual, not in a footnote at the bottom of the poster.</li>
+      <li>Keep captions to one line where you can. Space on a poster is expensive.</li>
+      <li>The caption should say <strong>what the visual shows</strong>, not just what it is.</li>
+      <li>If the meaning is not clear within about <strong>three seconds</strong>, it needs a better caption, or a different visual.</li>
+      <li>A QR code linking to your full reference list is fine, but the credits on the poster itself still have to be there.</li>
+    </ul>
+    <div class="quiz" data-xp="10">
+      <p class="quiz__q">Which poster caption is better?</p>
+      <div class="quiz__opts">
+        <button data-why="This only names the topic. It makes the reader do the work.">“Figure 2: Injury data”</button>
+        <button data-correct data-why="Yes. It states the finding: a direct use of your findings writing from Part A.">“Figure 2: Falls caused a third of all injuries in 2024”</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 59 · Final checklist -->
+  <section class="slide" data-title="Final visual checklist">
+    <div class="slide__kicker">53 · Checklist</div>
+    <h2>Check every visual against this list</h2>
+    <ul class="checklist" data-xp="15">
+      <li>It answers a question the reader actually has.</li>
+      <li>It is the right type for that question.</li>
+      <li>It has a number, a specific caption and a source.</li>
+      <li>Table captions above; figure captions below.</li>
+      <li>It is referred to by number in your text, and explained there.</li>
+      <li>If it is a bar chart, the value axis starts at zero.</li>
+      <li>Units and time period are stated.</li>
+      <li>It passes the black-and-white test, and colour is not the only thing carrying meaning.</li>
+      <li>It is readable at final printed size, at 300 dpi or as vector art.</li>
+      <li>Nothing on it is there only for decoration.</li>
+    </ul>
+    <p class="small muted">Use this alongside the referencing checklist from Week 6.</p>
+  </section>
+
+  <!-- 60 · Sources -->
+  <section class="slide" data-title="Sources">
+    <div class="slide__kicker">54 · Sources</div>
+    <h2>Sources used in this session</h2>
+    <div class="grid grid-3">
+      <div class="card"><h3>Course texts</h3>
+        <p class="small">Alfred, G. J., Brusaw, C. T., &amp; Oliu, W. E. (2019). <i>Handbook of technical writing</i> (12th ed.). Bedford/St. Martin's.</p>
+        <p class="small">Markel, M., &amp; Selber, S. (2025). <i>Technical communication</i> (14th ed.). Bedford/St. Martin's, Macmillan Learning.</p>
+        <p class="small">Raman, M., &amp; Sharma, S. (2022). <i>Technical communication: Principles and practice</i> (4th ed.). Oxford University Press.</p>
+      </div>
+      <div class="card"><h3>Visual design, honesty &amp; accessibility</h3>
+        <p class="small">Cairo, A. (2019). <i>How charts lie: Getting smarter about visual information</i>. W. W. Norton.</p>
+        <p class="small">Wong, B. (2011). Points of view: Color blindness. <i>Nature Methods, 8</i>(6), 441. https://doi.org/10.1038/nmeth.1618</p>
+        <p class="small">World Wide Web Consortium. (2018). <i>Web content accessibility guidelines (WCAG) 2.1</i>. W3C.</p>
+      </div>
+      <div class="card"><h3>Style guides &amp; policy</h3>
+        <p class="small">American Psychological Association. (2020). <i>Publication manual of the American Psychological Association</i> (7th ed.).</p>
+        <p class="small">Institute of Electrical and Electronics Engineers. (n.d.). <i>IEEE reference guide</i>. IEEE Author Center.</p>
+        <p class="small">Kementerian Pendidikan Tinggi Malaysia. (2024). <i>Garis panduan penggunaan teknologi kecerdasan buatan generatif dalam pengajaran dan pembelajaran (PdP) pendidikan tinggi</i>.</p>
+      </div>
+    </div>
+    <p class="small muted">All company scenarios and datasets in this lesson are fictional teaching material. Charts use the Okabe–Ito colour-blind-safe palette (Wong, 2011). Values marked “illustrative” were not given in the original slides.</p>
+  </section>
+
+  <!-- 61 · Finale -->
+  <section class="slide" data-title="Session complete">
+    <div class="finale">
+      <div class="slide__kicker" style="justify-content:center">Session complete</div>
+      <div class="finale__xp">0 XP</div>
+      <div class="finale__stats"></div>
+      <h2>Read it carefully. Draw it honestly. Credit it properly.</h2>
+      <p class="slide__lead" style="margin:0 auto 1.5rem">Now choose the two visuals for your group poster and run the checklist on each one.</p>
+      <a class="btn btn--primary" href="../index.html#weeks">← Back to all weeks</a>
+    </div>
+  </section>
+
+</main>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/hooks.js"></script>
+<script src="../assets/js/lab.js"></script>
+<script src="../assets/js/deck.js"></script>
+<script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var D = window.Deck || { award: function () {}, widgetId: function (p) { return p; } };
+  var OI = { orange: "#E69F00", sky: "#56B4E9", green: "#009E73", yellow: "#F0E442", blue: "#0072B2", verm: "#D55E00", purple: "#CC79A7", black: "#000000" };
+  function $(id) { return document.getElementById(id); }
+  function S(tag, attrs, parent, text) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function tween(ms, fn) {
+    var t0 = null;
+    function f(t) {
+      if (t0 === null) t0 = t;
+      var p = Math.min(1, (t - t0) / ms);
+      var e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      fn(e); if (p < 1) requestAnimationFrame(f);
+    }
+    requestAnimationFrame(f);
+  }
+  function setOn(btns, on) { btns.forEach(function (b) { b.classList.toggle("is-on", b === on); }); }
+
+  /* Generic vertical bar chart */
+  function bars(svg, o) {
+    var W = o.w || 660, H = o.h || 380, L = o.left == null ? 56 : o.left, R = o.right || 12, T = o.top || 30, B = o.bottom == null ? 56 : o.bottom;
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    var pw = W - L - R, ph = H - T - B, n = o.cats.length, gw = pw / n, ns = o.series.length, gap = o.gap == null ? 4 : o.gap;
+    var bw = Math.min(o.barW || 40, (gw * 0.8 - (ns - 1) * gap) / ns);
+    var min = o.min || 0;
+    function y(v) { return T + ph - (v - min) / (o.max - min) * ph; }
+    var ref = { bars: [], vals: [], cats: [], tickTxt: [], y: y, base: T + ph, L: L, W: W, R: R, T: T, gw: gw, bw: bw, gx: function (i) { return L + gw * i + gw / 2; } };
+    ref.grid = S("g", {}, svg);
+    (o.ticks || []).forEach(function (t) {
+      var yy = y(t);
+      S("line", { x1: L, x2: W - R, y1: yy, y2: yy, class: "gl" }, ref.grid);
+      if (o.tickLabels !== false) ref.tickTxt.push(S("text", { x: L - 8, y: yy + 4, "text-anchor": "end", class: "lab" }, ref.grid, t));
+    });
+    o.series.forEach(function (s, si) {
+      ref.bars[si] = []; ref.vals[si] = [];
+      s.vals.forEach(function (v, i) {
+        var x = L + gw * i + gw / 2 - (ns * bw + (ns - 1) * gap) / 2 + si * (bw + gap);
+        var col = s.colors ? s.colors[i] : s.color;
+        ref.bars[si].push(S("rect", { x: x, y: y(v), width: bw, height: ref.base - y(v), fill: col, rx: 2 }, svg));
+        if (o.valueLabels !== false) ref.vals[si].push(S("text", { x: x + bw / 2, y: y(v) - 6, "text-anchor": "middle", class: "val" }, svg, v));
+      });
+    });
+    ref.baseLine = S("line", { x1: L, x2: W - R, y1: ref.base, y2: ref.base, class: "ax" }, svg);
+    if (o.yAxis !== false) S("line", { x1: L, x2: L, y1: T, y2: ref.base, class: "ax" }, svg);
+    if (o.catLabels !== false) o.cats.forEach(function (c, i) {
+      var t = S("text", { x: ref.gx(i), y: ref.base + 18, "text-anchor": "middle", class: "lab" }, svg);
+      c.split("|").forEach(function (l, k) { S("tspan", { x: ref.gx(i), dy: k ? 15 : 0 }, t, l); });
+      ref.cats.push(t);
+    });
+    if (o.yTitle) ref.yTitle = S("text", { x: 14, y: T + ph / 2, "text-anchor": "middle", transform: "rotate(-90 14 " + (T + ph / 2) + ")", class: "lab" }, svg, o.yTitle);
+    return ref;
+  }
+
+  /* ---------- Figure 1 data ---------- */
+  var CATS = ["Falls from|height", "Struck by|object", "Manual|handling", "Electrical", "Slips and|trips"];
+  var V22 = [34, 27, 41, 8, 19], V24 = [46, 24, 38, 7, 23];
+
+  /* ---------- Figure 1 interactive ---------- */
+  var f1 = $("fig1");
+  if (f1) {
+    var r = bars(f1, { w: 660, h: 400, top: 56, left: 60, max: 50, ticks: [0, 10, 20, 30, 40, 50], cats: CATS, yTitle: "Recorded injuries (count)",
+      series: [{ vals: V22, color: OI.sky }, { vals: V24, color: OI.orange }] });
+    var leg = S("g", {}, f1);
+    S("rect", { x: 420, y: 14, width: 14, height: 14, fill: OI.sky }, leg); S("text", { x: 440, y: 26, class: "lab" }, leg, "2022");
+    S("rect", { x: 500, y: 14, width: 14, height: 14, fill: OI.orange }, leg); S("text", { x: 520, y: 26, class: "lab" }, leg, "2024");
+    var ann = S("g", {}, f1);
+    var STEPS = [
+      ["1 · Title, units and period", "Units: counts, not rates. Two separate years (2022 and 2024)."],
+      ["2 · Check the axes", "The axis starts at zero, so differences are honest."],
+      ["3 · Find the biggest", "Biggest in 2024: falls from height (46)."],
+      ["4 · Find the biggest change", "Biggest change as a number: falls, +12. Biggest change as a percentage: falls, +35.3%."],
+      ["5 · Look for a break in the pattern", "Pattern break: falls passed manual handling. In 2022 manual handling (41) led; in 2024 falls (46) lead."],
+      ["6 · What goes the other way?", "Three of five categories went DOWN: struck by object, manual handling and electrical."]
+    ];
+    var step = 0, f1id = D.widgetId("fig1steps");
+    var allBars = r.bars[0].concat(r.bars[1]), allVals = r.vals[0].concat(r.vals[1]);
+    function dimGroup(i, on) { [r.bars[0][i], r.bars[1][i], r.vals[0][i], r.vals[1][i]].forEach(function (e) { e.classList.toggle("dim", on); }); }
+    function render() {
+      while (ann.firstChild) ann.removeChild(ann.firstChild);
+      allBars.concat(allVals).forEach(function (e) { e.classList.remove("dim"); });
+      [r.yTitle, leg].concat(r.tickTxt).forEach(function (e) { e.classList.remove("hl"); });
+      leg.querySelectorAll("text").forEach(function (e) { e.classList.remove("hl"); });
+      var dots = document.querySelectorAll("#fig1steps .stepdots span");
+      dots.forEach(function (d, i) { d.classList.toggle("on", i < step); });
+      $("fig1prev").disabled = step === 0;
+      $("fig1next").textContent = step >= 6 ? "Start again ↺" : "Next step →";
+      if (step === 0) { $("fig1h").textContent = "Press “Next step” to start"; $("fig1p").textContent = "Each step highlights one thing on the chart."; return; }
+      $("fig1h").textContent = STEPS[step - 1][0]; $("fig1p").textContent = STEPS[step - 1][1];
+      if (step === 1) {
+        r.yTitle.classList.add("hl"); leg.querySelectorAll("text").forEach(function (e) { e.classList.add("hl"); });
+        S("rect", { x: 412, y: 6, width: 150, height: 30, rx: 6, fill: "none", stroke: "#0071e3", "stroke-width": 2 }, ann);
+      } else if (step === 2) {
+        S("line", { x1: r.L, x2: r.W - r.R, y1: r.base, y2: r.base, stroke: "#0071e3", "stroke-width": 4 }, ann);
+        r.tickTxt[0].classList.add("hl");
+        S("text", { x: r.L + 10, y: r.base - 8, class: "ann", fill: "#0071e3" }, ann, "starts at 0 ✓");
+      } else if (step === 3) {
+        allBars.concat(allVals).forEach(function (e) { e.classList.add("dim"); });
+        r.bars[1][0].classList.remove("dim"); r.vals[1][0].classList.remove("dim");
+        var b = r.bars[1][0];
+        S("rect", { x: +b.getAttribute("x") - 4, y: +b.getAttribute("y") - 26, width: +b.getAttribute("width") + 8, height: r.base - b.getAttribute("y") + 26, rx: 4, fill: "none", stroke: "#0071e3", "stroke-width": 2 }, ann);
+      } else if (step === 4) {
+        V22.forEach(function (v, i) {
+          var d = V24[i] - v, pct = (d / v * 100).toFixed(1);
+          var yy = r.y(Math.max(v, V24[i])) - 30;
+          S("text", { x: r.gx(i), y: yy, "text-anchor": "middle", class: "ann", fill: i === 0 ? "#0071e3" : "#6e6e73" }, ann, (d > 0 ? "+" : "−") + Math.abs(d) + " (" + (d > 0 ? "+" : "−") + Math.abs(pct) + "%)");
+        });
+        [1, 2, 3, 4].forEach(function (i) { dimGroup(i, true); });
+      } else if (step === 5) {
+        [1, 3, 4].forEach(function (i) { dimGroup(i, true); });
+        S("text", { x: r.gx(1), y: r.y(46) - 4, "text-anchor": "middle", class: "ann", fill: "#0071e3" }, ann, "2022: 41 > 34");
+        S("text", { x: r.gx(1), y: r.y(46) + 16, "text-anchor": "middle", class: "ann", fill: "#0071e3" }, ann, "2024: 46 > 38");
+        S("text", { x: r.gx(1), y: r.y(46) + 36, "text-anchor": "middle", class: "ann", fill: "#b25e00" }, ann, "order reversed");
+      } else if (step === 6) {
+        [0, 4].forEach(function (i) { dimGroup(i, true); });
+        [1, 2, 3].forEach(function (i) {
+          S("text", { x: r.gx(i), y: r.y(Math.max(V22[i], V24[i])) - 26, "text-anchor": "middle", class: "ann", fill: "#d70015" }, ann, "▼ " + (V24[i] - V22[i]));
+        });
+        D.award(f1id, 15);
+      }
+    }
+    $("fig1next").addEventListener("click", function () { step = step >= 6 ? 0 : step + 1; render(); });
+    $("fig1prev").addEventListener("click", function () { if (step > 0) { step--; render(); } });
+    render();
+  }
+
+  /* mini Figure 1 for Practice 1 */
+  if ($("fig1mini")) bars($("fig1mini"), { w: 660, h: 300, top: 24, max: 50, ticks: [0, 10, 20, 30, 40, 50], cats: CATS, series: [{ vals: V22, color: OI.sky }, { vals: V24, color: OI.orange }] });
+
+  /* small paper charts (APA, IEEE, caption) */
+  ["capFig", "apaFig", "ieeeFig"].forEach(function (id) {
+    var s = $(id); if (!s) return;
+    bars(s, { w: 300, h: 110, top: 6, left: 6, right: 6, bottom: 6, max: 50, ticks: [], cats: CATS, catLabels: false, valueLabels: false, yAxis: false, gap: 2,
+      series: [{ vals: V22, color: "#7a7a7a" }, { vals: V24, color: "#222" }] });
+  });
+
+  /* ---------- Mini type previews ---------- */
+  var mb = $("mini-bar");
+  if (mb) bars(mb, { w: 240, h: 120, top: 8, left: 8, right: 8, bottom: 8, max: 50, ticks: [], cats: [1, 2, 3, 4, 5], catLabels: false, valueLabels: false, yAxis: false, barW: 30, series: [{ vals: V24, color: OI.orange }] });
+  var ml = $("mini-line");
+  if (ml) {
+    ml.setAttribute("viewBox", "0 0 240 120");
+    var tot = [447, 497, 666, 693], pts = tot.map(function (v, i) { return (20 + i * 66) + "," + (110 - (v / 700) * 100); });
+    S("line", { x1: 10, x2: 230, y1: 110, y2: 110, class: "ax" }, ml);
+    S("polyline", { points: pts.join(" "), fill: "none", stroke: OI.sky, "stroke-width": 4, "stroke-linejoin": "round" }, ml);
+    pts.forEach(function (p) { var c = p.split(","); S("circle", { cx: c[0], cy: c[1], r: 5, fill: OI.sky }, ml); });
+  }
+  function pie(svg, cx, cy, rad, vals, cols, stroke) {
+    var tot = vals.reduce(function (a, b) { return a + b; }, 0), a = 0, out = [];
+    vals.forEach(function (v, i) {
+      var a1 = a + v / tot * Math.PI * 2;
+      var x0 = cx + rad * Math.sin(a), y0 = cy - rad * Math.cos(a), x1 = cx + rad * Math.sin(a1), y1 = cy - rad * Math.cos(a1);
+      out.push(S("path", { d: "M" + cx + "," + cy + "L" + x0 + "," + y0 + "A" + rad + "," + rad + " 0 " + (a1 - a > Math.PI ? 1 : 0) + " 1 " + x1 + "," + y1 + "Z", fill: cols[i], stroke: stroke || "#f5f5f7", "stroke-width": 2 }, svg));
+      a = a1;
+    });
+    return out;
+  }
+  var mp = $("mini-pie");
+  if (mp) { mp.setAttribute("viewBox", "0 0 240 120"); pie(mp, 120, 60, 55, [46, 38, 24, 23, 7], [OI.orange, OI.sky, OI.green, OI.yellow, OI.blue]); }
+  var mt = $("mini-table");
+  if (mt) {
+    mt.setAttribute("viewBox", "0 0 240 120");
+    var rows = [["Year", "Mandarin", "German", "Total"], ["2021", "70", "55", "447"], ["2022", "77", "86", "497"], ["2023", "130", "113", "666"], ["2024", "98", "125", "693"]];
+    rows.forEach(function (row, i) {
+      row.forEach(function (c, j) { S("text", { x: [8, 54, 130, 190][j], y: 20 + i * 22, "font-size": 12, fill: i ? "#1d1d1f" : "#0071e3", "font-weight": i ? 400 : 700 }, mt, c); });
+      S("line", { x1: 8, x2: 232, y1: 26 + i * 22, y2: 26 + i * 22, class: "gl" }, mt);
+    });
+  }
+
+  /* ---------- Decision guide ---------- */
+  var dec = $("decide");
+  if (dec) {
+    var dId = D.widgetId("decide"), opened = 0, db = dec.querySelectorAll("button");
+    db.forEach(function (b) { b.addEventListener("click", function () {
+      if (!b.classList.contains("is-open")) { b.classList.add("is-open"); opened++; if (opened === db.length) D.award(dId, 10); }
+    }); });
+  }
+
+  /* ---------- Exploded diagram ---------- */
+  var xb = $("explodeBtn");
+  if (xb) {
+    var parts = document.querySelectorAll("#explode .xp-part"), exploded = false, xId = D.widgetId("explode");
+    parts.forEach(function (p) { p.style.transition = "transform .8s cubic-bezier(.2,.8,.2,1)"; });
+    xb.addEventListener("click", function () {
+      exploded = !exploded;
+      parts.forEach(function (p) { p.style.transform = exploded ? "translateY(" + p.getAttribute("data-off") + "px)" : "none"; });
+      $("xp-labels").style.opacity = exploded ? 1 : 0;
+      xb.textContent = exploded ? "Assemble ↕" : "Explode ↕";
+      if (exploded) D.award(xId, 5);
+    });
+  }
+
+  /* ---------- Cutaway ---------- */
+  var cut = $("cutaway");
+  if (cut) {
+    var cx = 160, cy = 160, layers = [[140, "#56B4E9", "Outer casing"], [118, "#F0E442", "Insulation"], [96, "#D55E00", "Inner wall"], [86, "#0072B2", "Contents"]];
+    var defs = S("defs", {}, cut);
+    var grad = S("radialGradient", { id: "shine", cx: "35%", cy: "30%", r: "75%" }, defs);
+    S("stop", { offset: "0%", "stop-color": "#bfe6fb" }, grad); S("stop", { offset: "100%", "stop-color": "#2a6f99" }, grad);
+    var hatch = S("pattern", { id: "hatchI", width: 8, height: 8, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, defs);
+    S("rect", { width: 8, height: 8, fill: "#F0E442" }, hatch); S("line", { x1: 0, y1: 0, x2: 0, y2: 8, stroke: "#8a7f10", "stroke-width": 3 }, hatch);
+    S("circle", { cx: cx, cy: cy, r: 140, fill: "url(#shine)" }, cut);
+    var wedge = S("g", { style: "opacity:0;transition:opacity .6s" }, cut);
+    function quarter(rad, fill) { return S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - rad) + "A" + rad + "," + rad + " 0 0 1 " + (cx + rad) + "," + cy + "Z", fill: fill, stroke: "#f5f5f7", "stroke-width": 1.5 }, wedge); }
+    S("path", { d: "M" + cx + "," + cy + "L" + cx + "," + (cy - 146) + "A146,146 0 0 1 " + (cx + 146) + "," + cy + "Z", fill: "#f5f5f7" }, wedge);
+    layers.forEach(function (l, i) { quarter(l[0], i === 1 ? "url(#hatchI)" : l[1]); });
+    var labs = S("g", { "font-size": 13 }, wedge);
+    var lp = [[129, 300, 40], [107, 300, 82], [91, 300, 124], [50, 300, 166]];
+    layers.forEach(function (l, i) {
+      var ang = Math.PI / 4 + (i - 1.5) * 0.18, rr = lp[i][0];
+      var px = cx + rr * Math.sin(ang), py = cy - rr * Math.cos(ang);
+      S("line", { x1: px, y1: py, x2: lp[i][1] + 8, y2: lp[i][2] - 4, stroke: "#6e6e73", "stroke-width": 1 }, labs);
+      S("circle", { cx: px, cy: py, r: 3, fill: "#1d1d1f" }, labs);
+      S("text", { x: lp[i][1] + 12, y: lp[i][2] }, labs, l[2]);
+    });
+    var cutOn = false, cId = D.widgetId("cut");
+    $("cutBtn").addEventListener("click", function () {
+      cutOn = !cutOn; wedge.style.opacity = cutOn ? 1 : 0;
+      $("cutBtn").textContent = cutOn ? "Put the quarter back" : "Remove the quarter";
+      if (cutOn) D.award(cId, 5);
+    });
+  }
+
+  /* ---------- Block diagram ---------- */
+  var bd = $("blockd");
+  if (bd) {
+    var defsB = S("defs", {}, bd);
+    var mk = S("marker", { id: "arrB", viewBox: "0 0 10 10", refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, orient: "auto" }, defsB);
+    S("path", { d: "M0,0 L10,5 L0,10 z", fill: "#0071e3" }, mk);
+    var BW = 116, BH = 50;
+    var blocks = [["Setpoint", OI.purple], ["Controller", OI.sky], ["Heater", OI.orange], ["Tank", OI.green], ["Sensor", OI.yellow]];
+    var edges = [[0, 1, "target"], [1, 2, "power"], [2, 3, "heat"], [3, 4, "temperature"], [4, 1, "signal"]];
+    var layoutA = [[74, 70], [230, 70], [386, 70], [528, 160], [306, 250]];
+    var slots = [[74, 60], [300, 50], [526, 60], [74, 250], [300, 260], [526, 250], [190, 160], [420, 160]];
+    var gE = S("g", {}, bd), gB = S("g", {}, bd), lines = [], boxes = [];
+    edges.forEach(function (e) {
+      var g = S("g", {}, gE);
+      lines.push({ l: S("line", { stroke: "#0071e3", "stroke-width": 2, "marker-end": "url(#arrB)" }, g), t: S("text", { "font-size": 12, fill: "#6e6e73", "text-anchor": "middle" }, g, e[2]) });
+    });
+    blocks.forEach(function (b) {
+      var g = S("g", {}, gB);
+      S("rect", { x: -BW / 2, y: -BH / 2, width: BW, height: BH, rx: 6, fill: "var(--bg-2)", stroke: b[1], "stroke-width": 2.5 }, g);
+      S("text", { x: 0, y: 5, "text-anchor": "middle", "font-size": 15, "font-weight": 700 }, g, b[0]);
+      boxes.push(g);
+    });
+    var pos = layoutA.map(function (p) { return p.slice(); });
+    function edgePt(c, o) {
+      var dx = o[0] - c[0], dy = o[1] - c[1];
+      var t = Math.min(dx ? (BW / 2 + 4) / Math.abs(dx) : 1e9, dy ? (BH / 2 + 4) / Math.abs(dy) : 1e9);
+      return [c[0] + dx * t, c[1] + dy * t];
+    }
+    function draw(P) {
+      boxes.forEach(function (g, i) { g.setAttribute("transform", "translate(" + P[i][0] + "," + P[i][1] + ")"); });
+      edges.forEach(function (e, k) {
+        var a = edgePt(P[e[0]], P[e[1]]), b = edgePt(P[e[1]], P[e[0]]);
+        lines[k].l.setAttribute("x1", a[0]); lines[k].l.setAttribute("y1", a[1]); lines[k].l.setAttribute("x2", b[0]); lines[k].l.setAttribute("y2", b[1]);
+        lines[k].t.setAttribute("x", (a[0] + b[0]) / 2); lines[k].t.setAttribute("y", (a[1] + b[1]) / 2 - 6);
+      });
+    }
+    draw(pos);
+    var bId = D.widgetId("block"), moves = 0;
+    $("blockBtn").addEventListener("click", function () {
+      var pool = slots.slice(), target = [];
+      for (var i = 0; i < blocks.length; i++) target.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+      var from = pos.map(function (p) { return p.slice(); });
+      tween(700, function (e) {
+        pos = from.map(function (p, i) { return [p[0] + (target[i][0] - p[0]) * e, p[1] + (target[i][1] - p[1]) * e]; });
+        draw(pos);
+      });
+      if (++moves >= 2) D.award(bId, 5);
+    });
+  }
+
+  /* ---------- Truncated axis ---------- */
+  var tr = $("trunc");
+  if (tr) {
+    var RV = [61, 62, 63, 65], Q = ["Q1", "Q2", "Q3", "Q4"];
+    tr.setAttribute("viewBox", "0 0 480 330");
+    var TL = 56, TT = 24, TB = 290, TW = 470;
+    var gT = S("g", {}, tr), rb = [], rv = [], curMin = 0, tId = D.widgetId("trunc");
+    S("text", { x: 14, y: 157, "text-anchor": "middle", transform: "rotate(-90 14 157)", class: "lab" }, tr, "Recycling rate (%)");
+    RV.forEach(function (v, i) {
+      var x = TL + 20 + i * 100;
+      rb.push(S("rect", { x: x, width: 64, fill: OI.green, rx: 2 }, tr));
+      rv.push(S("text", { x: x + 32, "text-anchor": "middle", class: "val" }, tr, v + "%"));
+      S("text", { x: x + 32, y: TB + 20, "text-anchor": "middle", class: "lab" }, tr, Q[i]);
+    });
+    S("line", { x1: TL, x2: TL, y1: TT, y2: TB, class: "ax" }, tr);
+    S("line", { x1: TL, x2: TW, y1: TB, y2: TB, class: "ax" }, tr);
+    function axisFor(m) { return m === 0 ? { min: 0, max: 70, ticks: [0, 10, 20, 30, 40, 50, 60, 70] } : { min: 60, max: 66, ticks: [60, 61, 62, 63, 64, 65, 66] }; }
+    function drawT(min, max, ticks) {
+      while (gT.firstChild) gT.removeChild(gT.firstChild);
+      function y(v) { return TB - (v - min) / (max - min) * (TB - TT); }
+      ticks.forEach(function (t) { S("line", { x1: TL, x2: TW, y1: y(t), y2: y(t), class: "gl" }, gT); S("text", { x: TL - 8, y: y(t) + 4, "text-anchor": "end", class: "lab" }, gT, t); });
+      RV.forEach(function (v, i) { rb[i].setAttribute("y", y(v)); rb[i].setAttribute("height", TB - y(v)); rv[i].setAttribute("y", y(v) - 6); });
+    }
+    var A0 = axisFor(0); drawT(A0.min, A0.max, A0.ticks);
+    var tbtns = Array.prototype.slice.call(document.querySelectorAll("[data-axis]"));
+    tbtns.forEach(function (b) { b.addEventListener("click", function () {
+      var m = +b.getAttribute("data-axis"); if (m === curMin) return;
+      setOn(tbtns, b);
+      var a = axisFor(curMin), z = axisFor(m); curMin = m;
+      tween(700, function (e) { drawT(a.min + (z.min - a.min) * e, a.max + (z.max - a.max) * e, e < 1 ? [] : z.ticks); });
+      D.award(tId, 5);
+    }); });
+  }
+
+  /* ---------- 3-D pie ---------- */
+  var p3 = $("pie3d");
+  if (p3) {
+    pie(p3, 110, 110, 100, [25, 25, 25, 25], [OI.orange, OI.sky, OI.green, OI.purple]);
+    var pbtns = Array.prototype.slice.call(document.querySelectorAll("[data-pie]")), pId = D.widgetId("pie3d");
+    pbtns.forEach(function (b) { b.addEventListener("click", function () {
+      setOn(pbtns, b); p3.classList.toggle("is-3d", b.getAttribute("data-pie") === "3d");
+      if (b.getAttribute("data-pie") === "3d") D.award(pId, 5);
+    }); });
+  }
+
+  /* ---------- Downtime: bad pie + redraw ---------- */
+  var DT = [["Mechanical breakdown", 22], ["Material shortage", 19], ["Tool changeover", 15], ["Electrical faults", 12], ["Operator availability", 11], ["Quality holds", 9], ["Other", 7], ["Software faults", 5]];
+  var PIE_ORDER = [3, 0, 5, 1, 7, 4, 2, 6];
+  var PIE_COL = [OI.orange, OI.sky, OI.green, OI.yellow, OI.blue, OI.verm, OI.purple, OI.black];
+  function drawBadPie(svg, offset) {
+    var g = S("g", {}, svg);
+    pie(g, 130 + (offset || 0), 140, 115, PIE_ORDER.map(function (k) { return DT[k][1]; }), PIE_COL, "#1d1d1f");
+    PIE_ORDER.forEach(function (k, i) {
+      S("rect", { x: 280 + (offset || 0), y: 40 + i * 28, width: 14, height: 14, fill: PIE_COL[i], stroke: "#1d1d1f", "stroke-width": 1 }, g);
+      S("text", { x: 300 + (offset || 0), y: 52 + i * 28, class: "lab" }, g, DT[k][0]);
+    });
+    return g;
+  }
+  var bp = $("badpie");
+  if (bp) { bp.setAttribute("viewBox", "0 0 460 280"); drawBadPie(bp); }
+  var rd = $("redraw");
+  if (rd) {
+    rd.setAttribute("viewBox", "0 0 460 300");
+    var gPie = drawBadPie(rd); gPie.style.transition = "opacity .5s";
+    var gBar = S("g", { style: "opacity:0;transition:opacity .6s" }, rd);
+    var BL = 160, BR = 420, top0 = 16, rowH = 30;
+    DT.forEach(function (d, i) {
+      var w = d[1] / 25 * (BR - BL), y = top0 + i * rowH, hot = i < 3;
+      S("text", { x: BL - 8, y: y + 18, "text-anchor": "end", class: "lab", fill: hot ? "#1d1d1f" : "#6e6e73" }, gBar, d[0]);
+      var rect = S("rect", { x: BL, y: y + 4, width: 0, height: 20, rx: 2, fill: hot ? OI.orange : "#86868b" }, gBar);
+      rect.setAttribute("data-w", w);
+      S("text", { x: BL + w + 6, y: y + 19, class: "val" }, gBar, d[1] + "%");
+    });
+    S("line", { x1: BL, x2: BL, y1: 12, y2: top0 + 8 * rowH + 2, class: "ax" }, gBar);
+    S("text", { x: (BL + BR) / 2, y: 290, "text-anchor": "middle", class: "lab" }, gBar, "Share of downtime hours (%)");
+    var drawn = false, rId = D.widgetId("redraw");
+    $("redrawBtn").addEventListener("click", function () {
+      drawn = !drawn;
+      gPie.style.opacity = drawn ? 0 : 1; gBar.style.opacity = drawn ? 1 : 0;
+      var rects = gBar.querySelectorAll("rect");
+      if (drawn) tween(800, function (e) { rects.forEach(function (r) { r.setAttribute("width", r.getAttribute("data-w") * e); }); });
+      $("redrawCap").textContent = drawn ? "Figure 2: Three causes account for 56% of downtime hours" : "Reported causes of production downtime, one plant, 2024";
+      $("redrawBtn").textContent = drawn ? "Back to the pie ↺" : "Redraw it ↻";
+      if (drawn) D.award(rId, 10);
+    });
+  }
+
+  /* ---------- Line chart helper ---------- */
+  function lineChart(svg, series, o) {
+    o = o || {};
+    svg.setAttribute("viewBox", "0 0 420 260");
+    var L = 40, R = o.right || 20, T = 16, B = 226, W = 420, X = o.x || ["Q1", "Q2", "Q3", "Q4", "Q5"], max = o.max || 50;
+    function x(i) { return L + 16 + i * (W - L - R - 32) / (X.length - 1); }
+    function y(v) { return B - v / max * (B - T); }
+    for (var t = 0; t <= max; t += 10) { S("line", { x1: L, x2: W - R, y1: y(t), y2: y(t), class: "gl" }, svg); S("text", { x: L - 6, y: y(t) + 4, "text-anchor": "end", class: "lab" }, svg, t); }
+    S("line", { x1: L, x2: W - R, y1: B, y2: B, class: "ax" }, svg);
+    X.forEach(function (l, i) { S("text", { x: x(i), y: B + 18, "text-anchor": "middle", class: "lab" }, svg, l); });
+    series.forEach(function (s, si) {
+      S("polyline", { points: s.v.map(function (v, i) { return x(i) + "," + y(v); }).join(" "), fill: "none", stroke: s.c, "stroke-width": 3.5, "stroke-dasharray": s.dash || "none" }, svg);
+      if (s.marker) s.v.forEach(function (v, i) {
+        if (s.marker === "circle") S("circle", { cx: x(i), cy: y(v), r: 6, fill: s.c }, svg);
+        else S("rect", { x: x(i) - 6, y: y(v) - 6, width: 12, height: 12, fill: s.c }, svg);
+      });
+      if (s.direct) S("text", { x: x(s.v.length - 1) + 10, y: y(s.v[s.v.length - 1]) + 5, "font-size": 14, "font-weight": 700, fill: s.c }, svg, s.name);
+    });
+    if (o.legend) series.forEach(function (s, si) {
+      S("rect", { x: L + 12 + si * 70, y: T - 2, width: 22, height: 6, fill: s.c }, svg);
+      S("text", { x: L + 40 + si * 70, y: T + 5, class: "lab" }, svg, s.name);
+    });
+  }
+  var CVDDATA = [[30, 34, 38, 41, 44], [28, 33, 37, 42, 43], [20, 22, 21, 24, 26], [12, 15, 19, 18, 21]];
+  if ($("cvdA")) {
+    lineChart($("cvdA"), [{ v: CVDDATA[0], c: "#D62728", name: "A" }, { v: CVDDATA[1], c: "#2CA02C", name: "B" }, { v: CVDDATA[2], c: "#1F77B4", name: "C" }, { v: CVDDATA[3], c: "#AAAAAA", name: "D" }], { legend: true });
+    lineChart($("cvdB"), [{ v: CVDDATA[0], c: OI.orange, name: "A" }, { v: CVDDATA[1], c: OI.sky, name: "B" }, { v: CVDDATA[2], c: OI.blue, name: "C" }, { v: CVDDATA[3], c: OI.verm, name: "D" }], { legend: true });
+    var cb = Array.prototype.slice.call(document.querySelectorAll("[data-cvd]")), cvId = D.widgetId("cvd");
+    cb.forEach(function (b) { b.addEventListener("click", function () {
+      var on = b.getAttribute("data-cvd") === "on"; setOn(cb, b);
+      ["cvdA", "cvdB"].forEach(function (id) { $(id).style.filter = on ? "url(#deut)" : "none"; });
+      if (on) D.award(cvId, 10);
+    }); });
+  }
+  var CH = [[12, 18, 24, 30, 36], [26, 25, 28, 27, 29]];
+  if ($("chanA")) {
+    lineChart($("chanA"), [{ v: CH[0], c: OI.orange, name: "Line 1" }, { v: CH[1], c: OI.sky, name: "Line 2" }], { legend: true, max: 40, right: 20 });
+    lineChart($("chanB"), [{ v: CH[0], c: OI.orange, name: "Line 1", marker: "circle", direct: true }, { v: CH[1], c: OI.sky, name: "Line 2", marker: "square", dash: "9 6", direct: true }], { max: 40, right: 74 });
+    var gOn = false, gId = D.widgetId("gray");
+    $("grayBtn").addEventListener("click", function () {
+      gOn = !gOn; ["chanA", "chanB"].forEach(function (id) { $(id).style.filter = gOn ? "grayscale(1)" : "none"; });
+      $("grayBtn").textContent = gOn ? "🎨 Back to colour" : "🖨 Print in black and white";
+      if (gOn) D.award(gId, 10);
+    });
+  }
+
+  /* ---------- Contrast ---------- */
+  function lum(hex) {
+    hex = hex.replace("#", "");
+    var c = [0, 2, 4].map(function (i) { var v = parseInt(hex.substr(i, 2), 16) / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  }
+  function ratio(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+  function verdictHTML(rt) {
+    return '<span class="verdict ' + (rt >= 4.5 ? "ok" : "no") + '">' + (rt >= 4.5 ? "✓" : "✗") + ' body text</span><span class="verdict ' + (rt >= 3 ? "ok" : "no") + '">' + (rt >= 3 ? "✓" : "✗") + ' large / chart</span>';
+  }
+  var sw = $("swatches");
+  if (sw) {
+    [["#000000", "Black"], ["#0072B2", "Okabe–Ito blue"], ["#AAAAAA", "Light grey"], ["#E69F00", "Okabe–Ito orange"]].forEach(function (s) {
+      var rt = ratio(s[0], "#FFFFFF");
+      var d = document.createElement("div"); d.className = "swatch";
+      d.innerHTML = '<p style="color:' + s[0] + '">' + s[1] + ' text on white</p><div class="small">' + rt.toFixed(1) + ':1</div><div>' + verdictHTML(rt) + "</div>";
+      sw.appendChild(d);
+    });
+    var kId = D.widgetId("contrast"), kUses = 0;
+    function ck() {
+      var f = $("fgC").value, b = $("bgC").value, rt = ratio(f, b), o = $("ckOut");
+      o.style.background = b; o.innerHTML = '<p style="color:' + f + '">Sample text ' + rt.toFixed(1) + ':1</p><div>' + verdictHTML(rt) + "</div>";
+    }
+    ["fgC", "bgC"].forEach(function (id) { $(id).addEventListener("input", function () { ck(); if (++kUses === 3) D.award(kId, 5); }); });
+    ck();
+  }
+
+  /* ---------- Chart junk ---------- */
+  var jk = $("junk");
+  if (jk) {
+    jk.setAttribute("viewBox", "0 0 520 360");
+    var defsJ = S("defs", {}, jk);
+    var hp = S("pattern", { id: "hatchJ", width: 8, height: 8, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, defsJ);
+    S("line", { x1: 0, y1: 0, x2: 0, y2: 8, stroke: "rgba(0,0,0,.55)", "stroke-width": 3 }, hp);
+    var jBg = S("rect", { x: 4, y: 4, width: 512, height: 352, fill: "#2b2550" }, jk);
+    var jr = bars(S("g", {}, jk), { w: 520, h: 360, top: 40, left: 50, right: 20, max: 50, ticks: [0, 10, 20, 30, 40, 50], cats: CATS, valueLabels: false,
+      series: [{ vals: V24, colors: [OI.orange, OI.sky, OI.green, OI.purple, OI.yellow] }] });
+    jk.setAttribute("viewBox", "0 0 520 360");
+    var jGrid = jr.grid.querySelectorAll("line");
+    jGrid.forEach(function (l) { l.setAttribute("stroke-dasharray", "2 3"); l.style.stroke = "rgba(255,255,255,.55)"; });
+    var jHatch = S("g", {}, jk);
+    jr.bars[0].forEach(function (b) { S("rect", { x: b.getAttribute("x"), y: b.getAttribute("y"), width: b.getAttribute("width"), height: b.getAttribute("height"), fill: "url(#hatchJ)" }, jHatch); });
+    var jLeg = S("g", {}, jk);
+    S("rect", { x: 380, y: 10, width: 120, height: 28, fill: "#111a34", stroke: "#1d1d1f" }, jLeg);
+    S("rect", { x: 390, y: 18, width: 12, height: 12, fill: OI.orange }, jLeg);
+    S("text", { x: 408, y: 29, class: "lab" }, jLeg, "Injuries 2024");
+    var jBorder = S("rect", { x: 4, y: 4, width: 512, height: 352, fill: "none", stroke: "#1d1d1f", "stroke-width": 8 }, jk);
+    var jVals = S("g", { style: "opacity:0" }, jk);
+    jr.bars[0].forEach(function (b, i) { S("text", { x: +b.getAttribute("x") + jr.bw / 2, y: +b.getAttribute("y") - 6, "text-anchor": "middle", class: "val" }, jVals, V24[i]); });
+    var JSTEPS = [
+      function (on) { jBorder.style.opacity = on ? 1 : 0; },
+      function (on) { jBg.style.opacity = on ? 1 : 0; },
+      function (on) { jHatch.style.opacity = on ? 1 : 0; },
+      function (on) { jLeg.style.opacity = on ? 1 : 0; },
+      function (on) { jGrid.forEach(function (l, i) { if (i > 0) l.style.opacity = on ? 1 : 0; }); },
+      function (on) {
+        jr.bars[0].forEach(function (b, i) { b.setAttribute("fill", on ? [OI.orange, OI.sky, OI.green, OI.purple, OI.yellow][i] : (i === 0 ? OI.orange : "#86868b")); });
+        jVals.style.opacity = on ? 0 : 1;
+      }
+    ];
+    var jStep = 0, jId = D.widgetId("junk"), jItems = document.querySelectorAll("#junkList li");
+    function jRender() {
+      JSTEPS.forEach(function (f, i) { f(i >= jStep); });
+      jItems.forEach(function (li, i) { li.style.textDecoration = i < jStep ? "line-through" : "none"; li.style.color = i < jStep ? "var(--ok)" : ""; });
+      $("junkBtn").disabled = jStep >= JSTEPS.length;
+    }
+    $("junkBtn").addEventListener("click", function () { if (jStep < JSTEPS.length) { jStep++; jRender(); if (jStep === JSTEPS.length) D.award(jId, 10); } });
+    $("junkReset").addEventListener("click", function () { jStep = 0; jRender(); });
+    jRender();
+  }
+
+  /* ---------- Poster layout ---------- */
+  var ps = $("poster");
+  if (ps) {
+    S("rect", { x: 4, y: 4, width: 352, height: 492, rx: 6, fill: "#f4f4ef" }, ps);
+    S("rect", { x: 14, y: 14, width: 332, height: 50, rx: 4, fill: "#0072B2" }, ps);
+    S("text", { x: 180, y: 36, "text-anchor": "middle", "font-size": 15, "font-weight": 700, fill: "#fff" }, ps, "Title");
+    S("text", { x: 180, y: 54, "text-anchor": "middle", "font-size": 11, fill: "#fff" }, ps, "Names · matric numbers");
+    var cols = [16, 128, 240], blocksP = [
+      [[0, 74, 120, "Introduction", "bar chart"], [0, 204, 140, "Problems", "photo"]],
+      [[1, 74, 130, "Problems", "verbal table"], [1, 214, 130, "Solutions", "flowchart"]],
+      [[2, 74, 120, "Solutions", "table"], [2, 204, 70, "Conclusion", "one big number"], [2, 284, 60, "References", "+ QR"]]
+    ];
+    blocksP.forEach(function (col) { col.forEach(function (b) {
+      S("rect", { x: cols[b[0]], y: b[1], width: 104, height: b[2], rx: 4, fill: "#ffffff", stroke: "#6e6e73" }, ps);
+      S("text", { x: cols[b[0]] + 8, y: b[1] + 18, "font-size": 12, "font-weight": 700, fill: "#111" }, ps, b[3]);
+      S("rect", { x: cols[b[0]] + 8, y: b[1] + 28, width: 88, height: Math.min(40, b[2] - 52), fill: "#E69F00", opacity: .55 }, ps);
+      S("text", { x: cols[b[0]] + 8, y: b[1] + b[2] - 10, "font-size": 10, fill: "#444" }, ps, b[4]);
+    }); });
+    S("rect", { x: 14, y: 362, width: 332, height: 124, rx: 4, fill: "none", stroke: "#6e6e73", "stroke-dasharray": "5 5" }, ps);
+    S("text", { x: 180, y: 428, "text-anchor": "middle", "font-size": 12, fill: "#555" }, ps, "white space: about 70% coverage");
+
+    var pth = S("path", { d: "M68,78 L68,340 Q68,358 124,358 Q180,358 180,340 L180,78 Q180,66 236,66 Q292,66 292,78 L292,340", fill: "none", stroke: "#D55E00", "stroke-width": 4, "stroke-linecap": "round" }, ps);
+    var len = pth.getTotalLength ? pth.getTotalLength() : 1200;
+    pth.style.strokeDasharray = len; pth.style.strokeDashoffset = len;
+    var nums = S("g", { style: "opacity:0;transition:opacity .4s" }, ps);
+    [[68, "1"], [180, "2"], [292, "3"]].forEach(function (n) { S("circle", { cx: n[0], cy: 92, r: 12, fill: "#D55E00" }, nums); S("text", { x: n[0], y: 97, "text-anchor": "middle", "font-size": 14, "font-weight": 700, fill: "#fff" }, nums, n[1]); });
+    var ptId = D.widgetId("path");
+    $("pathBtn").addEventListener("click", function () {
+      nums.style.opacity = 1;
+      tween(2200, function (e) { pth.style.strokeDashoffset = len * (1 - e); });
+      D.award(ptId, 5);
+    });
+  }
+})();
+</script>
+<script>
+/* chart animations: draw on scroll, counters, tooltips (after deck.js) */
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var figs=[].slice.call(document.querySelectorAll('.vz'));
+  function counters(f,go){[].forEach.call(f.querySelectorAll('.vz-count'),function(c){
+    var to=parseFloat(c.getAttribute('data-to')),dec=(c.getAttribute('data-to').split('.')[1]||'').length;
+    if(!go){c.textContent=(0).toFixed(dec);return;}
+    if(reduce){c.textContent=to.toFixed(dec);return;}
+    var t0=null;(function step(t){t0=t0||t;var p=Math.min(1,(t-t0)/1100),e=1-Math.pow(1-p,3);c.textContent=(to*e).toFixed(dec);if(p<1)requestAnimationFrame(step);})(performance.now());
+  });}
+  if(!reduce&&'IntersectionObserver' in window&&!/[?&]static/.test(location.search)){
+    figs.forEach(function(f){f.classList.add('vz-pre');counters(f,false);});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){
+      var f=e.target;io.unobserve(f);requestAnimationFrame(function(){f.classList.remove('vz-pre');counters(f,true);});}});},{threshold:.05,rootMargin:"0px 0px -8% 0px"});
+    figs.forEach(function(f){io.observe(f);});
+  }
+  var tip=document.createElement('div');tip.className='vz-tip';tip.setAttribute('role','tooltip');document.body.appendChild(tip);
+  function show(el){tip.textContent=el.getAttribute('data-tip');var r=el.getBoundingClientRect();tip.classList.add('on');
+    var w=tip.offsetWidth,x=Math.max(8,Math.min(innerWidth-w-8,r.left+r.width/2-w/2));tip.style.left=x+'px';tip.style.top=Math.max(8,r.top-tip.offsetHeight-8)+'px';}
+  function hide(){tip.classList.remove('on');}
+  [].forEach.call(document.querySelectorAll('[data-tip]'),function(el){
+    if(!el.hasAttribute('tabindex'))el.setAttribute('tabindex','0');
+    el.addEventListener('mouseenter',function(){show(el)});el.addEventListener('mouseleave',hide);
+    el.addEventListener('focus',function(){show(el)});el.addEventListener('blur',hide);
+    el.addEventListener('click',function(ev){ev.stopPropagation();show(el)});
+  });
+  document.addEventListener('click',hide);window.addEventListener('scroll',hide,{passive:true});
+})();
+</script>
+
+</body>
+</html>

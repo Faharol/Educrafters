@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 13 · Speaking Assessment Part 1 · SMB31202</title>
+<meta name="description" content="SMB31202 Week 13: Speaking Assessment Part 1 (Groups A). Task 1 individual presentation and Task 2 group discussion, 30%.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700;800&family=Space+Grotesk:wght@500;700;800&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="../assets/css/style.css">
+<link rel="stylesheet" href="../assets/css/lab.css">
+<style>
+/* visual pass: scoped to vz- classes */
+.photo-fig img{height:auto}
+.vz-tip{min-height:1.5rem;margin:.8rem 0 0;font-size:.88rem;color:var(--text);background:var(--bg-2);border-radius:12px;padding:.55rem .9rem}
+[data-tip]{cursor:pointer;outline-offset:2px}
+.vz-steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;list-style:none;padding:0;margin:0}
+.vz-step{position:relative;text-align:center;padding:0 .2rem}
+.vz-step .vz-dot{width:2.7rem;height:2.7rem;border-radius:50%;margin:0 auto .6rem;display:grid;place-items:center;color:#fff;font:700 1rem var(--font);position:relative;z-index:1}
+.vz-step:not(:last-child)::after{content:"";position:absolute;top:1.3rem;left:calc(50% + 1.5rem);right:calc(-50% + 1.5rem);height:3px;border-radius:3px;background:var(--line)}
+.vz-step b{display:block;font:800 1.5rem var(--display,var(--font));letter-spacing:-.03em;color:var(--text);line-height:1.1}
+.vz-step small{display:block;color:var(--muted);font-size:.82rem;margin-top:.2rem}
+.vz-step em{display:block;font-style:normal;font-weight:600;font-size:.9rem;margin-top:.15rem}
+.vz-bar{display:flex;gap:3px;border-radius:14px;overflow:hidden}
+.vz-seg{min-height:3.4rem;display:flex;flex-direction:column;justify-content:center;align-items:center;color:#fff;font:700 .95rem var(--font);text-align:center;padding:.3rem .15rem;line-height:1.15}
+.vz-seg small{font-weight:500;font-size:.72rem;opacity:.95}
+.vz-key{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.4rem .9rem;margin:.9rem 0 0;padding:0;list-style:none;font-size:.86rem;color:var(--muted)}
+.vz-key li{display:flex;gap:.5rem;align-items:baseline}
+.vz-key i{width:.8rem;height:.8rem;border-radius:4px;flex:none;transform:translateY(.1rem)}
+.vz-key strong{color:var(--text)}
+.vz-donut{display:grid;grid-template-columns:minmax(0,200px) 1fr;gap:1.4rem;align-items:center}
+.vz-donut svg{max-width:200px}
+.vz-donut .seg{fill:none;stroke-width:6;stroke-dasharray:var(--d);transition:stroke-dasharray 1.1s cubic-bezier(.2,.7,.2,1)}
+.vz-ready .seg{stroke-dasharray:0 100}
+.vz-in .seg{stroke-dasharray:var(--d)}
+.vz-big{font:800 2.4rem var(--display,var(--font));letter-spacing:-.04em;line-height:1}
+.vz-leg{list-style:none;margin:0;padding:0;display:grid;gap:.9rem}
+.vz-leg li{display:flex;gap:.7rem;align-items:center}
+.vz-leg i{width:1rem;height:1rem;border-radius:5px;flex:none}
+.vz-leg b{font:800 1.6rem var(--display,var(--font));letter-spacing:-.03em;margin-right:.3rem}
+.vz-ready .vz-clip{clip-path:inset(0 100% 0 0 round 14px);transition:clip-path 1.3s cubic-bezier(.2,.7,.2,1)}
+.vz-in .vz-clip{clip-path:inset(0 0 0 0 round 14px)}
+.vz-rows{display:grid;gap:1.1rem}
+.vz-row h4{margin:0 0 .5rem;font-size:.95rem}
+.vz-chips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem}
+.vz-chip{border-radius:14px;padding:.8rem .8rem;background:var(--bg-2);border:1.5px solid var(--line)}
+.vz-chip b{display:block;font-size:.9rem;color:var(--text)}
+.vz-chip span{display:block;font-size:.75rem;color:var(--muted);margin:.15rem 0 .45rem}
+.vz-pips{display:flex;gap:4px}
+.vz-pips i{height:.5rem;flex:1;border-radius:4px;background:var(--c,var(--cyan))}
+.vz-chip--new{background:#fff;border-color:var(--violet);box-shadow:0 0 0 3px rgba(110,79,246,.12)}
+.vz-ladder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;align-items:end}
+.vz-stair{border-radius:16px 16px 6px 6px;padding:1rem .95rem;color:#fff;font-size:.9rem;line-height:1.35}
+.vz-stair b{display:block;font:800 1.5rem var(--display,var(--font));letter-spacing:-.03em;margin-bottom:.3rem}
+.vz-stair:nth-child(1){background:#8e8e93;min-height:8rem}
+.vz-stair:nth-child(2){background:var(--cyan);min-height:10.5rem}
+.vz-stair:nth-child(3){background:var(--lime);min-height:13rem}
+.vz-flow{display:flex;align-items:stretch;gap:.6rem;flex-wrap:wrap}
+.vz-node{flex:1 1 150px;border-radius:16px;padding:.9rem 1rem;background:var(--bg-2);border:1.5px solid var(--line);font-size:.9rem}
+.vz-node b{display:block;color:var(--text);margin-bottom:.15rem}
+.vz-node--hi{background:#fff;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,113,227,.1)}
+.vz-node--alt{border-color:var(--amber);background:rgba(178,94,0,.07)}
+.vz-arrow{align-self:center;font-size:1.4rem;color:var(--muted);flex:none}
+.vz-icons{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.vz-ic{border-radius:18px;background:var(--bg-2);padding:1.1rem .9rem;text-align:center;font-size:.88rem;line-height:1.35}
+.vz-ic span{display:block;font-size:2rem;margin-bottom:.4rem}
+.vz-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;position:relative}
+.vz-j{position:relative;text-align:center;padding-top:.2rem}
+.vz-j .vz-dot{width:4rem;height:4rem;border-radius:50%;margin:0 auto .8rem;display:grid;place-items:center;color:#fff;font:800 1.05rem var(--font);position:relative;z-index:1}
+.vz-j:not(:last-child)::after{content:"";position:absolute;top:2rem;left:calc(50% + 2.4rem);right:calc(-50% + 2.4rem);height:4px;border-radius:4px;background:linear-gradient(90deg,var(--line),var(--line))}
+.vz-j h4{margin:0;font-size:1.2rem}
+.vz-j p{margin:.3rem 0 0;font-size:.88rem;color:var(--muted)}
+.vz-j .vz-now{display:inline-block;margin-top:.5rem;padding:.2rem .7rem;border-radius:99px;background:var(--pink);color:#fff;font-weight:700;font-size:.78rem}
+@media (max-width:640px){
+ .vz-steps{grid-template-columns:1fr;gap:1rem}
+ .vz-step{display:grid;grid-template-columns:2.7rem 1fr;gap:.2rem .9rem;text-align:left;align-items:center}
+ .vz-step .vz-dot{margin:0;grid-row:1/4}
+ .vz-step:not(:last-child)::after{left:1.3rem;right:auto;top:2.9rem;bottom:-1.1rem;width:3px;height:auto}
+ .vz-donut{grid-template-columns:1fr;justify-items:center}
+ .vz-chips{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .vz-ladder{grid-template-columns:1fr;align-items:stretch}
+ .vz-stair:nth-child(n){min-height:0}
+ .vz-icons{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .vz-journey{grid-template-columns:1fr;gap:1.6rem}
+ .vz-j:not(:last-child)::after{display:none}
+ .vz-arrow{transform:rotate(90deg);width:100%;text-align:center}
+ .vz-seg{font-size:.82rem}
+}
+@media (prefers-reduced-motion:reduce){.vz-ready .vz-clip,.vz-ready .seg{transition:none}}
+</style>
+</head>
+<body data-week="13" data-title="Speaking Assessment Part 1 – Groups A">
+<main class="deck">
+
+  <!-- 1 · Title -->
+  <section class="slide slide--title" data-title="Welcome">
+    <div class="slide__kicker"><span class="tag tag--red">Assessment</span><span class="tag tag--lime">Face-to-face</span><span>4 – 10 Jan 2027</span></div>
+    <div class="week-no">13</div>
+    <h1>Speaking Assessment, <span class="grad-text">Part 1</span></h1>
+    <p class="slide__lead">30% of your grade. Task 1 is an individual presentation (10%). Task 2 is a group discussion (20%). <strong>Groups A</strong> are assessed this week.</p>
+    <p class="meta">Department of Languages &amp; General Studies · Faculty of Business and Communication (FPK) · UniMAP · Semester 1, 2026/2027</p>
+  </section>
+
+  <!-- 2 · Today at a glance -->
+  <section class="slide" data-title="Today at a glance">
+    <div class="slide__kicker"><span class="tag tag--red">Assessment</span> Speaking · CO3</div>
+    <h2>Today: Speaking Assessment, Part 1</h2>
+    <div class="grid grid-4">
+      <div class="card card--accent stat"><div class="stat__label">Weight</div><div class="stat__value">30%</div><div class="stat__sub">of your course grade. CO3.</div></div>
+      <div class="card stat"><div class="stat__label">Task 1 · 10%</div><div class="stat__value">2 to 3 min</div><div class="stat__sub">Individual presentation.</div></div>
+      <div class="card stat"><div class="stat__label">Task 2 · 20%</div><div class="stat__value">12 min</div><div class="stat__sub">Group discussion.</div></div>
+      <div class="card stat"><div class="stat__label">Who</div><div class="stat__value">Groups A</div><div class="stat__sub">assessed today. See the schedule.</div></div>
+    </div>
+    <div class="callout" style="margin-top:1rem"><p><strong>What it measures.</strong> CO3: presenting sustained arguments and engaging critically in formal discussion on technical topics. Two-task ELHAM format, CEFR B2 to C1 descriptors (ELHAM Table 5.4), every criterion out of 5.</p></div>
+    <div class="callout callout--warn"><p><strong>Public holiday:</strong> Wednesday 6 January is Israk dan Mikraj. Check the schedule for your group's exact slot.</p></div>
+  </section>
+
+  <section class="slide" data-title="The 30% in numbers">
+    <div class="slide__kicker">The numbers</div>
+    <h2>Thirty percent, two tasks</h2>
+<div class="keystats"><div class="keystat"><b class="vz-count" data-to="30" data-sfx="%">30%</b><span>of the course grade, CO3</span></div><div class="keystat"><b class="vz-count" data-to="10" data-sfx="%">10%</b><span>Task 1 · individual presentation</span></div><div class="keystat"><b class="vz-count" data-to="20" data-sfx="%">20%</b><span>Task 2 · group discussion</span></div><div class="keystat"><b class="vz-count" data-to="20" data-sfx=" min">20 min</b><span>early: report before your slot</span></div></div><div class="grid grid-2"><figure class="chart-card"><h3>Where the 30% comes from</h3>
+<div class="vz-donut"><svg viewBox="0 0 42 42" role="img" aria-label="Donut chart: speaking is 30 percent of the course grade, one third Task 1 at 10 percent and two thirds Task 2 at 20 percent."><circle cx="21" cy="21" r="15.915" fill="none" stroke="#f0f0f3" stroke-width="6"/><g transform="rotate(-90 21 21)"><circle class="seg" cx="21" cy="21" r="15.915" stroke="var(--cyan)" style="--d:32.3 67.7" data-tip="Task 1 individual presentation: 10% of the course grade."/><circle class="seg" cx="21" cy="21" r="15.915" stroke="var(--violet)" style="--d:65 35" stroke-dashoffset="-33.3" data-tip="Task 2 group discussion: 20% of the course grade."/></g><text x="21" y="22.5" text-anchor="middle" style="font-size:8px;font-weight:800;fill:#1d1d1f">30%</text><text x="21" y="27.5" text-anchor="middle" style="font-size:2.6px">of the grade</text></svg>
+<ul class="vz-leg"><li data-tip="Task 1 individual presentation: 10% of the course grade."><i style="background:var(--cyan)"></i><span><b>10%</b> Task 1<br><span class="muted small">Individual presentation · 2 to 3 min</span></span></li><li data-tip="Task 2 group discussion: 20% of the course grade."><i style="background:var(--violet)"></i><span><b>20%</b> Task 2<br><span class="muted small">Group discussion · 12 min</span></span></li></ul></div>
+<p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>Task 2 carries twice the weight of Task 1. Both assess CO3.</figcaption></figure><figure class="photo-fig photo-fig--tall"><img src="../assets/img/exam-hall.jpg" alt="A quiet examination hall with rows of desks laid out in neat lines" loading="lazy" width="1200" height="1043"><figcaption>Formal, quiet and well organised. You will be presenting to examiners, not performing for a crowd.</figcaption></figure></div>
+  </section>
+
+  <!-- 3 · Session flow -->
+  <section class="slide" data-title="How the session runs">
+    <div class="slide__kicker">Exam flow</div>
+    <h2>How the session runs</h2>
+    <p class="slide__lead">Four candidates per group. About 35 minutes from sign-in to release.</p>
+    <ol class="steps" data-build>
+      <li><div><p><strong>Report.</strong> Arrive <strong>20 minutes</strong> before your slot. Sign in. Phones off and handed to the invigilator.</p></div></li>
+      <li><div><p><strong>Task 1 prep.</strong> Receive the scenario and your assigned option. <strong>Two minutes.</strong> Notes on the card provided.</p></div></li>
+      <li><div><p><strong>Task 1.</strong> Present for <strong>two to three minutes</strong>. The examiner will stop you at three.</p></div></li>
+      <li><div><p><strong>Task 2 prep.</strong> <strong>Three minutes</strong> with your group. Agree an order of business.</p></div></li>
+      <li><div><p><strong>Task 2.</strong> <strong>Twelve minutes.</strong> Reach a decision. The examiner does not intervene.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="slide" data-title="Your 35 minutes">
+    <div class="slide__kicker">Exam flow, drawn</div>
+    <h2>Your 35 minutes, drawn to scale</h2>
+    <p class="slide__lead">Four candidates per group. About 35 minutes from sign-in to release.</p>
+<figure class="chart-card"><h3>Your exam in five steps</h3><ol class="vz-steps" role="img" aria-label="Exam journey in five steps: report 20 minutes before your slot, Task 1 prep 2 minutes, Task 1 for 2 to 3 minutes, Task 2 prep 3 minutes, Task 2 for 12 minutes."><li class="vz-step" data-tip="Report. Before your slot: 20 min. Sign in. Phones handed to the invigilator."><span class="vz-dot" style="background:var(--cyan)" aria-hidden="true">1</span><b>20 min</b><small>before your slot</small><em>Report</em></li><li class="vz-step" data-tip="Read. Task 1 prep: 2 min. Scenario and your assigned option. Notes on the card."><span class="vz-dot" style="background:var(--violet)" aria-hidden="true">2</span><b>2 min</b><small>Task 1 prep</small><em>Read</em></li><li class="vz-step" data-tip="Present. Task 1: 2–3 min. The examiner stops you at three."><span class="vz-dot" style="background:var(--pink)" aria-hidden="true">3</span><b>2–3 min</b><small>Task 1</small><em>Present</em></li><li class="vz-step" data-tip="Agree. Task 2 prep: 3 min. Agree an order of business with your group."><span class="vz-dot" style="background:var(--amber)" aria-hidden="true">4</span><b>3 min</b><small>Task 2 prep</small><em>Agree</em></li><li class="vz-step" data-tip="Decide. Task 2: 12 min. Reach a decision. The examiner does not intervene."><span class="vz-dot" style="background:var(--lime)" aria-hidden="true">5</span><b>12 min</b><small>Task 2</small><em>Decide</em></li></ol><p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>The five steps from the session flow, with the time attached to each.</figcaption></figure><figure class="chart-card"><h3>The timed part, drawn to scale</h3><div class="vz-bar vz-clip" role="img" aria-label="Bar drawn to scale: Task 1 prep 2 minutes, Task 1 up to 3 minutes, Task 2 prep 3 minutes, Task 2 12 minutes."><div class="vz-seg" style="flex:2 1 0;background:var(--violet)" data-tip="Task 1 prep: 2 minutes. Notes on the card provided.">2<small>min prep</small></div><div class="vz-seg" style="flex:3 1 0;background:var(--pink)" data-tip="Task 1: present for 2 to 3 minutes. The examiner stops you at three.">3<small>min max</small></div><div class="vz-seg" style="flex:3 1 0;background:var(--amber)" data-tip="Task 2 prep: 3 minutes with your group to agree an order of business.">3<small>min prep</small></div><div class="vz-seg" style="flex:12 1 0;background:var(--lime)" data-tip="Task 2: 12 minutes of group discussion. Reach a decision.">12<small>minutes</small></div></div><ul class="vz-key"><li><i style="background:var(--violet)"></i><span><strong>Task 1 prep</strong></span></li><li><i style="background:var(--pink)"></i><span><strong>Task 1</strong></span></li><li><i style="background:var(--amber)"></i><span><strong>Task 2 prep</strong></span></li><li><i style="background:var(--lime)"></i><span><strong>Task 2</strong></span></li></ul><p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>Segment widths are proportional to minutes (sign-in time not shown). Task 2 is the biggest block of the whole session.</figcaption></figure><figure class="photo-fig"><img src="../assets/img/hourglass.jpg" alt="A sand timer with the sand running through" loading="lazy" width="1200" height="521"><figcaption>Every minute is planned. Know the timings so none of them surprise you.</figcaption></figure>
+  </section>
+
+  <!-- 4 · Flow check -->
+  <section class="slide" data-title="Check: arrival and Task 1">
+    <div class="slide__kicker">Quick checks</div>
+    <h2>Do you know the flow?</h2>
+    <div class="grid grid-2">
+      <div class="quiz" data-xp="10" data-label="Arrival">
+        <p class="quiz__q">Your slot starts at 10:00. When should you arrive?</p>
+        <div class="quiz__opts">
+          <button data-why="Too late. You must report 20 minutes before your slot to sign in.">9:55</button>
+          <button data-correct data-why="Right. Arrive 20 minutes early, sign in, and hand your phone to the invigilator.">9:40</button>
+          <button data-why="That is your slot time. You would miss sign-in.">10:00</button>
+        </div>
+      </div>
+      <div class="quiz" data-xp="10" data-label="Task 1 time">
+        <p class="quiz__q">You are still talking at the three-minute mark in Task 1. What happens?</p>
+        <div class="quiz__opts">
+          <button data-why="No extra time is given. Plan to finish between two and three minutes.">You get one more minute to finish</button>
+          <button data-correct data-why="Correct. The examiner will stop you at three, so your call to action must come before then.">The examiner stops you</button>
+          <button data-why="Nothing is deducted automatically, but you are stopped, and you may lose your ending.">Marks are deducted, but you continue</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4b · Flow check 2 -->
+  <section class="slide" data-title="Check: Task 2 flow">
+    <div class="slide__kicker">Quick checks</div>
+    <h2>And the group part?</h2>
+    <div class="grid grid-2">
+      <div class="quiz" data-xp="10" data-label="Task 2 prep">
+        <p class="quiz__q">What should your group do in the three minutes of Task 2 prep?</p>
+        <div class="quiz__opts">
+          <button data-why="The examiner does not run the discussion. Your group plans it.">Wait for the examiner's questions</button>
+          <button data-why="You will defend your Task 1 option, but the prep is for the group, not solo notes.">Write a full script of your argument</button>
+          <button data-correct data-why="Yes. Agree an order of business, so the 12 minutes run smoothly.">Agree an order of business</button>
+        </div>
+      </div>
+      <div class="quiz" data-xp="10" data-label="Task 2 examiner">
+        <p class="quiz__q">The group is stuck at minute 9. Will the examiner help?</p>
+        <div class="quiz__opts">
+          <button data-correct data-why="Correct. The examiner does not intervene. Someone in your group must drive to a decision.">No. The examiner does not intervene.</button>
+          <button data-why="No. In Task 2 the examiner does not intervene.">Yes, with a hint</button>
+          <button data-why="No. The group must manage its own time and reach a decision.">Yes, by choosing an option</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · Task 1 -->
+  <section class="slide" data-title="Task 1: individual presentation">
+    <div class="slide__kicker"><span class="tag">Task 1 · 10%</span> Individual presentation · 2–3 min</div>
+    <h2>Task 1: individual presentation</h2>
+    <div class="grid grid-2">
+      <div class="card"><span class="num-badge">01</span><h3 class="mt">You receive</h3><p>A technical scenario, a target audience (for example the operations manager) and one assigned option with its figures.</p></div>
+      <div class="card"><span class="num-badge">02</span><h3 class="mt">You deliver</h3><p>Context and hook (<strong>30 s</strong>). Core proposal with evidence (<strong>90 s</strong>). Benefits and call to action (<strong>30 s</strong>).</p></div>
+      <div class="card"><span class="num-badge">03</span><h3 class="mt">You are scored on</h3><p>Grammatical accuracy, lexical range and register, fluency and pronunciation. Each out of 5.</p></div>
+      <div class="card card--accent"><span class="num-badge">04</span><h3 class="mt">Remember</h3><p>Notes are for glancing, not reading. Say the numbers. Hedge the estimates. Finish with a request, not a fade.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-title="Task 1 on a clock">
+    <div class="slide__kicker">Task 1 · shape</div>
+    <h2>Thirty, ninety, thirty</h2>
+<figure class="chart-card"><h3>Task 1: how the three minutes are spent</h3><div class="vz-bar vz-clip" role="img" aria-label="Bar: context and hook 30 seconds, core proposal with evidence 90 seconds, benefits and call to action 30 seconds."><div class="vz-seg" style="flex:30 1 0;background:var(--cyan)" data-tip="Context and hook, 30 seconds: state the scenario and why it matters to this audience.">30 s<small>Hook</small></div><div class="vz-seg" style="flex:90 1 0;background:var(--violet)" data-tip="Core proposal with evidence, 90 seconds. Say the numbers. Hedge the estimates.">90 s<small>Core proposal with evidence</small></div><div class="vz-seg" style="flex:30 1 0;background:var(--pink)" data-tip="Benefits and call to action, 30 seconds. Finish with a request, not a fade.">30 s<small>Call to action</small></div></div><ul class="vz-key"><li><i style="background:var(--cyan)"></i><span><strong>Context and hook</strong></span></li><li><i style="background:var(--violet)"></i><span><strong>Core proposal</strong></span></li><li><i style="background:var(--pink)"></i><span><strong>Benefits and call to action</strong></span></li></ul><p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>Proportional to the time. Half of Task 1 is the proposal itself. Preparation (2 minutes) comes before the clock starts.</figcaption></figure><div class="split"><div><p class="pull">Finish with a request, not a fade.<cite>Task 1 · call to action</cite></p><p class="muted">Notes are for glancing, not reading. Say the numbers. Hedge the estimates.</p></div><figure class="photo-fig"><img src="../assets/img/pen-paper.jpg" alt="A pen resting on a sheet of notes" loading="lazy" width="1200" height="521"><figcaption>Two minutes of prep, notes on the card provided. Hook, proposal, benefits.</figcaption></figure></div>
+  </section>
+
+  <!-- 6 · Task 1 timer -->
+  <section class="slide" data-title="Task 1 timed rehearsal">
+    <div class="slide__kicker"><span class="tag tag--pink">Rehearse</span> Task 1 · real timings</div>
+    <h2>Run Task 1 against the clock</h2>
+    <div class="grid grid-2">
+      <div>
+        <p>Use any option from the Week 12 mock prompts, or a technical problem from your own field. Run the timer and speak out loud.</p>
+        <ul class="checklist" data-xp="10">
+          <li>I glanced at my notes; I did not read them.</li>
+          <li>I said the key numbers out loud.</li>
+          <li>I hedged my estimates (for example “approximately”, “we expect”).</li>
+          <li>I finished with a request, not a fade.</li>
+          <li>I finished before the three-minute stop.</li>
+        </ul>
+      </div>
+      <div class="timer" data-xp="15" data-label="Task 1 exam timer" data-phases='[{"label":"Prep","sec":120,"hint":"Read the scenario first. Notes on the card: hook, proposal, benefits."},{"label":"Context & hook","sec":30,"hint":"State the scenario and why it matters to this audience."},{"label":"Core proposal","sec":90,"hint":"Your option with evidence. Say the numbers. Hedge the estimates."},{"label":"Benefits & call to action","sec":30,"hint":"Sum up the benefits. Finish with a request, not a fade."}]'></div>
+    </div>
+  </section>
+
+  <!-- 7 · Task 2 -->
+  <section class="slide" data-title="Task 2: group discussion">
+    <div class="slide__kicker"><span class="tag tag--violet">Task 2 · 20%</span> Group discussion · 12 min</div>
+    <h2>Task 2: group discussion</h2>
+    <div class="grid grid-2">
+      <div class="card"><span class="num-badge">01</span><h3 class="mt">You receive</h3><p>A shared board-level decision: choose one measure within a budget. Each candidate defends the option from Task 1, then the group decides.</p></div>
+      <div class="card"><span class="num-badge">02</span><h3 class="mt">You must</h3><p>Open, present, compare, challenge, summarise and decide. Someone must call time. Everyone must speak.</p></div>
+      <div class="card"><span class="num-badge">03</span><h3 class="mt">You are scored on</h3><p>All four criteria, including interactive effectiveness: turn-taking, responding, building on and challenging points, driving to a decision.</p></div>
+      <div class="card card--accent"><span class="num-badge">04</span><h3 class="mt">Remember</h3><p>Agreeing with everyone scores as silence. Disagreeing with a reason and a figure scores as C1.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-title="Task 2 on a clock">
+    <div class="slide__kicker">Task 2 · shape</div>
+    <h2>Twelve minutes, three jobs</h2>
+<figure class="chart-card"><h3>Task 2: the 3 + 12 minutes</h3><div class="vz-bar vz-clip" role="img" aria-label="Bar: group prep 3 minutes, then the 12-minute discussion split into open and present 3, compare and challenge 5, summarise and decide 4."><div class="vz-seg" style="flex:3 1 0;background:#8e8e93" data-tip="Group prep, 3 minutes: agree who opens, speaking order, who calls time.">3<small>min prep</small></div><div class="vz-seg" style="flex:3 1 0;background:var(--cyan)" data-tip="Open and present, 3 minutes: open the meeting; each candidate presents their option briefly.">3<small>Open and present</small></div><div class="vz-seg" style="flex:5 1 0;background:var(--violet)" data-tip="Compare and challenge, 5 minutes: challenge with a reason and a figure.">5<small>Compare and challenge</small></div><div class="vz-seg" style="flex:4 1 0;background:var(--lime)" data-tip="Summarise and decide, 4 minutes: summarise, call time, agree ONE measure within the budget.">4<small>Summarise and decide</small></div></div><ul class="vz-key"><li><i style="background:#8e8e93"></i><span><strong>Group prep</strong></span></li><li><i style="background:var(--cyan)"></i><span><strong>Open and present</strong></span></li><li><i style="background:var(--violet)"></i><span><strong>Compare and challenge</strong></span></li><li><i style="background:var(--lime)"></i><span><strong>Summarise and decide</strong></span></li></ul><p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>The split follows the Task 2 rehearsal timer. The longest block is comparing and challenging.</figcaption></figure><div class="split"><figure class="photo-fig"><img src="../assets/img/team-table.jpg" alt="A group of people discussing around a table" loading="lazy" width="1200" height="521"><figcaption>Task 2 is a meeting: open, present, compare, challenge, summarise, decide.</figcaption></figure><div><p class="pull">Agreeing with everyone scores as silence. Disagreeing with a reason and a figure scores as C1.<cite>Task 2 · Remember</cite></p></div></div><figure class="chart-card"><h3>Climb the ladder: B2 to C1</h3>
+<div class="vz-ladder" role="img" aria-label="Three-step ladder for a Task 2 response: agreeing with everyone scores as silence; disagreeing with no reason does not move the group forward; disagreeing with a reason and a figure scores as C1.">
+<div class="vz-stair" data-tip="Agreeing with everyone scores as silence. It adds nothing to the decision."><b>Silence</b>“Yes, I agree.” Agreeing with everyone adds nothing.</div>
+<div class="vz-stair" data-tip="A disagreement with no reason and no figure does not move the group forward."><b>Bare no</b>“I don't think that will work.” No reason, no figure.</div>
+<div class="vz-stair" data-tip="A disagreement with a reason and a figure scores as C1 and builds on the other speaker's point."><b>C1</b>“I see your point, but…” a reason and a figure.</div></div>
+<p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>Illustrative ladder built from the Task 2 quiz: the more you build on a point with a reason and a figure, the higher it scores.</figcaption></figure>
+  </section>
+
+  <!-- 8 · Task 2 check -->
+  <section class="slide" data-title="Check: what scores in Task 2">
+    <div class="slide__kicker">Quick check</div>
+    <h2>Which turn earns the most?</h2>
+    <div class="quiz" data-xp="15" data-label="Think like the examiner">
+      <p class="quiz__q">Another candidate has just defended their option. Which response scores highest for interactive effectiveness?</p>
+      <div class="quiz__opts">
+        <button data-why="Agreeing with everyone scores as silence. It adds nothing to the decision.">“Yes, I agree with you. That is a good option.”</button>
+        <button data-why="This is a disagreement, but with no reason and no figure. It does not move the group forward.">“No, I don't think that will work.”</button>
+        <button data-correct data-why="Yes. A disagreement with a reason and a figure scores as C1, and it builds on the other speaker's point.">“I see your point, but rooftop solar costs RM 150,000. That is RM 50,000 over our budget, so I doubt the board would approve it.”</button>
+        <button data-why="Staying quiet is not safe. Everyone must speak.">Staying quiet and letting the strongest speaker decide</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8b · Task 2 moves -->
+  <section class="slide" data-title="Order the six Task 2 moves">
+    <div class="slide__kicker">Task 2 · shape</div>
+    <h2>Open, present, compare, challenge, summarise, decide</h2>
+    <p class="slide__lead">These are the six things your group must do. Where does each one belong in the 12 minutes?</p>
+    <div class="sorter" data-xp="15" data-label="Put the six moves in the right part of the discussion">
+      <div class="sorter__pool">
+        <button class="chip" data-bin="start">Open</button>
+        <button class="chip" data-bin="start">Present</button>
+        <button class="chip" data-bin="mid">Compare</button>
+        <button class="chip" data-bin="mid">Challenge</button>
+        <button class="chip" data-bin="end">Summarise</button>
+        <button class="chip" data-bin="end">Decide</button>
+      </div>
+      <div class="sorter__bins">
+        <div class="bin" data-bin="start"><span class="bin__label">Start</span></div>
+        <div class="bin" data-bin="mid"><span class="bin__label">Middle</span></div>
+        <div class="bin" data-bin="end"><span class="bin__label">End</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · Task 2 timer -->
+  <section class="slide" data-title="Task 2 timed rehearsal">
+    <div class="slide__kicker"><span class="tag tag--pink">Rehearse</span> Task 2 · real timings</div>
+    <h2>Run Task 2 with your study group</h2>
+    <div class="grid grid-2">
+      <div>
+        <p>Four of you, one board-level decision, one budget. Each person defends an option, then the group decides.</p>
+        <div class="picker" data-label="Who opens and who calls time? Spin twice" data-items='["Candidate A","Candidate B","Candidate C","Candidate D"]'></div>
+        <div class="callout callout--warn mt"><p>Someone must call time. Everyone must speak. The examiner does not intervene.</p></div>
+      </div>
+      <div class="timer" data-xp="15" data-label="Task 2 exam timer" data-phases='[{"label":"Group prep","sec":180,"hint":"Agree an order of business: who opens, speaking order, who calls time."},{"label":"Open & present","sec":180,"hint":"Open the meeting. Each candidate presents their option briefly."},{"label":"Compare & challenge","sec":300,"hint":"Compare the options. Challenge with a reason and a figure."},{"label":"Summarise & decide","sec":240,"hint":"Summarise the points. Call time. Agree ONE measure within the budget."}]'></div>
+    </div>
+  </section>
+
+  <!-- 10 · Criteria table -->
+  <section class="slide" data-title="The criteria">
+    <div class="slide__kicker">Rubric · ELHAM Table 5.4</div>
+    <h2>The criteria</h2>
+    <p class="slide__lead">CEFR-anchored descriptors, B2 to C1, from ELHAM Table 5.4. Band descriptors are on the course portal.</p>
+    <div class="table-wrap">
+      <table>
+        <caption>Speaking assessment criteria</caption>
+        <thead><tr><th>Criterion</th><th>What the examiner listens for</th><th class="num">Scale</th></tr></thead>
+        <tbody>
+          <tr><td>Grammatical accuracy</td><td>Complex structures used correctly; errors rare and never obscure meaning.</td><td class="num">/5</td></tr>
+          <tr><td>Lexical range and register</td><td>Technical vocabulary, precise verbs, hedging; formal but natural.</td><td class="num">/5</td></tr>
+          <tr><td>Fluency and pronunciation</td><td>Steady pace, clear stress and intonation, few long pauses.</td><td class="num">/5</td></tr>
+          <tr><td>Interactive effectiveness (Task 2)</td><td>Turn-taking, responding, building on and challenging points, driving to a decision.</td><td class="num">/5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="slide" data-title="Seven scores">
+    <div class="slide__kicker">Rubric · drawn</div>
+    <h2>Seven boxes, each out of 5</h2>
+<figure class="chart-card"><h3>Seven scores per candidate</h3>
+<div class="vz-rows" role="img" aria-label="Task 1 has three criteria, accuracy, lexis and fluency. Task 2 has four, the same three plus interactive effectiveness. Each is out of 5, so seven scores in all.">
+<div class="vz-row"><h4><span class="tag">Task 1 · 10%</span> three criteria</h4><div class="vz-chips"><div class="vz-chip" style="--c:var(--cyan)" data-tip="Accuracy: scored out of 5."><b>Accuracy</b><span>Grammatical accuracy /5</span><div class="vz-pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div><div class="vz-chip" style="--c:var(--cyan)" data-tip="Lexis: scored out of 5."><b>Lexis</b><span>Range and register /5</span><div class="vz-pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div><div class="vz-chip" style="--c:var(--cyan)" data-tip="Fluency: scored out of 5."><b>Fluency</b><span>Fluency and pronunciation /5</span><div class="vz-pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div></div></div>
+<div class="vz-row"><h4><span class="tag tag--violet">Task 2 · 20%</span> four criteria</h4><div class="vz-chips"><div class="vz-chip" style="--c:var(--violet)" data-tip="Accuracy: scored out of 5."><b>Accuracy</b><span>Grammatical accuracy /5</span><div class="vz-pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div><div class="vz-chip" style="--c:var(--violet)" data-tip="Lexis: scored out of 5."><b>Lexis</b><span>Range and register /5</span><div class="vz-pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div><div class="vz-chip" style="--c:var(--violet)" data-tip="Fluency: scored out of 5."><b>Fluency</b><span>Fluency and pronunciation /5</span><div class="vz-pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div><div class="vz-chip vz-chip--new" style="--c:var(--pink)" data-tip="Interaction: scored out of 5. Task 2 only."><b>Interaction</b><span>Task 2 only /5</span><div class="vz-pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div></div></div></div>
+<p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>3 + 4 = 7 separate scores, each out of 5. Interactive effectiveness appears in Task 2 only.</figcaption></figure>
+  </section>
+
+  <!-- 11 · Rubric flip cards -->
+  <section class="slide" data-title="Rubric flip cards">
+    <div class="slide__kicker">Rubric · test yourself</div>
+    <h2>Can you say what each criterion means?</h2>
+    <p class="small muted">Say the descriptor out loud first, then tap the card to check. Tap all four for the XP.</p>
+    <div class="flip-grid" data-xp="10">
+      <div class="flip"><div class="flip__front"><span class="tag">01 · /5</span><h4 class="mt">Grammatical accuracy</h4></div><div class="flip__back"><p>Complex structures used correctly; errors rare and never obscure meaning.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag">02 · /5</span><h4 class="mt">Lexical range and register</h4></div><div class="flip__back"><p>Technical vocabulary, precise verbs, hedging; formal but natural.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag">03 · /5</span><h4 class="mt">Fluency and pronunciation</h4></div><div class="flip__back"><p>Steady pace, clear stress and intonation, few long pauses.</p></div></div>
+      <div class="flip"><div class="flip__front"><span class="tag tag--violet">04 · /5 · Task 2</span><h4 class="mt">Interactive effectiveness</h4></div><div class="flip__back"><p>Turn-taking, responding, building on and challenging points, driving to a decision.</p></div></div>
+    </div>
+    <div class="quiz mt" data-xp="10" data-label="Which task?">
+      <p class="quiz__q">Which criterion is scored in Task 2 only?</p>
+      <div class="quiz__opts">
+        <button data-why="Fluency and pronunciation is scored in both tasks.">Fluency and pronunciation</button>
+        <button data-correct data-why="Right. Task 1 is scored on three criteria; Task 2 adds interactive effectiveness.">Interactive effectiveness</button>
+        <button data-why="Lexical range and register is scored in both tasks.">Lexical range and register</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-title="Test day in icons">
+    <div class="slide__kicker">Test day</div>
+    <h2>What to bring, what to leave</h2>
+<figure class="chart-card"><h3>Test day at a glance</h3><div class="vz-icons"><div class="vz-ic"><span aria-hidden="true">🪪</span>Matric card and student ID. No other documents.</div><div class="vz-ic"><span aria-hidden="true">👔</span>Formal or smart-casual dress.</div><div class="vz-ic"><span aria-hidden="true">📵</span>Phones and smartwatches handed in at sign-in.</div><div class="vz-ic"><span aria-hidden="true">🤐</span>Do not discuss the scenario with candidates not yet assessed.</div><div class="vz-ic"><span aria-hidden="true">🤒</span>Unwell? Tell the invigilator before your slot.</div><div class="vz-ic"><span aria-hidden="true">⏳</span>Results are not given on the day.</div></div><figcaption>The six candidate instructions as icons. Tick them off in the checklist on the next slide.</figcaption></figure><figure class="photo-fig"><img src="../assets/img/students-class.jpg" alt="Students sitting together in a classroom" loading="lazy" width="1200" height="521"><figcaption>Arrive early, dress smartly, and be ready to speak up.</figcaption></figure>
+  </section>
+
+  <!-- 12 · Candidate instructions -->
+  <section class="slide" data-title="Candidate instructions">
+    <div class="slide__kicker"><span class="tag tag--amber">Test day</span> Candidate instructions</div>
+    <h2>Your test-day checklist</h2>
+    <div class="grid grid-2">
+      <div><ul class="checklist" data-xp="10">
+        <li>Matric card and student ID. No other documents.</li>
+        <li>Formal or smart-casual dress. You are presenting to a board.</li>
+        <li>Phones and smartwatches handed in at sign-in.</li>
+        <li>Do not discuss the scenario with candidates who have not yet been assessed.</li>
+        <li>If you are unwell, tell the invigilator before your slot, not after.</li>
+        <li>Results are not given on the day.</li>
+      </ul></div>
+      <div class="quiz" data-xp="10" data-label="Rule check">
+        <p class="quiz__q">You wake up with a fever on test day but decide to try anyway. It goes badly. What does the rule say?</p>
+        <div class="quiz__opts">
+          <button data-why="No. The rule is to report it before your slot, not after.">Tell the examiner afterwards and ask for a retake</button>
+          <button data-correct data-why="Correct. If you are unwell, tell the invigilator before your slot, not after.">You should have told the invigilator before your slot</button>
+          <button data-why="Results are not given on the day, and illness must be reported before the slot.">Wait for the result, then appeal</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 · While you wait -->
+  <section class="slide" data-title="While you wait">
+    <div class="slide__kicker">Before you go in</div>
+    <h2>While you wait</h2>
+    <div class="grid grid-2">
+      <div class="card"><span class="num-badge">01</span><h3 class="mt">Warm up your voice</h3><p>Read a paragraph aloud, slowly. Cold voices rush.</p></div>
+      <div class="card"><span class="num-badge">02</span><h3 class="mt">Rehearse the shape, not the words</h3><p>Hook, proposal, benefits. Open, compare, decide. If you memorise sentences you will freeze when the scenario differs.</p></div>
+      <div class="card"><span class="num-badge">03</span><h3 class="mt">Review the phrase bank</h3><p>Three ways to disagree. Two ways to pass the floor. One way to summarise.</p></div>
+      <div class="card"><span class="num-badge">04</span><h3 class="mt">Breathe</h3><p>Two minutes of preparation is enough if you use the first thirty seconds to read, not to panic.</p></div>
+    </div>
+  </section>
+
+  <!-- 14 · While you wait: recall -->
+  <section class="slide" data-title="Check: waiting-room tips">
+    <div class="slide__kicker">Recall</div>
+    <h2>Fill in the waiting-room advice</h2>
+    <div class="gapfill" data-xp="15" data-label="Complete the tips">
+      <p>Read a paragraph aloud, slowly. Cold voices <input class="gap" data-answer="rush" aria-label="gap 1">.</p>
+      <p>Rehearse the <input class="gap" data-answer="shape" aria-label="gap 2">, not the words.</p>
+      <p>Task 1 shape: hook, proposal, <input class="gap" data-answer="benefits" aria-label="gap 3">.</p>
+      <p>Task 2 shape: open, compare, <input class="gap" data-answer="decide" aria-label="gap 4">.</p>
+      <p>Use the first <input class="gap" data-answer="thirty|30" aria-label="gap 5"> seconds of preparation to read, not to panic.</p>
+    </div>
+    <details class="reveal mt" data-xp="5">
+      <summary>Why not memorise full sentences?</summary>
+      <div class="reveal__body"><p>If you memorise sentences you will freeze when the scenario differs. Rehearse the shape instead, and fill it with the figures you are given on the day.</p></div>
+    </details>
+  </section>
+
+  <!-- 15 · How marks are recorded -->
+  <section class="slide" data-title="How your marks are recorded">
+    <div class="slide__kicker">Behind the desk</div>
+    <h2>The examiner's running sheet</h2>
+    <p class="slide__lead">Two examiners per room. Scores are agreed after each group, not during. Discrepancies of more than one band are re-listened to from the recording.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Candidate</th><th class="num">T1 Acc.</th><th class="num">T1 Lex.</th><th class="num">T1 Flu.</th><th class="num">T2 Acc.</th><th class="num">T2 Lex.</th><th class="num">T2 Flu.</th><th class="num">T2 Int.</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr>
+          <tr><td>B</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr>
+          <tr><td>C</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr>
+          <tr><td>D</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td><td class="num">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <details class="reveal mt" data-xp="5">
+      <summary>Count the boxes: how many separate scores does each candidate receive?</summary>
+      <div class="reveal__body"><p><strong>Seven.</strong> Three in Task 1 (accuracy, lexis, fluency) plus four in Task 2 (the same three plus interaction). Each is out of 5.</p></div>
+    </details>
+  </section>
+
+  <section class="slide" data-title="Two examiners, one mark">
+    <div class="slide__kicker">Behind the desk</div>
+    <h2>How a mark is agreed</h2>
+<figure class="chart-card"><h3>How two examiners agree a mark</h3>
+<div class="vz-flow" role="img" aria-label="Flow: two examiners listen in each room, scores are agreed after each group, and if two scores differ by more than one band the recording is listened to again.">
+<div class="vz-node" data-tip="Two examiners per room, each with a running sheet."><b>1 · Two examiners</b>Each listens and fills in a running sheet.</div><span class="vz-arrow" aria-hidden="true">→</span>
+<div class="vz-node vz-node--hi" data-tip="Scores are agreed after each group, not during."><b>2 · After the group</b>Scores are agreed after each group, not during.</div><span class="vz-arrow" aria-hidden="true">→</span>
+<div class="vz-node vz-node--alt" data-tip="Discrepancies of more than one band are re-listened to from the recording."><b>3 · More than one band apart?</b>Re-listen to the recording.</div></div>
+<p class="vz-tip" aria-live="polite">Tap or hover a part of the chart for detail.</p><figcaption>From the examiner's running sheet: agreement happens after the group, and the recording settles big gaps.</figcaption></figure>
+  </section>
+
+  <!-- 16 · Readiness self-rating -->
+  <section class="slide" data-title="Readiness self-rating">
+    <div class="slide__kicker">Self-check</div>
+    <h2>How ready are you, criterion by criterion?</h2>
+    <p class="small muted">Rate yourself honestly on the same 1–5 scale the examiners use. Your lowest score is the one to practise tonight.</p>
+    <div class="grid grid-2">
+      <div class="rate" data-min="1" data-max="5">Grammatical accuracy: complex structures used correctly</div>
+      <div class="rate" data-min="1" data-max="5">Lexical range and register: technical words, precise verbs, hedging</div>
+      <div class="rate" data-min="1" data-max="5">Fluency and pronunciation: steady pace, clear stress, few long pauses</div>
+      <div class="rate" data-min="1" data-max="5">Interactive effectiveness: turn-taking, challenging, driving to a decision</div>
+    </div>
+  </section>
+
+  <!-- 17 · Next week -->
+  <section class="slide" data-title="Next week: Part 2">
+    <div class="slide__kicker">What happens next</div>
+    <h2>Next week: Part 2</h2>
+    <div class="grid grid-3">
+      <div class="card card--accent"><span class="tag tag--violet">Week 14</span><h3 class="mt">Groups B</h3><p>Groups B are assessed. Same format, same criteria, different scenarios. Report <strong>20 minutes</strong> before your slot.</p></div>
+      <div class="card"><span class="tag tag--lime">Done?</span><h3 class="mt">If you were assessed today</h3><p>You are released. Do not discuss the scenario with next week's groups; the scenarios are different, but the format is the same.</p></div>
+      <div class="card"><span class="tag tag--amber">Marks</span><h3 class="mt">Poster marks</h3><p>Released with the final grade.</p></div>
+    </div>
+    <div class="quiz mt" data-xp="10" data-label="Fair play">
+      <p class="quiz__q">A friend in Groups B asks you what your scenario was. What do you do?</p>
+      <div class="quiz__opts">
+        <button data-why="Do not discuss the scenario with candidates who have not yet been assessed.">Tell them, since their scenarios will be different anyway</button>
+        <button data-correct data-why="Right. Do not discuss the scenario. You can tell them the format is the same, and that is already public.">Don't discuss it; tell them the format is the same</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 · Finale -->
+  <section class="slide" data-title="Session complete">
+    <div class="finale">
+      <div class="slide__kicker" style="justify-content:center">Session complete</div>
+      <div class="finale__xp">0 XP</div>
+      <div class="finale__stats"></div>
+      <h2>Shape, not script. You've got this.</h2>
+      <p class="slide__lead" style="margin:0 auto 1.5rem">Arrive 20 minutes early, breathe, and drive your group to a decision.</p>
+      <a class="btn btn--primary" href="../index.html#weeks">← Back to all weeks</a>
+    </div>
+  </section>
+
+</main>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/hooks.js"></script>
+<script src="../assets/js/lab.js"></script>
+<script src="../assets/js/deck.js"></script>
+<script>
+/* visual pass: draw charts when scrolled into view; tap/hover tooltips */
+(function(){
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cards=[].slice.call(document.querySelectorAll('.chart-card'));
+  cards.forEach(function(c){
+    var tip=c.querySelector('.vz-tip');
+    [].slice.call(c.querySelectorAll('[data-tip]')).forEach(function(el){
+      if(!el.hasAttribute('tabindex'))el.setAttribute('tabindex','0');
+      var show=function(){if(tip)tip.textContent=el.getAttribute('data-tip');};
+      el.addEventListener('click',show);el.addEventListener('mouseenter',show);el.addEventListener('focus',show);
+    });
+  });
+  var counters=[].slice.call(document.querySelectorAll('.vz-count'));
+  function run(el){
+    var to=parseFloat(el.getAttribute('data-to')),sfx=el.getAttribute('data-sfx')||'';
+    if(reduce){el.textContent=to+sfx;return;}
+    var t0=null;function f(t){if(t0===null)t0=t;var p=Math.min(1,(t-t0)/1100);el.textContent=Math.round(to*(1-Math.pow(1-p,3)))+sfx;if(p<1)requestAnimationFrame(f);}requestAnimationFrame(f);
+  }
+  if(!('IntersectionObserver' in window)||reduce||/[?&]static/.test(location.search)){
+    counters.forEach(function(el){el.textContent=el.getAttribute('data-to')+(el.getAttribute('data-sfx')||'');});
+    return;
+  }
+  cards.forEach(function(c){c.classList.add('vz-ready');});
+  counters.forEach(function(el){el.textContent='0'+(el.getAttribute('data-sfx')||'');});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(!e.isIntersecting)return;io.unobserve(e.target);
+    e.target.classList.add('vz-in');
+    if(e.target.classList.contains('vz-count'))run(e.target);
+    [].forEach.call(e.target.querySelectorAll('.vz-count'),run);
+  });},{threshold:.25});
+  cards.forEach(function(c){io.observe(c);});
+  counters.forEach(function(el){if(!el.closest('.chart-card'))io.observe(el);});
+})();
+</script>
+</body>
+</html>
