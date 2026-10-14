@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Play · ETC Lab</title>
+<meta name="description" content="Join the ETC Lab live round from your phone.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='30' text-anchor='middle' fill='%232997FF'%3EE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/lab.css">
+<style>
+  body.lab-play { background: var(--black); color: var(--dk-text); }
+  .play { max-width: 560px; margin: 0 auto; padding: 20px 16px 50px; min-height: calc(100vh - 48px); display: flex; flex-direction: column; gap: 14px; }
+  .lpanel.dk { gap: 14px; background: var(--dk); }
+  .lpanel.dk input { font: inherit; background: var(--dk-2); color: #fff; border: 1.5px solid var(--dk-line); border-radius: 14px; padding: 14px 16px; width: 100%; font-size: 1.1rem; }
+  .lpanel.dk input.code { text-transform: uppercase; letter-spacing: .3em; font: 800 1.6rem var(--font-mono); text-align: center; }
+  .big { font: 800 clamp(2rem, 9vw, 3rem)/1.05 var(--font-display); letter-spacing: -.04em; margin: 0; }
+  .qq { font: 700 clamp(1.2rem, 5vw, 1.6rem)/1.25 var(--font-display); letter-spacing: -.02em; margin: 0; }
+  .ans { display: grid; gap: 10px; }
+  .ans button { border: 0; border-radius: 18px; padding: 18px 16px; text-align: left; color: #fff; font: 600 1.05rem/1.3 var(--font-display); display: flex; gap: 12px; align-items: flex-start; min-height: 60px; cursor: pointer; transition: transform .1s; }
+  .ans button:active { transform: scale(.97); }
+  .ans button .k { font: 800 1rem var(--font-mono); background: rgba(0, 0, 0, .25); border-radius: 8px; padding: 2px 8px; flex: 0 0 auto; }
+  .ans .c0 { background: linear-gradient(135deg, #2997ff, #5e5ce6); } .ans .c1 { background: linear-gradient(135deg, #ff4d8d, #a855f7); } .ans .c2 { background: linear-gradient(135deg, #ff9f0a, #ff4d8d); } .ans .c3 { background: linear-gradient(135deg, #1db954, #0fa3a3); } .ans .c4 { background: linear-gradient(135deg, #a855f7, #3a3ac9); } .ans .c5 { background: linear-gradient(135deg, #6e6e73, #3a3a3c); }
+  .ans button[disabled] { opacity: .45; cursor: default; }
+  .ans button.pick { opacity: 1; box-shadow: 0 0 0 3px #fff; }
+  .ans button.right { opacity: 1; box-shadow: 0 0 0 3px #30d158; }
+  .timer { font: 800 2.4rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+  .timer.end { color: var(--rose); }
+  .result { text-align: center; display: flex; flex-direction: column; gap: 8px; align-items: center; padding: 10px 0; }
+  .result .pts { font: 800 clamp(3rem, 16vw, 5rem)/1 var(--font-display); letter-spacing: -.05em; }
+  .me { display: flex; justify-content: space-between; gap: 10px; background: var(--dk-2); border-radius: 14px; padding: 12px 14px; font-weight: 600; }
+  .why { color: var(--dk-muted); margin: 0; }
+</style>
+</head>
+<body class="lab-play" data-root="">
+<main id="main"><div class="play" id="play"></div></main>
+<script src="assets/js/course.js"></script>
+<script src="assets/js/hooks.js"></script>
+<script src="assets/js/lab.js"></script>
+<script>
+(function () {
+  var L = window.LAB, $ = L.$, $$ = L.$$, esc = L.esc;
+  L.nav("play", L.totalXp());
+  var API = "/api/live", box = $("#play");
+  var S = { code: (new URLSearchParams(location.search).get("code") || "").toUpperCase().slice(0, 4), pid: "", sess: null, iv: null, tick: null, answered: {}, last: null, me: null };
+  function post(body) { return fetch(API, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
+  function join() {
+    box.innerHTML = '<section class="lpanel dk has-orbs" style="overflow:hidden"><div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div><p class="eyebrow"><span class="live"></span>Live round</p><h1 class="big">' + L.words("Join the") + " " + L.words("round.", 2, true) + '</h1><p class="why">Type the code on the screen, pick a nickname, and wait for the first question.</p>' +
+      '<input class="code" id="code" maxlength="4" placeholder="CODE" value="' + esc(S.code) + '" autocomplete="off" aria-label="Round code"><input id="nick" maxlength="24" placeholder="Nickname" value="' + esc(L.nick()) + '" aria-label="Nickname">' +
+      '<button class="lbtn" type="button" id="go" style="font-size:1.1rem;padding:16px">Join</button><p class="why" id="msg"></p></section>';
+    $("#go").addEventListener("click", function () {
+      S.code = $("#code").value.trim().toUpperCase(); var nick = $("#nick").value.trim() || L.nick(); L.store.set("nick", nick);
+      $("#msg").textContent = "Joining…";
+      post({ action: "join", code: S.code, nick: nick }).then(function (d) { S.pid = d.pid; S.sess = d.session; render(); poll(); S.iv = setInterval(poll, 1500); }).catch(function (e) { $("#msg").textContent = e.message; });
+    });
+    if (S.code.length === 4) $("#nick").focus(); else $("#code").focus();
+  }
+  function poll() {
+    fetch(API + "?code=" + S.code + "&board=1&pid=" + S.pid, { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.error) return;
+      var prev = S.sess; S.sess = d; S.me = d.me;
+      if (!prev || prev.state !== d.state || prev.qi !== d.qi) render(); else { var c = $("#count"); if (c) c.textContent = d.count + " in the room"; }
+    }).catch(function () {});
+  }
+  function render() {
+    var s = S.sess; clearInterval(S.tick);
+    if (s.state === "lobby") {
+      box.innerHTML = '<section class="lpanel dk has-orbs" style="overflow:hidden;text-align:center;align-items:center"><div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div><p class="eyebrow"><span class="live"></span>You’re in · code ' + S.code + '</p><h1 class="big">Hi, ' + esc(L.nick()) + ".</h1><p class=\"why\">Week " + s.week + " · " + esc(s.title) + ".<br>Look at the screen. The first question is coming.</p><p class=\"why\" id=\"count\">" + (s.count || 0) + " in the room</p></section>";
+      return;
+    }
+    if (s.state === "q" && s.question) {
+      var done = S.answered[s.qi];
+      box.innerHTML = '<section class="lpanel dk"><div class="hud" style="display:flex;justify-content:space-between;align-items:center"><span class="eyebrow" style="margin:0">Q' + (s.qi + 1) + " of " + s.n + '</span><span class="timer" id="t"></span></div><p class="qq">' + esc(s.question.q) + '</p><div class="ans" id="ans">' + s.question.opts.map(function (o, k) { return '<button type="button" class="c' + k + '" data-k="' + k + '"' + (done ? " disabled" : "") + '><span class="k">' + "ABCDEF"[k] + "</span><span>" + esc(o) + "</span></button>"; }).join("") + "</div>" + (done ? '<p class="why">Answered. Watch the screen.</p>' : '<p class="why">Fast and correct scores most.</p>') + "</section>";
+      var started = s.qStart;
+      S.tick = setInterval(function () { var left = Math.max(0, Math.ceil((started + s.secs * 1000 - Date.now()) / 1000)); var t = $("#t"); if (t) { t.textContent = left; t.classList.toggle("end", left <= 5); } if (left <= 0) { clearInterval(S.tick); $$("#ans button").forEach(function (b) { b.disabled = true; }); } }, 250);
+      $("#ans").addEventListener("click", function (e) {
+        var b = e.target.closest("[data-k]"); if (!b || b.disabled) return;
+        $$("#ans button").forEach(function (x) { x.disabled = true; }); b.classList.add("pick");
+        S.answered[s.qi] = +b.getAttribute("data-k");
+        post({ action: "answer", code: S.code, pid: S.pid, qi: s.qi, k: +b.getAttribute("data-k") }).then(function (d) { S.last = d; if (d.correct) { L.burstFrom(b); b.classList.add("right"); } }).catch(function (e) { S.last = { error: e.message }; L.toast(e.message); });
+      });
+      return;
+    }
+    if (s.state === "reveal") {
+      var l = S.last, mine = S.answered[s.qi];
+      var right = s.reveal && s.reveal.right;
+      box.innerHTML = '<section class="lpanel dk"><div class="result"><p class="eyebrow">Q' + (s.qi + 1) + " of " + s.n + '</p>' + (l && !l.error ? '<div class="pts ' + (l.correct ? "lab-grad" : "") + '">' + (l.correct ? "+" + l.points : "0") + '</div><p class="big" style="font-size:1.4rem">' + (l.correct ? "Correct." : "Not this time.") + "</p>" : '<div class="pts" style="color:var(--dk-muted)">–</div><p class="big" style="font-size:1.4rem">' + (mine == null ? "No answer in time." : "Answer not counted.") + "</p>") +
+        (s.reveal ? '<p class="why">Answer: <b style="color:#fff">' + "ABCDEF"[right] + "</b>" + (s.reveal.why ? " · " + esc(s.reveal.why) : "") + "</p>" : "") + "</div>" +
+        (S.me ? '<div class="me"><span>#' + S.me.rank + " " + esc(S.me.nick) + "</span><span>" + S.me.score + " pts</span></div>" : "") + '<p class="why" style="text-align:center">Watch the screen for the next one.</p></section>';
+      return;
+    }
+    if (s.state === "ended") {
+      clearInterval(S.iv);
+      box.innerHTML = '<section class="lpanel dk has-orbs" style="overflow:hidden;text-align:center;align-items:center"><div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div><p class="eyebrow">Round over</p>' + (S.me ? '<div class="pts lab-grad" style="font:800 clamp(3rem,16vw,5rem)/1 var(--font-display);letter-spacing:-.05em">#' + S.me.rank + '</div><p class="big" style="font-size:1.4rem">' + esc(S.me.nick) + " · " + S.me.score + " pts</p>" : '<p class="big" style="font-size:1.4rem">Thanks for playing.</p>') + '<p class="why">Your XP on the Lab is separate: go and earn some.</p><a class="lbtn" href="index.html">Back to ETC Lab</a></section>';
+      if (S.me && S.me.rank <= 3) L.confetti();
+    }
+  }
+  join();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Class tools · ETC Lab</title>
+<meta name="description" content="Lecturer tools for SMB31202 classes: random name picker, group maker and timers, built for the projector.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='30' text-anchor='middle' fill='%232997FF'%3EE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/lab.css">
+<style>
+  body.lab-tools { background: var(--bg); }
+  .tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 960px) { .tools { grid-template-columns: minmax(0, 1fr); } }
+  .tool { background: #fff; border-radius: var(--r); padding: clamp(20px, 3vw, 30px); display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .tool h2 { font-size: 1.5rem; margin: 0; }
+  .tool textarea { font: inherit; border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 12px; min-height: 120px; width: 100%; resize: vertical; }
+  .pick-out { background: var(--black); color: #fff; border-radius: 22px; padding: 28px 20px; text-align: center; font: 800 clamp(2rem, 5vw, 3.4rem)/1.05 var(--font-display); letter-spacing: -.04em; min-height: 120px; display: grid; place-items: center; position: relative; overflow: hidden; }
+  .pick-out::before { content: ""; position: absolute; width: 320px; height: 320px; right: -120px; top: -140px; border-radius: 50%; background: var(--glow); filter: blur(70px); opacity: .45; }
+  .pick-out span { position: relative; }
+  .pick-out.spin span { animation: pop .12s linear infinite alternate; }
+  .groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+  .grp { border-radius: 18px; padding: 14px; color: #fff; font-weight: 600; font-size: .95rem; line-height: 1.4; }
+  .grp b { display: block; font: 800 1.1rem var(--font-display); margin-bottom: 6px; letter-spacing: -.02em; }
+  .tm-big { font: 800 clamp(3.6rem, 12vw, 7rem)/1 var(--font-display); letter-spacing: -.06em; font-variant-numeric: tabular-nums; text-align: center; padding: 10px 0; }
+  .tm-big.end { color: var(--rose); }
+  .tm-bar { height: 10px; border-radius: 999px; background: var(--panel-2); overflow: hidden; }
+  .tm-bar i { display: block; height: 100%; width: 100%; background: var(--glow); background-size: 300% 100%; animation: shine 6s linear infinite; transition: width 1s linear; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; }
+  body.proj .lwrap { padding-top: 10px; }
+  body.proj .tools { grid-template-columns: minmax(0, 1fr); }
+  body.proj .tool { background: var(--dk); color: #fff; }
+  body.proj .tool h2, body.proj .tool .muted { color: #fff; }
+  body.proj .tool:not(.focus) { display: none; }
+  body.proj .tm-big { font-size: clamp(6rem, 28vw, 18rem); }
+  body.proj .pick-out { font-size: clamp(3rem, 10vw, 7rem); }
+  body.proj .whero, body.proj .foot, body.proj .gn { display: none; }
+</style>
+</head>
+<body class="lab-tools" data-root="">
+<main id="main">
+  <section class="whero has-orbs">
+    <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="band-in">
+      <p class="eyebrow">Lecturer tools · nothing is saved online</p>
+      <h1 class="display" id="toolsTitle" style="margin-bottom:16px"></h1>
+      <p class="lede">A name picker, a group maker and a timer, built for the projector. Paste your class list once; it stays in this browser.</p>
+    </div>
+  </section>
+  <div class="lwrap">
+    <div class="tools">
+      <section class="tool" id="t-pick">
+        <h2>Random name picker</h2>
+        <p class="muted small" style="margin:0">One name per line. Picked names are greyed out until you reset.</p>
+        <textarea id="names" placeholder="Aiman&#10;Siti&#10;Wei Ling&#10;Arjun…" aria-label="Class list"></textarea>
+        <div class="pick-out" id="pickOut"><span>Who’s next?</span></div>
+        <div class="lchips"><button class="lbtn" type="button" id="pickBtn">Pick someone</button><button class="lchip" type="button" id="pickReset">Reset picked</button><button class="lchip" type="button" data-focus="t-pick">Projector</button></div>
+        <p class="small muted" id="pickStat" style="margin:0"></p>
+      </section>
+      <section class="tool" id="t-group">
+        <h2>Group maker</h2>
+        <p class="muted small" style="margin:0">Uses the same list. Choose the group size or the number of groups.</p>
+        <div class="lchips"><label class="lchip" style="display:inline-flex;gap:8px;align-items:center">Size <input id="gSize" type="number" min="2" max="12" value="4" style="width:56px;border:0;background:transparent;font:inherit"></label><label class="lchip" style="display:inline-flex;gap:8px;align-items:center">or groups <input id="gCount" type="number" min="2" max="30" placeholder="–" style="width:56px;border:0;background:transparent;font:inherit"></label></div>
+        <div class="lchips"><button class="lbtn" type="button" id="groupBtn">Make groups</button><button class="lchip" type="button" data-focus="t-group">Projector</button></div>
+        <div class="groups" id="groups"></div>
+      </section>
+      <section class="tool" id="t-timer">
+        <h2>Timer</h2>
+        <div class="presets" id="presets"></div>
+        <div class="tm-big" id="tmBig">10:00</div>
+        <div class="tm-bar"><i id="tmBar"></i></div>
+        <div class="lchips"><button class="lbtn" type="button" id="tmStart">▶ Start</button><button class="lchip" type="button" id="tmReset">↺ Reset</button><button class="lchip" type="button" data-focus="t-timer">Projector</button></div>
+        <p class="small muted" style="margin:0">Beeps at the end. Speaking Assessment presets: 2 min prep, 3 min presentation, 12 min discussion.</p>
+      </section>
+    </div>
+  </div>
+  <footer class="foot"><div class="band-in"><span>ETC Lab · SMB31202 · <a href="index.html">Home</a> · <a href="live.html">Live round</a> · <a href="wall.html">Class Wall</a></span><span id="motionBtn"></span></div></footer>
+</main>
+<script src="assets/js/course.js"></script>
+<script src="assets/js/hooks.js"></script>
+<script src="assets/js/lab.js"></script>
+<script>
+(function () {
+  var L = window.LAB, $ = L.$, $$ = L.$$, esc = L.esc;
+  L.nav("tools", L.totalXp());
+  $("#toolsTitle").innerHTML = L.words("Class") + " " + L.words("tools.", 1, true);
+  var names = $("#names"); names.value = L.store.get("classlist", "");
+  names.addEventListener("input", function () { L.store.set("classlist", names.value); });
+  function list() { return names.value.split(/\n/).map(function (x) { return x.trim(); }).filter(Boolean); }
+  var picked = {};
+  function stat() { var l = list(); $("#pickStat").textContent = l.length ? Object.keys(picked).length + " of " + l.length + " picked" : "Paste your class list above."; }
+  $("#pickBtn").addEventListener("click", function () {
+    var l = list().filter(function (n) { return !picked[n]; }); if (!l.length) { L.toast("Everyone has been picked. Reset to start again."); return; }
+    var out = $("#pickOut"), span = $("span", out), n = 0; out.classList.add("spin");
+    var iv = setInterval(function () { span.textContent = l[Math.floor(Math.random() * l.length)]; if (++n > 16) { clearInterval(iv); out.classList.remove("spin"); var w = l[Math.floor(Math.random() * l.length)]; span.textContent = w; picked[w] = 1; stat(); L.burstFrom(out); } }, 70);
+  });
+  $("#pickReset").addEventListener("click", function () { picked = {}; $("#pickOut span").textContent = "Who’s next?"; stat(); });
+  stat();
+  var COL = ["c-blue", "c-pink", "c-orange", "c-green", "c-purple"];
+  $("#groupBtn").addEventListener("click", function () {
+    var l = list(); if (l.length < 2) { L.toast("Need at least two names."); return; }
+    for (var i = l.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = l[i]; l[i] = l[j]; l[j] = t; }
+    var gc = +$("#gCount").value || Math.ceil(l.length / (+$("#gSize").value || 4));
+    var groups = []; for (i = 0; i < gc; i++) groups.push([]);
+    l.forEach(function (n, k) { groups[k % gc].push(n); });
+    $("#groups").innerHTML = groups.map(function (g, k) { return '<div class="grp post ' + COL[k % 5] + '" style="transform:none"><b>Group ' + (k + 1) + "</b>" + g.map(esc).join("<br>") + "</div>"; }).join("");
+    L.confetti();
+  });
+  var P = [["2 min prep", 120], ["3 min", 180], ["5 min", 300], ["10 min", 600], ["12 min discussion", 720], ["45 min test", 2700]];
+  $("#presets").innerHTML = P.map(function (p) { return '<button class="lchip" type="button" data-sec="' + p[1] + '">' + p[0] + "</button>"; }).join("");
+  var total = 600, left = 600, iv = null;
+  function fmt(s) { var m = Math.floor(s / 60), r = s % 60; return m + ":" + (r < 10 ? "0" : "") + r; }
+  function render() { $("#tmBig").textContent = fmt(left); $("#tmBig").classList.toggle("end", left <= 10 && left > 0 || left === 0); $("#tmBar").style.width = (left / total * 100) + "%"; }
+  function beep() { try { var C = window.AudioContext || window.webkitAudioContext; var ctx = new C(); [0, .25, .5].forEach(function (d) { var o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 880; o.connect(g); g.connect(ctx.destination); g.gain.setValueAtTime(.2, ctx.currentTime + d); g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + d + .22); o.start(ctx.currentTime + d); o.stop(ctx.currentTime + d + .25); }); } catch (e) {} }
+  function stop() { clearInterval(iv); iv = null; $("#tmStart").textContent = "▶ Start"; }
+  $("#presets").addEventListener("click", function (e) { var b = e.target.closest("[data-sec]"); if (!b) return; stop(); total = left = +b.getAttribute("data-sec"); $$("[data-sec]").forEach(function (x) { x.classList.toggle("on", x === b); }); render(); });
+  $("#tmStart").addEventListener("click", function () { if (iv) { stop(); return; } if (left <= 0) left = total; iv = setInterval(function () { left--; render(); if (left <= 0) { stop(); beep(); L.confetti(); } }, 1000); $("#tmStart").textContent = "⏸ Pause"; });
+  $("#tmReset").addEventListener("click", function () { stop(); left = total; render(); });
+  render();
+  document.addEventListener("click", function (e) { var f = e.target.closest("[data-focus]"); if (!f) return; $$(".tool").forEach(function (t) { t.classList.toggle("focus", t.id === f.getAttribute("data-focus")); }); L.setProj(true); });
+  $("#motionBtn").innerHTML = L.motionBtn();
+  L.setupMotion(document); $("#main").classList.add("enter");
+})();
+</script>
+</body>
+</html>

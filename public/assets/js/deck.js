@@ -46,7 +46,9 @@
 
   /* ---------- issue content (images + next issue) ---------- */
   var TITLES = ["Basics of Technical Communication", "Preparing for the Workplace", "Research Skills & Paraphrasing", "Reading Skills for Technical Communication", "Writing for Technical Communication", "Drawing Conclusions & Referencing", "Graphics & Visuals in Technical Communication", "Reading Test", "Language Skills for Technical Writing", "Writing Test & Poster Supervision 2", "Group Communication", "Speaking Practice & Final Consultation", "Speaking Assessment · Part 1", "Speaking Assessment · Part 2"];
-  var IMG = "../assets/img/";
+  var COURSEPAGE = body.classList.contains("lab-course");
+  var ROOTP = COURSEPAGE ? "" : "../";
+  var IMG = ROOTP + "assets/img/";
   // first image = cover; the rest are used for chapter openers and photo breaks
   var PHOTOS = {
     1: ["team-casual", "team-office", "whiteboard", "business-team", "sticky-notes"],
@@ -64,9 +66,9 @@
     13: ["lecture-hall", "business-team", "hourglass", "students-class"],
     14: ["handshake", "team-table", "lecture-hall", "business-team"]
   };
-  var WN = parseInt(WEEK, 10) || 1;
+  var WN = body.classList.contains("lab-course") ? 0 : (parseInt(WEEK, 10) || 1);
   var EXTRA = ["g-office", "g-solar", "g-datacentre", "g-robot", "g-wind", "g-rooftop", "g-ev", "g-chart", "g-library", "g-students"];
-  var pool = ["wk" + WEEK].concat(EXTRA.slice((WN * 3) % EXTRA.length).concat(EXTRA.slice(0, (WN * 3) % EXTRA.length)));
+  var pool = [WN ? "wk" + WEEK : "hero"].concat(EXTRA.slice((WN * 3) % EXTRA.length).concat(EXTRA.slice(0, (WN * 3) % EXTRA.length)));
   function photoUrl(i) { return IMG + pool[i % pool.length] + ".jpg"; }
   var STATIC = /[?&]static\b/.test(location.search);
   var LAB = window.LAB;
@@ -78,8 +80,8 @@
   var slides = $$(".slide");
   if (!slides.length) return;
   body.classList.add("lab-week");
-  body.setAttribute("data-root", "../");
-  if (LAB) LAB.nav("w" + WEEK, LAB.totalXp());
+  body.setAttribute("data-root", ROOTP);
+  if (LAB) LAB.nav(WN ? "w" + WEEK : "course", LAB.totalXp());
 
   var toc = el("aside", { class: "toc", id: "toc", "aria-label": "Contents" },
     '<div class="toc__head"><strong>Contents</strong><button class="btn btn--sm" id="tocClose">Close</button></div><ul class="toc__list" id="tocList"></ul>' +
@@ -108,6 +110,7 @@
     if (wk.earned[id]) return false;
     wk.earned[id] = pts; save(); renderXP(true);
     showToast("+" + pts + " XP");
+    if (LAB) LAB.syncBoard();
     return true;
   }
   function xpChip(host, id, pts) {
@@ -133,14 +136,14 @@
   var isNow = LAB && LAB.currentWeek() === WN;
   var hero = el("section", { class: "lhero", id: "top" },
     '<div class="lh-media" data-para><img src="' + photoUrl(0) + '" alt="" decoding="async" fetchpriority="high"></div>' +
-    '<div class="lh-in"><span class="lh-num lab-grad" aria-hidden="true">' + WEEK + '</span>' +
-    '<p class="eyebrow">Week ' + WN + (modeLabel ? " · " + modeLabel : "") + (dates ? " · " + dates : "") + "</p>" +
+    '<div class="lh-in"><span class="lh-num lab-grad" aria-hidden="true">' + (WN ? WEEK : 'ETC') + '</span>' +
+    '<p class="eyebrow">' + (WN ? 'Week ' + WN : 'SMB31202 · Semester 1 · 2026/2027') + (modeLabel ? " · " + modeLabel : "") + (dates ? " · " + dates : "") + "</p>" +
     "<h1>" + (LAB ? LAB.words(heroTitle) : heroTitle) + "</h1>" +
     (heroLead ? '<p class="lede">' + heroLead + "</p>" : "") +
     '<div class="meta">' + (isNow ? '<span class="hot">This week</span>' : "") + (modeLabel ? "<span>" + modeLabel + "</span>" : "") + (WINFO.flag ? "<span>" + WINFO.flag + "</span>" : "") + (HOOK ? "<span>Hook · Learn · Try · Wall · Boss</span>" : "") + "</div></div>");
+  var railHtml = WN ? '<nav class="rail" aria-label="Mission stages"><a href="#hook" data-stage="hook"><i></i>Hook</a><a href="#learn" data-stage="learn"><i></i>Learn</a><a href="#try" data-stage="try"><i></i>Try</a><a href="#wall" data-stage="wall"><i></i>Wall</a><a href="#boss" data-stage="boss"><i></i>Boss</a></nav>' : '<span></span>';
   var lnav = el("div", { class: "lnav" },
-    '<div class="lnav-in"><strong>' + TITLE + '</strong><nav class="rail" aria-label="Mission stages">' +
-    '<a href="#hook" data-stage="hook"><i></i>Hook</a><a href="#learn" data-stage="learn"><i></i>Learn</a><a href="#try" data-stage="try"><i></i>Try</a><a href="#wall" data-stage="wall"><i></i>Wall</a><a href="#boss" data-stage="boss"><i></i>Boss</a></nav>' +
+    '<div class="lnav-in"><strong>' + TITLE + '</strong>' + railHtml +
     '<div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:nowrap"><span class="gn-xp" id="wkXp" style="background:var(--text);color:#fff">0 XP</span><button class="btn btn--sm" id="tocBtn" aria-controls="toc" aria-expanded="false">Contents</button></div></div>');
   main.insertBefore(lnav, main.firstChild);
   main.insertBefore(hero, main.firstChild);
@@ -154,8 +157,8 @@
       '<div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div><div class="band-in">' +
       '<div class="kick"><span class="sticker">Hook</span><span class="eyebrow" style="margin:0">Why this week matters</span></div>' +
       '<p class="scrub" data-scrub>' + (LAB ? LAB.scrubHtml(HOOK.head, gradIdx) : HOOK.head) + "</p>" +
-      '<div class="scene"><div class="scene-card"><p class="big">' + HOOK.scene + '</p><p class="why">' + HOOK.why + "</p></div>" +
-      '<div class="ask tilt"><p class="eyebrow">Think, then tell the wall</p><p class="q">' + HOOK.ask + '</p><p class="muted">Post one or two lines. Nicknames only, no matric numbers.</p><div><a class="lbtn" href="#wall">Go to the Week ' + WN + " wall ›</a></div></div></div></div>");
+      '<div class="scene"><div class="scene-card"><p class="lbig">' + HOOK.scene + '</p><p class="why">' + HOOK.why + "</p></div>" +
+      '<div class="ask ltilt"><p class="eyebrow">Think, then tell the wall</p><p class="q">' + HOOK.ask + '</p><p class="muted">Post one or two lines. Nicknames only, no matric numbers.</p><div><a class="lbtn" href="#wall">Go to the Week ' + WN + " wall ›</a></div></div></div></div>");
     lnav.after(hook);
   }
 
@@ -203,11 +206,40 @@
 
   // Class Wall + Boss round (before the finale)
   var finaleSlide = slides.filter(function (s) { return $(".finale", s); })[0] || slides[slides.length - 1];
-  if (LAB) {
+  // Listening lab: dictation + record-and-compare from this week's model sentences
+  var SENT = $$(".example").map(function (e) { return (e.textContent || "").replace(/\s+/g, " ").trim(); }).filter(function (t) { var n = t.split(" ").length; return n >= 6 && n <= 28 && !/\[|\]/.test(t); });
+  if (LAB && WN && LAB.canSpeak && SENT.length >= 2) {
+    var ll = el("section", { class: "slide listen", id: "listen", "data-title": "Listening lab" },
+      '<p class="slide__kicker"><span class="tag tag--lime">Listening lab</span><span class="muted">Audio from your browser, free. Nothing is uploaded.</span></p><h2>Hear it. Type it. Say it.</h2><p class="slide__lead">The model sentences from this week, read aloud. Dictation trains the ear for the Reading Test passages; recording trains the mouth for the Speaking Assessment.</p><div data-listenmount class="mt"></div>');
+    finaleSlide.before(ll);
+    slides.push(ll);
+  }
+  var NEWSCASE = (window.NEWS || {})[WN];
+  if (LAB && WN && NEWSCASE) {
+    var nc = NEWSCASE, t = nc.tasks;
+    function fmtDate(d) { var M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; var a = d.split("-"); return (+a[2]) + " " + M[+a[1] - 1] + " " + a[0]; }
+    var srcList = nc.sources.map(function (x, i) { return '<li><span class="mono small">[' + (i + 1) + ']</span> <a href="' + x.url + '" target="_blank" rel="noopener">' + LAB.esc(x.title) + "</a> <span class=\"muted small\">· " + LAB.esc(x.publisher) + " · " + fmtDate(x.date) + "</span></li>"; }).join("");
+    var factList = nc.facts.map(function (f) { return "<li>" + LAB.esc(f.fact) + ' <span class="muted small">[' + f.sources.map(function (i) { return i + 1; }).join(", ") + "]</span></li>"; }).join("");
+    var apaList = nc.apa.slice(0, 2).map(function (a) { return "<li>" + LAB.esc(a).replace(/(https?:\/\/\S+)/, '<a href="$1" target="_blank" rel="noopener">$1</a>') + "</li>"; }).join("");
+    var quizzes = t.read.map(function (q) { return '<div class="quiz" data-xp="10" data-label="News check"><p class="quiz__q">' + LAB.esc(q[0]) + '</p><div class="quiz__opts">' + q[1].map(function (o, i) { return "<button" + (i === q[2] ? ' data-correct data-why="' + LAB.esc(q[3]) + '"' : "") + ">" + LAB.esc(o) + "</button>"; }).join("") + "</div></div>"; }).join("");
+    var news = el("section", { class: "news slide", id: "news", "data-title": "Now in the news" },
+      '<p class="slide__kicker"><span class="tag tag--pink">Now in the news</span>' + (nc.malaysia ? '<span class="tag">Malaysia</span>' : '<span class="tag tag--violet">Global</span>') + '<span class="muted">Figures checked against two sources · 15 Oct 2026</span></p>' +
+      "<h2>" + LAB.esc(nc.headline) + "</h2>" +
+      '<p class="slide__lead">' + LAB.esc(nc.summary) + "</p>" +
+      '<div class="grid grid-2 news-grid"><div class="card"><h3>Verified facts</h3><ol class="news-facts">' + factList + '</ol><p class="small muted mb0">Numbers in brackets show which sources carry each figure.</p></div>' +
+      '<div class="card"><h3>Sources</h3><ol class="news-src">' + srcList + '</ol><h4 class="mt">Reference list, APA 7</h4><ul class="news-apa">' + apaList + "</ul></div></div>" +
+      '<div class="grid grid-3 news-tasks mt">' +
+      '<div class="card card--accent"><span class="tag">Read</span><h3 class="mt">Check the facts</h3>' + quizzes + "</div>" +
+      '<div class="card card--accent"><span class="tag tag--violet">Write</span><h3 class="mt">' + LAB.esc(t.write.label.replace(/^Write: /, "")) + '</h3><div class="write" data-min="' + t.write.min + '" data-max="' + t.write.max + '" data-xp="20" data-label="' + LAB.esc(t.write.label) + '"><p class="small muted">' + LAB.esc(t.write.p) + '</p><textarea placeholder="Write here. The AI coach can give feedback when you are done."></textarea></div></div>' +
+      '<div class="card card--accent"><span class="tag tag--amber">Class activity · 10 min</span><h3 class="mt">In pairs or groups</h3><ol class="steps">' + t.act.map(function (a) { return "<li><div><p>" + LAB.esc(a) + "</p></div></li>"; }).join("") + '</ol><div class="timer" data-label="Activity timer" data-phases=\'[{"label":"Work","sec":480,"hint":"Talk in English. Notes are allowed."},{"label":"Share","sec":120,"hint":"One line per group to the class or the wall."}]\'></div></div></div>');
+    finaleSlide.before(news);
+    slides.push(news);
+  }
+  if (LAB && WN) {
     var wallSec = el("section", { class: "wweek has-orbs", id: "wall" },
       '<div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div><div class="band-in">' +
       '<p class="eyebrow"><span class="live"></span>Live · Week ' + WN + ' board · updates every few seconds</p>' +
-      '<h2 class="big">' + LAB.words("The Class Wall.") + "<br>" + LAB.words("Everyone’s voice.", 3, true) + "</h2>" +
+      '<h2 class="lbig">' + LAB.words("The Class Wall.") + "<br>" + LAB.words("Everyone’s voice.", 3, true) + "</h2>" +
       '<p class="lede">Post one or two lines. Read what the class wrote. Then we talk about it on the projector.</p>' +
       '<div data-wallmount style="margin-top:28px"></div></div>');
     finaleSlide.before(wallSec);
@@ -218,14 +250,14 @@
   // next issue + footer (after the last slide)
   (function () {
     var last = slides[slides.length - 1];
-    if (WN < 14) {
+    if (WN && WN < 14) {
       var n = WN + 1, nn = ("0" + n).slice(-2);
       var sec = el("section", { class: "next-issue" },
-        '<a class="next-issue__card tilt" href="week-' + nn + '.html"><img src="' + IMG + "wk" + nn + '.jpg" alt="" loading="lazy"><div class="next-issue__body"><div class="k">Next issue · Week ' + n + '</div><h3>' + TITLES[n - 1] + '</h3><p class="muted">Keep going. Your progress and XP are saved on this device.</p><span class="link-arrow btn--ghost">Read Week ' + n + '</span></div></a>');
+        '<a class="next-issue__card ltilt" href="week-' + nn + '.html"><img src="' + IMG + "wk" + nn + '.jpg" alt="" loading="lazy"><div class="next-issue__body"><div class="k">Next issue · Week ' + n + '</div><h3>' + TITLES[n - 1] + '</h3><p class="muted">Keep going. Your progress and XP are saved on this device.</p><span class="link-arrow btn--ghost">Read Week ' + n + '</span></div></a>');
       last.after(sec);
-      sec.after(el("footer", { class: "site-foot" }, '<p><a href="../index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
+      sec.after(el("footer", { class: "site-foot" }, '<p><a href="' + ROOTP + 'index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
     } else {
-      last.after(el("footer", { class: "site-foot" }, '<p><a href="../index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
+      last.after(el("footer", { class: "site-foot" }, '<p><a href="' + ROOTP + 'index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
     }
   })();
 
@@ -707,7 +739,7 @@
       if (QS.length >= 4) {
         LAB.boss(bm, QS, { xp: 40, blurb: HOOK ? HOOK.boss : "", onDone: function (score, n, xp) { if (xp > 0) { var id = "boss"; if (!wk.earned[id] || wk.earned[id] < xp) { wk.earned[id] = xp; save(); renderXP(true); showToast("+" + xp + " XP"); } } } });
       } else {
-        bm.innerHTML = '<p class="eyebrow">Boss round</p><h2 class="big">No quiz this week.<br><span class="muted">Assessment weeks are about the real thing.</span></h2><p class="lede">Use the Class Wall above, then open the Contents drawer to revise the weeks the test covers.</p>';
+        bm.innerHTML = '<p class="eyebrow">Boss round</p><h2 class="lbig">No quiz this week.<br><span class="muted">Assessment weeks are about the real thing.</span></h2><p class="lede">Use the Class Wall above, then open the Contents drawer to revise the weeks the test covers.</p>';
       }
     }
     // AI coach on substantial writing pads
@@ -718,6 +750,10 @@
       var cid = "coach" + ($$(".write").indexOf(w) + 1);
       LAB.coach(w, { task: task.slice(0, 500), week: WEEK, title: TITLE, min: min, max: max, onFeedback: function () { award(cid, 10); } });
     });
+    // speaker buttons on model sentences; listening lab
+    LAB.addSpeakers(document);
+    var lm = $("[data-listenmount]");
+    if (lm) { var seen = {}; var uniq = SENT.filter(function (t) { if (seen[t]) return false; seen[t] = 1; return true; }); var pick = uniq.length > 3 ? [uniq[0], uniq[Math.floor(uniq.length / 2)], uniq[uniq.length - 1]] : uniq; LAB.listeningLab(lm, pick, { onDone: function () { award("dictation", 15); }, onRecord: function () { award("record", 10); } }); }
     // mission rail: which stage is on screen
     var stages = ["hook", "learn", "try", "wall", "boss"];
     var railLinks = $$(".rail a");

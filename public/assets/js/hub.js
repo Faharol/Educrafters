@@ -37,7 +37,7 @@
   var MODE = L.MODE;
   $("#bento").innerHTML = weeks.map(function (w) {
     var hk = H[w.n] || {};
-    var cls = "ltile tilt " + (span[w.n] || "") + (w.mode === "test" ? " test" : "");
+    var cls = "ltile ltilt " + (span[w.n] || "") + (w.mode === "test" ? " test" : "");
     return '<a class="' + cls + '" href="weeks/week-' + pad(w.n) + '.html"><img src="assets/img/wk' + pad(w.n) + '.jpg" alt="" loading="lazy"><div class="tt"><span class="n">' + pad(w.n) + "</span><strong>" + esc(w.title) + '</strong><span class="a">' + esc(hk.head || (w.topics || [])[0] || "") + '</span><span class="d">' + L.fmtRange(w.start, w.end) + " · " + esc(MODE[w.mode] || "") + (w.flag ? " · " + esc(w.flag) : "") + "</span></div>" +
       (w.n === cw ? '<span class="sticker">This week</span>' : "") + (weekDone(w.n) ? '<span class="done-mark">Done · ' + weekXp(w.n) + " XP</span>" : (weekXp(w.n) ? '<span class="done-mark" style="background:#fff">' + weekXp(w.n) + " XP</span>" : "")) + "</a>";
   }).join("");
@@ -56,6 +56,22 @@
     var cls = w.end < L.TODAY ? "past" : (w.start <= L.TODAY && L.TODAY <= w.end ? "now" : "");
     return '<div class="pr ' + cls + '"><span class="dt">' + (isNum ? "Week " + w.n + " · " : "") + L.fmtRange(w.start, w.end) + (cls === "now" ? " · Now" : "") + "</span><span>" + esc(w.title) + ' <span class="muted small">· ' + esc(MODE[w.mode] || "") + "</span>" + (w.flag ? '<span class="tagx">' + esc(w.flag) + "</span>" : "") + "</span>" + (isNum ? '<a class="go" href="weeks/week-' + pad(w.n) + '.html">Open ›</a>' : "<span></span>") + "</div>";
   }).join("");
+
+  /* leaderboard */
+  var lb = $("#lb");
+  function drawLb(data) {
+    var on = L.store.get("board", false), me = L.deviceId();
+    var join = '<div class="lb-join"><p class="eyebrow">' + (on ? "You’re on the board" : "Join the board") + '</p><h3>' + (on ? "Nice. Keep stacking XP." : "Put your nickname up.") + '</h3><p class="muted" style="margin:0;color:var(--dk-muted)">Only your nickname, XP and weeks done are shared. No names, no matric numbers.</p><input id="lbNick" maxlength="30" value="' + esc(L.nick()) + '" aria-label="Nickname"><div class="lchips"><button class="lbtn" type="button" id="lbJoin">' + (on ? "Update my score" : "Join with this nickname") + '</button>' + (on ? '<button class="lchip" type="button" id="lbLeave" style="background:transparent;color:#fff;border-color:var(--dk-line)">Leave</button>' : "") + "</div></div>";
+    var rows = data && data.rows ? data.rows : [];
+    var list = rows.length ? rows.slice(0, 20).map(function (r) { return '<div class="lb-row' + (r.rank <= 3 ? " top" : "") + (r.id === me ? " me" : "") + '"><span class="rk">' + (r.rank <= 3 ? ["🥇", "🥈", "🥉"][r.rank - 1] : "#" + r.rank) + '</span><span>' + esc(r.nick) + (r.id === me ? ' <span class="wk">· you</span>' : "") + '</span><span class="wk">' + r.weeks + " wk</span><span class=\"xp\">" + r.xp + " XP</span></div>"; }).join("") : '<div class="lb-row"><span class="rk">–</span><span class="muted">' + (data ? "Nobody has joined yet. Be first." : "The board lives on the Netlify site.") + "</span><span></span><span></span></div>";
+    lb.innerHTML = join + '<div class="lb-list">' + list + (data && data.total > 20 ? '<div class="lb-row"><span class="rk"></span><span class="muted small">' + data.total + " on the board</span><span></span><span></span></div>" : "") + "</div>";
+    $("#lbNick").addEventListener("input", function () { L.store.set("nick", $("#lbNick").value.trim()); });
+    $("#lbJoin").addEventListener("click", function () { L.store.set("nick", $("#lbNick").value.trim() || L.nick()); L.store.set("board", true); L.syncBoard(true).then(function () { L.burstFrom($("#lbJoin")); refreshLb(); }); });
+    var lv = $("#lbLeave"); if (lv) lv.addEventListener("click", function () { L.leaveBoard().then(refreshLb); });
+  }
+  function refreshLb() { L.loadBoard().then(drawLb).catch(function () { drawLb(null); }); }
+  drawLb(null); refreshLb();
+  if (L.store.get("board", false)) L.syncBoard(true);
 
   $("#motionBtn").innerHTML = L.motionBtn();
   $("#resetProg").addEventListener("click", function (e) { e.preventDefault(); if (confirm("Reset your progress, XP and drafts on this device?")) { try { localStorage.removeItem("smb31202.progress.v1"); } catch (x) {} location.reload(); } });

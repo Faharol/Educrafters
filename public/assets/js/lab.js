@@ -58,7 +58,7 @@
   /* ---------- text helpers ---------- */
   function words(t, start, grad) {
     start = start || 0;
-    return String(t).split(" ").map(function (w, i) { return '<span class="w' + (grad ? " lab-grad" : "") + '" style="--d:' + (start + i) + '">' + esc(w) + "</span>"; }).join(" ");
+    return String(t).split(" ").map(function (w, i) { return '<span class="wd' + (grad ? " lab-grad" : "") + '" style="--d:' + (start + i) + '">' + esc(w) + "</span>"; }).join(" ");
   }
   function scrubHtml(t, gradIdx) {
     gradIdx = gradIdx || [];
@@ -72,7 +72,8 @@
     var html = '<div class="gn-in"><a class="brand" href="' + ROOT + 'index.html"><i>E</i>ETC Lab <span>· SMB31202</span></a><div class="gn-links">' +
       '<a class="gl ' + (current === "home" ? "on" : "") + '" href="' + ROOT + 'index.html">Home</a>' +
       weeks.map(function (w) { var id = "w" + pad(w.n); return '<a class="gl ' + (current === id ? "on" : "") + '" href="' + ROOT + "weeks/week-" + pad(w.n) + '.html" title="' + esc(w.title) + '">' + pad(w.n) + (w.n === cw ? '<span class="live" style="width:6px;height:6px;margin:0 0 0 4px;background:#ff9f0a;animation:none" aria-label="this week"></span>' : "") + "</a>"; }).join("") +
-      '<a class="gl ' + (current === "wall" ? "on" : "") + '" href="' + ROOT + 'wall.html"><span class="live"></span>Wall</a></div>' +
+      '<a class="gl ' + (current === "wall" ? "on" : "") + '" href="' + ROOT + 'wall.html"><span class="live"></span>Wall</a>' +
+      '<a class="gl ' + (current === "course" ? "on" : "") + '" href="' + ROOT + 'course.html">Course</a></div>' +
       '<span class="gn-xp" id="gnXp" title="Experience points on this device">⚡ ' + (totalXp || 0) + ' XP</span></div><div class="gprog" id="gprog"></div>';
     var el = document.createElement("nav");
     el.className = "gn"; el.setAttribute("aria-label", "Main"); el.innerHTML = html;
@@ -140,14 +141,14 @@
     if (!("IntersectionObserver" in window)) { SCRUB.forEach(function (s) { s.spans.forEach(function (x) { x.classList.add("lit"); }); }); onScroll(); return; }
     IO = new IntersectionObserver(function (es) { es.forEach(function (en) { if (!en.isIntersecting) return; var t = en.target; if (t.hasAttribute("data-count")) { if (!REDUCE) countUp(t); else t.textContent = t.getAttribute("data-count") + (t.getAttribute("data-suffix") || ""); } else { t.classList.add("in"); settle(t); } IO.unobserve(t); }); }, { threshold: 0, rootMargin: "0px 0px -8% 0px" });
     var vh = innerHeight;
-    $$("[data-rv] > *, .lab-bento > .ltile, .gallery > .ph, .stats > div, .rules > div, .lol > div, .assess > div", root).forEach(function (e) { if (e.getBoundingClientRect().top > vh * 0.92) { e.classList.add("rv"); IO.observe(e); } });
+    $$("[data-rv] > *, .lab-bento > .ltile, .gallery > .lph, .stats > div, .rules > div, .lol > div, .assess > div", root).forEach(function (e) { if (e.getBoundingClientRect().top > vh * 0.92) { e.classList.add("rv"); IO.observe(e); } });
     $$("[data-count]", root).forEach(function (e) { if (e.getBoundingClientRect().top > vh * 0.92) IO.observe(e); else { e.textContent = e.getAttribute("data-count") + (e.getAttribute("data-suffix") || ""); } });
     onScroll();
   }
   function collect(root) {
     GROW = $$("[data-grow]", root); PARA = $$("[data-para]", root);
     SCRUB = $$("[data-scrub]", root).map(function (el) { return { el: el, spans: $$("span", el) }; });
-    STILT = FINE ? [] : $$(".lab-bento .ltile, .gallery .ph", root);
+    STILT = FINE ? [] : $$(".lab-bento .ltile, .gallery .lph", root);
     $$(".gallery", root).forEach(function (g) { g.addEventListener("scroll", onScroll, { passive: true }); });
   }
   function onScroll() {
@@ -168,7 +169,7 @@
   var tiltEl = null;
   function untilt() { if (tiltEl) { tiltEl.classList.remove("tilting"); tiltEl.style.transform = ""; tiltEl = null; } }
   if (FINE && !REDUCE) {
-    document.addEventListener("pointermove", function (e) { var el = e.target.closest && e.target.closest(".tilt"); if (el !== tiltEl) untilt(); if (!el) return; tiltEl = el; var r = el.getBoundingClientRect(); var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; el.classList.add("tilting"); el.style.setProperty("--mx", (x * 100).toFixed(1) + "%"); el.style.setProperty("--my", (y * 100).toFixed(1) + "%"); el.style.transform = "perspective(900px) rotateX(" + ((.5 - y) * 7).toFixed(2) + "deg) rotateY(" + ((x - .5) * 7).toFixed(2) + "deg) translateY(-4px)"; }, { passive: true });
+    document.addEventListener("pointermove", function (e) { var el = e.target.closest && e.target.closest(".ltilt"); if (el !== tiltEl) untilt(); if (!el) return; tiltEl = el; var r = el.getBoundingClientRect(); var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height; el.classList.add("tilting"); el.style.setProperty("--mx", (x * 100).toFixed(1) + "%"); el.style.setProperty("--my", (y * 100).toFixed(1) + "%"); el.style.transform = "perspective(900px) rotateX(" + ((.5 - y) * 7).toFixed(2) + "deg) rotateY(" + ((x - .5) * 7).toFixed(2) + "deg) translateY(-4px)"; }, { passive: true });
     document.addEventListener("pointerout", function (e) { if (!e.relatedTarget) untilt(); });
   }
   function motionBtn() { return '<button class="mtoggle" type="button" data-motion>' + (store.get("calm", false) ? "Motion: off · turn on" : "Motion: on · turn off") + "</button>"; }
@@ -247,11 +248,15 @@
   Wall.prototype.setBoard = function (b) { this.board = b; this.posts = []; this.status = "loading"; this.first = true; this.sig = ""; this.seen = {}; var p = $("[data-wprompt]", this.mount); if (p) p.textContent = wallPrompt(b); this.draw(); this.load(); };
   Wall.prototype.render = function () {
     var w = this, m = this.mount;
-    var composer = '<div class="' + (w.compact ? "wcomp" : "wcomp2") + '" data-wcomp>' +
-      '<div class="panel-h"><p class="wprompt' + (w.compact ? "" : "-sm") + '" data-wprompt>' + esc(wallPrompt(w.board)) + '</p><div class="swatches" role="group" aria-label="Card colour">' + COLORS.map(function (c) { return '<button class="sw c-' + c + (w.color === c ? " on" : "") + '" type="button" data-sw="' + c + '" aria-label="' + c + ' card"></button>'; }).join("") + "</div></div>" +
-      '<textarea data-wt maxlength="600" placeholder="Write your post here…" aria-label="Your post"></textarea>' +
-      '<div class="wrow"><div class="left"><input data-wn placeholder="Nickname" maxlength="30" value="' + esc(nick()) + '" aria-label="Your nickname"><span class="muted small" data-wtc>0 / 600</span></div><button class="lbtn" type="button" data-wallpost>Post to the wall</button></div></div>';
-    var tools = '<div class="wtools"><span class="muted small" data-wcount></span><div class="chips">' + (w.compact ? '<a class="lchip" href="' + ROOT + 'wall.html?board=' + w.board + '">Open the full wall ›</a>' : '<button class="lchip" type="button" data-wall="proj">Projector mode</button>') + '<button class="lchip" type="button" data-wall="refresh">Refresh</button><button class="lchip" type="button" data-wall="lect">' + (w.pin ? "Lecturer mode: on" : "Lecturer") + "</button></div></div>" +
+    var dots = '<div class="wl-sw" role="group" aria-label="Card colour">' + COLORS.map(function (c) { return '<button class="wl-dot c-' + c + (w.color === c ? " on" : "") + '" type="button" data-sw="' + c + '" aria-label="' + c + ' card"></button>'; }).join("") + "</div>";
+    var composer = w.compact
+      ? '<div class="wcomp" data-wcomp><p class="eyebrow" style="margin:0">Prompt</p><p class="wprompt" data-wprompt>' + esc(wallPrompt(w.board)) + '</p>' +
+        '<textarea data-wt maxlength="600" placeholder="Write one or two lines…" aria-label="Your post"></textarea>' +
+        '<div class="wrow"><div class="left">' + dots + '<input data-wn placeholder="Nickname" maxlength="30" value="' + esc(nick()) + '" aria-label="Your nickname"><span class="muted small" data-wtc>0 / 600</span></div><button class="lbtn" type="button" data-wallpost>Post to the wall</button></div></div>'
+      : '<div class="wcomp2" data-wcomp><div class="panel-h"><p class="wprompt-sm" data-wprompt>' + esc(wallPrompt(w.board)) + "</p>" + dots + "</div>" +
+        '<textarea data-wt maxlength="600" placeholder="Write your post here…" aria-label="Your post"></textarea>' +
+        '<div class="wrow"><div class="left"><input data-wn placeholder="Nickname" maxlength="30" value="' + esc(nick()) + '" aria-label="Your nickname"><span class="muted small" data-wtc>0 / 600</span></div><button class="lbtn" type="button" data-wallpost>Post to the wall</button></div></div>';
+    var tools = '<div class="wtools"><span class="muted small" data-wcount></span><div class="lchips">' + (w.compact ? '<a class="lchip" href="' + ROOT + 'wall.html?board=' + w.board + '">Open the full wall ›</a>' : '<button class="lchip" type="button" data-wall="proj">Projector mode</button>') + '<button class="lchip" type="button" data-wall="refresh">Refresh</button><button class="lchip" type="button" data-wall="lect">' + (w.pin ? "Lecturer mode: on" : "Lecturer") + "</button></div></div>" +
       '<div class="pinrow" data-lect hidden><strong>Lecturer PIN</strong><input data-lpin type="password" inputmode="numeric" maxlength="12" placeholder="PIN" aria-label="Lecturer PIN"><button class="lbtn sm" type="button" data-wall="pin">Unlock</button>' + (w.pin ? '<button class="lbtn sm ghost" type="button" data-wall="lock">Turn off</button>' : "") + '<span class="muted small" data-lmsg>Unlock to pin or remove posts.</span></div>';
     m.innerHTML = composer + tools + '<div data-wallgrid>' + this.grid() + "</div>";
     var wt = $("[data-wt]", m), wn = $("[data-wn]", m);
@@ -329,7 +334,7 @@
     var st = {};
     function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
     function intro() {
-      mount.innerHTML = '<div class="intro"><div><p class="eyebrow">Boss round</p><h2 class="big">' + ({10:"Ten",9:"Nine",8:"Eight",7:"Seven",6:"Six",5:"Five",4:"Four"}[N] || N) + ' questions.<br><span class="muted">Three lives. Ninety seconds.</span></h2><p class="lede">' + esc(opts.blurb || "Everything from this week, fast. Answer streaks multiply your XP.") + '</p><div class="facts" style="margin-top:18px"><span>' + N + " questions</span><span>" + LIVES + " lives</span><span>" + TIME + ' s</span><span>+' + (opts.xp || 40) + ' XP max</span></div></div><div class="glow"><div class="qcard" style="justify-content:center;align-items:center;text-align:center"><p class="qtext" style="flex:0">Ready?</p><p class="why">Pair up: one reads, one answers. Or go solo.</p><button class="lbtn white" type="button" data-start>Start the boss round</button>' + (st.best != null ? '<p class="why">Best so far: ' + st.best + "/" + N + "</p>" : "") + "</div></div></div>";
+      mount.innerHTML = '<div class="intro"><div><p class="eyebrow">Boss round</p><h2 class="lbig">' + ({10:"Ten",9:"Nine",8:"Eight",7:"Seven",6:"Six",5:"Five",4:"Four"}[N] || N) + ' questions.<br><span class="muted">Three lives. Ninety seconds.</span></h2><p class="lede">' + esc(opts.blurb || "Everything from this week, fast. Answer streaks multiply your XP.") + '</p><div class="facts" style="margin-top:18px"><span>' + N + " questions</span><span>" + LIVES + " lives</span><span>" + TIME + ' s</span><span>+' + (opts.xp || 40) + ' XP max</span></div></div><div class="glow"><div class="qcard" style="justify-content:center;align-items:center;text-align:center"><p class="qtext" style="flex:0">Ready?</p><p class="why">Pair up: one reads, one answers. Or go solo.</p><button class="lbtn white" type="button" data-start>Start the boss round</button>' + (st.best != null ? '<p class="why">Best so far: ' + st.best + "/" + N + "</p>" : "") + "</div></div></div>";
       $("[data-start]", mount).addEventListener("click", start);
     }
     var queue, i, lives, score, streak, best = 0, left, iv, done;
@@ -362,7 +367,7 @@
       var card = $("[data-card]", mount); if (!card) return;
       var xp = Math.round((opts.xp || 40) * score / N);
       card.classList.remove("flip"); void card.offsetWidth; card.classList.add("flip");
-      card.innerHTML = '<div class="end"><p class="eyebrow">' + esc(msg) + '</p><div class="score lab-grad">' + score + " / " + N + '</div><p class="why" style="color:#fff">' + (score === N ? "Perfect run. Screenshot it." : score >= N * .7 ? "Strong. One more run for a perfect score?" : "Read the chapter once more, then come back.") + " Best streak: " + best + '.</p><p class="why">+' + xp + ' XP</p><div class="chips" style="justify-content:center"><button class="lbtn white" type="button" data-again>Play again</button></div></div>';
+      card.innerHTML = '<div class="end"><p class="eyebrow">' + esc(msg) + '</p><div class="score lab-grad">' + score + " / " + N + '</div><p class="why" style="color:#fff">' + (score === N ? "Perfect run. Screenshot it." : score >= N * .7 ? "Strong. One more run for a perfect score?" : "Read the chapter once more, then come back.") + " Best streak: " + best + '.</p><p class="why">+' + xp + ' XP</p><div class="lchips" style="justify-content:center"><button class="lbtn white" type="button" data-again>Play again</button></div></div>';
       $("[data-again]", card).addEventListener("click", start);
       if (score >= N * .5) confetti();
       if (opts.onDone) opts.onDone(score, N, xp);
@@ -371,5 +376,102 @@
     return { start: start };
   }
 
-  window.LAB = { $: $, $$: $$, esc: esc, pad: pad, store: store, nav: nav, setXp: setXp, totalXp: totalXpAll, words: words, scrubHtml: scrubHtml, toast: toast, confetti: confetti, burstFrom: burstFrom, setupMotion: setupMotion, motionBtn: motionBtn, Wall: Wall, wallPrompt: wallPrompt, wallName: wallName, coach: coach, boss: boss, nick: nick, currentWeek: currentWeek, weekInfo: weekInfo, fmtRange: fmtRange, MODE: MODE, TODAY: TODAY, REDUCE: REDUCE, setProj: setProj, root: ROOT };
+  /* ---------- audio: speak, speaker buttons, dictation, record ---------- */
+  var canSpeak = (function () { try { return "speechSynthesis" in window && typeof SpeechSynthesisUtterance !== "undefined"; } catch (e) { return false; } })();
+  var VOICE = null;
+  function pickVoice() { try { var vs = speechSynthesis.getVoices(); if (!vs.length) return; VOICE = vs.filter(function (v) { return /en-GB/i.test(v.lang) && /Google|Daniel|Serena|Libby|Ryan|Sonia|Natural/i.test(v.name); })[0] || vs.filter(function (v) { return /en-GB/i.test(v.lang); })[0] || vs.filter(function (v) { return /^en/i.test(v.lang); })[0] || null; } catch (e) {} }
+  if (canSpeak) { pickVoice(); try { speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {} }
+  function speakRate() { return +store.get("rate", 1) || 1; }
+  function speak(t, onend) { if (!canSpeak) return false; try { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(String(t).replace(/[“”"]/g, "").replace(/_{2,}/g, " blank ")); u.lang = "en-GB"; u.rate = speakRate(); if (VOICE) u.voice = VOICE; if (onend) u.onend = onend; speechSynthesis.speak(u); return true; } catch (e) { return false; } }
+  var SPK_ICON = '<svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true"><path d="M3 7.5h3l4-3v11l-4-3H3z" fill="currentColor"/><path d="M13 7.3a3.6 3.6 0 0 1 0 5.4M15.3 5a7 7 0 0 1 0 10" stroke="currentColor" stroke-width="1.7" fill="none" stroke-linecap="round"/></svg>';
+  function addSpeakers(root) {
+    if (!canSpeak) return 0;
+    var n = 0;
+    $$(".example, .say-it, [data-say-text]", root).forEach(function (e) {
+      if (e.querySelector(".spk")) return;
+      var t = (e.getAttribute("data-say-text") || e.textContent || "").trim();
+      if (t.split(/\s+/).length < 3 || t.length > 600) return;
+      var b = document.createElement("button"); b.type = "button"; b.className = "spk"; b.setAttribute("aria-label", "Listen"); b.setAttribute("title", "Listen"); b.innerHTML = SPK_ICON;
+      b.addEventListener("click", function (ev) { ev.stopPropagation(); b.classList.add("on"); speak(t, function () { b.classList.remove("on"); }); });
+      e.appendChild(b); n++;
+    });
+    return n;
+  }
+  function rateToggle() {
+    var r = speakRate();
+    return '<div class="rate-tog" role="group" aria-label="Playback speed"><button type="button" class="' + (r < 1 ? "on" : "") + '" data-rate="0.8">0.8×</button><button type="button" class="' + (r >= 1 ? "on" : "") + '" data-rate="1">1×</button></div>';
+  }
+  document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-rate]"); if (!b) return; store.set("rate", +b.getAttribute("data-rate")); $$("[data-rate]").forEach(function (x) { x.classList.toggle("on", x === b || x.getAttribute("data-rate") === b.getAttribute("data-rate")); }); });
+  function normW(s) { return String(s).toLowerCase().replace(/[“”"'’‘.,;:!?()\[\]]/g, "").replace(/\s+/g, " ").trim(); }
+  function diffWords(target, typed) {
+    var a = normW(target).split(" ").filter(Boolean), b = normW(typed).split(" ").filter(Boolean);
+    // LCS alignment
+    var m = a.length, n = b.length, L = [];
+    for (var i = 0; i <= m; i++) { L.push(new Array(n + 1).fill(0)); }
+    for (i = m - 1; i >= 0; i--) for (var j = n - 1; j >= 0; j--) L[i][j] = a[i] === b[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    var out = [], x = 0, y = 0, hit = 0;
+    while (x < m && y < n) { if (a[x] === b[y]) { out.push({ w: a[x], ok: true }); hit++; x++; y++; } else if (L[x + 1][y] >= L[x][y + 1]) { out.push({ w: a[x], ok: false }); x++; } else { y++; } }
+    while (x < m) { out.push({ w: a[x++], ok: false }); }
+    return { words: out, score: m ? hit / m : 0 };
+  }
+  function listeningLab(mount, sentences, opts) {
+    opts = opts || {};
+    if (!canSpeak) { mount.innerHTML = '<div class="card"><h3>Listening lab</h3><p class="muted mb0">Your browser does not support speech playback. Try Chrome, Edge or Safari.</p></div>'; return; }
+    var picks = sentences.slice(0, 3);
+    var canRec = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    mount.innerHTML = '<div class="grid grid-2 ll-grid">' +
+      '<div class="card card--accent"><div class="row-h"><span class="tag">Listen and type</span>' + rateToggle() + '</div><h3 class="mt">Dictation</h3><p class="small muted">Play each sentence (as many times as you like), type what you hear, then check. Model sentences from this week.</p>' +
+      picks.map(function (t, i) { return '<div class="dict" data-i="' + i + '"><div class="dict__row"><button class="lbtn sm" type="button" data-play="' + i + '">▶ Play ' + (i + 1) + '</button><span class="small muted" data-dstat="' + i + '"></span></div><textarea data-dt="' + i + '" rows="2" placeholder="Type what you hear…" aria-label="Dictation ' + (i + 1) + '"></textarea><div class="dict__row"><button class="btn btn--sm btn--primary" type="button" data-check="' + i + '">Check</button><button class="btn btn--sm" type="button" data-show="' + i + '">Show</button></div><p class="dict__out" data-dout="' + i + '"></p></div>'; }).join("") +
+      '<p class="small muted mb0" data-dscore>Get all three to 90% or more for +15 XP.</p></div>' +
+      '<div class="card card--accent"><span class="tag tag--violet">Record and compare</span><h3 class="mt">Say it like the model</h3><p class="small muted">Listen to the model, record yourself, play both back. Nothing is uploaded; the recording stays on your device.</p>' +
+      '<p class="example" style="margin:0" data-model>' + esc(picks[0] || "") + '</p>' +
+      '<div class="dict__row" style="margin-top:.6rem"><button class="lbtn sm" type="button" data-model-play>▶ Model</button>' + (canRec ? '<button class="lbtn sm dark" type="button" data-rec>● Record</button><button class="btn btn--sm" type="button" data-playback disabled>▶ Me</button>' : '<span class="small muted">Recording needs a browser with microphone support.</span>') + '</div><p class="small muted" data-rstat></p>' +
+      (picks.length > 1 ? '<div class="lchips" style="margin-top:.6rem">' + picks.map(function (t, i) { return '<button class="lchip' + (i === 0 ? " on" : "") + '" type="button" data-pick="' + i + '">Sentence ' + (i + 1) + "</button>"; }).join("") + "</div>" : "") +
+      '<ul class="coach__selfcheck mt"><li>Pause at the commas, stop at the full stop.</li><li>Stress the key word in each sentence.</li><li>Numbers and units clear and slow.</li></ul></div></div>';
+    var done = {};
+    mount.addEventListener("click", function (e) {
+      var pl = e.target.closest("[data-play]"); if (pl) { var i = +pl.getAttribute("data-play"); $("[data-dstat='" + i + "']", mount).textContent = "Playing…"; speak(picks[i], function () { $("[data-dstat='" + i + "']", mount).textContent = ""; }); return; }
+      var ck = e.target.closest("[data-check]"); if (ck) {
+        var k = +ck.getAttribute("data-check"); var ta = $("[data-dt='" + k + "']", mount); var r = diffWords(picks[k], ta.value);
+        var out = $("[data-dout='" + k + "']", mount);
+        out.innerHTML = r.words.map(function (w) { return '<span class="' + (w.ok ? "ok" : "miss") + '">' + esc(w.w) + "</span>"; }).join(" ") + ' <b>' + Math.round(r.score * 100) + "%</b>";
+        if (r.score >= 0.9) { done[k] = 1; burstFrom(ck); }
+        if (Object.keys(done).length === picks.length && opts.onDone) { opts.onDone(); $("[data-dscore]", mount).textContent = "All three at 90% or more. Nice ear."; }
+        return;
+      }
+      var sh = e.target.closest("[data-show]"); if (sh) { var k2 = +sh.getAttribute("data-show"); $("[data-dout='" + k2 + "']", mount).innerHTML = '<span class="muted">' + esc(picks[k2]) + "</span>"; return; }
+      if (e.target.closest("[data-model-play]")) { speak($("[data-model]", mount).textContent); return; }
+      var pk = e.target.closest("[data-pick]"); if (pk) { $$("[data-pick]", mount).forEach(function (x) { x.classList.toggle("on", x === pk); }); $("[data-model]", mount).textContent = picks[+pk.getAttribute("data-pick")]; return; }
+      var rb = e.target.closest("[data-rec]"); if (rb) { toggleRec(rb); return; }
+      if (e.target.closest("[data-playback]")) { if (lastUrl) { var au = new Audio(lastUrl); au.play(); } return; }
+    });
+    var rec = null, chunks = [], lastUrl = null, stream = null;
+    function toggleRec(btn) {
+      var st = $("[data-rstat]", mount);
+      if (rec && rec.state === "recording") { rec.stop(); return; }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+        stream = s; chunks = []; rec = new MediaRecorder(s);
+        rec.ondataavailable = function (ev) { if (ev.data.size) chunks.push(ev.data); };
+        rec.onstop = function () { var blob = new Blob(chunks, { type: rec.mimeType || "audio/webm" }); if (lastUrl) URL.revokeObjectURL(lastUrl); lastUrl = URL.createObjectURL(blob); $("[data-playback]", mount).disabled = false; btn.textContent = "● Record again"; st.textContent = "Saved on this device. Play the model, then play yourself."; stream.getTracks().forEach(function (t) { t.stop(); }); if (opts.onRecord) opts.onRecord(); };
+        rec.start(); btn.textContent = "■ Stop"; st.textContent = "Recording… speak now.";
+        setTimeout(function () { if (rec && rec.state === "recording") rec.stop(); }, 20000);
+      }).catch(function () { st.textContent = "Microphone blocked. Allow the mic in your browser settings, then try again."; });
+    }
+  }
+
+  /* ---------- opt-in leaderboard ---------- */
+  function deviceId() { var id = store.get("devid", ""); if (!id) { id = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6); store.set("devid", id); } return id; }
+  function weeksDone() { try { var raw = localStorage.getItem("smb31202.progress.v1"); if (!raw) return 0; var d = JSON.parse(raw), n = 0; Object.keys(d.weeks || {}).forEach(function (k) { var w = d.weeks[k]; if (w && w.total && w.seen && w.seen.length >= Math.max(3, w.total - 1)) n++; }); return n; } catch (e) { return 0; } }
+  var boardTimer = null;
+  function syncBoard(force) {
+    if (!store.get("board", false) && !force) return Promise.resolve(null);
+    clearTimeout(boardTimer);
+    return new Promise(function (res) { boardTimer = setTimeout(function () {
+      fetch("/api/board", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: deviceId(), nick: nick(), xp: totalXpAll(), weeks: weeksDone() }) }).then(function (r) { return r.ok ? r.json() : null; }).then(res).catch(function () { res(null); });
+    }, force ? 0 : 1500); });
+  }
+  function leaveBoard() { store.set("board", false); return fetch("/api/board", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: deviceId(), leave: true }) }).catch(function () {}); }
+  function loadBoard() { return fetch("/api/board", { cache: "no-store" }).then(function (r) { var ct = r.headers.get("content-type") || ""; if (!ct.includes("json")) throw new Error("offline"); return r.json(); }); }
+
+  window.LAB = { syncBoard: syncBoard, leaveBoard: leaveBoard, loadBoard: loadBoard, deviceId: deviceId, speak: speak, canSpeak: canSpeak, addSpeakers: addSpeakers, listeningLab: listeningLab, rateToggle: rateToggle, $: $, $$: $$, esc: esc, pad: pad, store: store, nav: nav, setXp: setXp, totalXp: totalXpAll, words: words, scrubHtml: scrubHtml, toast: toast, confetti: confetti, burstFrom: burstFrom, setupMotion: setupMotion, motionBtn: motionBtn, Wall: Wall, wallPrompt: wallPrompt, wallName: wallName, coach: coach, boss: boss, nick: nick, currentWeek: currentWeek, weekInfo: weekInfo, fmtRange: fmtRange, MODE: MODE, TODAY: TODAY, REDUCE: REDUCE, setProj: setProj, root: ROOT };
 })();

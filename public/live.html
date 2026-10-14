@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live round · ETC Lab</title>
+<meta name="description" content="Lecturer console for the ETC Lab live round: pick a week, show the QR code, run the questions, watch the leaderboard.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='30' text-anchor='middle' fill='%232997FF'%3EE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/lab.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body.lab-live { background: var(--black); color: var(--dk-text); }
+  .stage { max-width: 1240px; margin: 0 auto; padding: 24px 16px 60px; display: flex; flex-direction: column; gap: 18px; min-height: calc(100vh - 48px); }
+  .lpanel.dk { gap: 14px; }
+  .lpanel.dk input, .lpanel.dk select { font: inherit; background: var(--dk-2); color: #fff; border: 1.5px solid var(--dk-line); border-radius: 12px; padding: 10px 14px; min-width: 0; }
+  .lpanel.dk label { display: flex; flex-direction: column; gap: 5px; font: 600 .78rem var(--font); color: var(--dk-muted); }
+  .setup { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: end; }
+  @media (max-width: 800px) { .setup { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .code { font: 800 clamp(4rem, 14vw, 11rem)/1 var(--font-display); letter-spacing: .08em; }
+  .lobby { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center; }
+  @media (max-width: 800px) { .lobby { grid-template-columns: minmax(0, 1fr); } }
+  #qr { background: #fff; padding: 14px; border-radius: 20px; display: inline-block; }
+  #qr img, #qr canvas { display: block; }
+  .joined { display: flex; flex-wrap: wrap; gap: 8px; }
+  .joined span { background: var(--dk-2); border-radius: 999px; padding: 6px 12px; font-weight: 600; animation: pop .4s cubic-bezier(.2, .8, .2, 1.4); }
+  .qbig { font: 800 clamp(1.8rem, 4.6vw, 3.6rem)/1.1 var(--font-display); letter-spacing: -.035em; margin: 0; }
+  .qopts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 640px) { .qopts { grid-template-columns: minmax(0, 1fr); } }
+  .qopt { border-radius: 20px; padding: 18px 20px; font: 600 clamp(1rem, 2vw, 1.4rem)/1.3 var(--font-display); color: #fff; display: flex; gap: 14px; align-items: flex-start; position: relative; overflow: hidden; }
+  .qopt .k { font: 800 1.1rem var(--font-mono); background: rgba(0, 0, 0, .25); border-radius: 10px; padding: 4px 9px; flex: 0 0 auto; }
+  .qopt .bar { position: absolute; left: 0; bottom: 0; height: 6px; background: rgba(255, 255, 255, .6); width: 0; transition: width .6s cubic-bezier(.2, .8, .2, 1); }
+  .qopt.c0 { background: linear-gradient(135deg, #2997ff, #5e5ce6); } .qopt.c1 { background: linear-gradient(135deg, #ff4d8d, #a855f7); } .qopt.c2 { background: linear-gradient(135deg, #ff9f0a, #ff4d8d); } .qopt.c3 { background: linear-gradient(135deg, #1db954, #0fa3a3); } .qopt.c4 { background: linear-gradient(135deg, #a855f7, #3a3ac9); } .qopt.c5 { background: linear-gradient(135deg, #6e6e73, #3a3a3c); }
+  .qopt.right { box-shadow: 0 0 0 4px #fff; }
+  .qopt.dim { opacity: .35; }
+  .hud { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .big-timer { font: 800 clamp(2.6rem, 7vw, 5rem)/1 var(--font-display); letter-spacing: -.05em; font-variant-numeric: tabular-nums; min-width: 2ch; text-align: right; }
+  .big-timer.end { color: var(--rose); }
+  .tbar { height: 8px; border-radius: 999px; background: var(--dk-2); overflow: hidden; }
+  .tbar i { display: block; height: 100%; width: 100%; background: var(--glow); background-size: 300% 100%; animation: shine 6s linear infinite; transition: width 1s linear; }
+  .board { display: flex; flex-direction: column; gap: 8px; }
+  .brow { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--dk-2); border-radius: 14px; padding: 10px 14px; font-weight: 600; font-size: 1.1rem; }
+  .brow .rk { font: 800 1.3rem var(--font-display); color: var(--dk-muted); }
+  .brow.top { background: var(--glow); background-size: 300% 100%; animation: shine 8s linear infinite; color: #000; }
+  .brow.top .rk { color: #000; }
+  .brow .sc { font: 700 1.05rem var(--font-mono); }
+  .podium { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; margin-top: 10px; }
+  .pod { border-radius: 20px 20px 8px 8px; padding: 18px 12px; text-align: center; color: #fff; display: flex; flex-direction: column; gap: 6px; }
+  .pod b { font: 800 clamp(1.2rem, 3vw, 2rem)/1.1 var(--font-display); letter-spacing: -.03em; overflow-wrap: anywhere; }
+  .pod.p1 { background: linear-gradient(135deg, #ff9f0a, #ff4d8d); min-height: 220px; } .pod.p2 { background: linear-gradient(135deg, #2997ff, #5e5ce6); min-height: 170px; } .pod.p3 { background: linear-gradient(135deg, #1db954, #0fa3a3); min-height: 130px; }
+  .ctl { display: flex; flex-wrap: wrap; gap: 10px; }
+  .why { color: var(--dk-muted); font-size: 1.05rem; margin: 0; }
+</style>
+</head>
+<body class="lab-live" data-root="">
+<main id="main">
+  <div class="stage" id="stage"></div>
+</main>
+<script src="assets/js/course.js"></script>
+<script src="assets/js/hooks.js"></script>
+<script src="assets/js/lab.js"></script>
+<script>
+(function () {
+  var L = window.LAB, $ = L.$, $$ = L.$$, esc = L.esc, pad = L.pad, C = window.COURSE;
+  L.nav("live", L.totalXp());
+  var API = "/api/live";
+  var pin = sessionStorage.getItem("wallpin") || "";
+  var stage = $("#stage");
+  var weeks = C.weeks.filter(function (w) { return typeof w.n === "number"; });
+  var S = { code: null, sess: null, players: [], answered: 0, dist: null, iv: null, tick: null, questions: [] };
+  var ORIGIN = location.origin + location.pathname.replace(/live\.html$/, "");
+
+  function api(action, extra) { return fetch(API, { method: "POST", headers: { "content-type": "application/json", "x-wall-pin": pin }, body: JSON.stringify(Object.assign({ action: action, code: S.code }, extra || {})) }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
+
+  function setup() {
+    stage.innerHTML = '<section class="lpanel dk has-orbs" style="overflow:hidden"><div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>' +
+      '<p class="eyebrow"><span class="live"></span>Live round · lecturer console</p><h1 class="display" style="font-size:clamp(2.4rem,6vw,4.6rem)">' + L.words("Ten questions.") + " " + L.words("One class.", 2, true) + '</h1>' +
+      '<p class="lede">Pick a week. The questions come straight from that week’s quizzes. Students join on their phones with the code or the QR. Fastest correct answer scores most.</p>' +
+      '<div class="setup"><label>Lecturer PIN<input id="pin" type="password" inputmode="numeric" value="' + esc(pin) + '"></label><label>Week<select id="wk">' + weeks.map(function (w) { return '<option value="' + pad(w.n) + '"' + (w.n === L.currentWeek() ? " selected" : "") + ">" + pad(w.n) + " · " + esc(w.title) + "</option>"; }).join("") + '</select></label><label>Questions<select id="qn"><option>5</option><option selected>10</option><option>15</option></select></label><label>Seconds each<select id="secs"><option>15</option><option selected>20</option><option>30</option></select></label></div>' +
+      '<div class="ctl"><button class="lbtn" type="button" id="create">Create the round</button><a class="lchip" href="class-tools.html" style="background:transparent;color:#fff;border-color:var(--dk-line)">Class tools</a></div><p class="why" id="msg"></p></section>';
+    $("#create").addEventListener("click", createRound);
+  }
+  function parseQuestions(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return $$(".quiz", doc).map(function (q) {
+      var qt = q.querySelector(".quiz__q"); var btns = $$(".quiz__opts button", q); var right = -1;
+      btns.forEach(function (b, i) { if (b.hasAttribute("data-correct")) right = i; });
+      if (!qt || btns.length < 2 || right < 0) return null;
+      return { q: qt.textContent.trim(), opts: btns.map(function (b) { return b.textContent.trim(); }), right: right, why: (btns[right].getAttribute("data-why") || "").trim() };
+    }).filter(Boolean);
+  }
+  function createRound() {
+    pin = $("#pin").value.trim(); sessionStorage.setItem("wallpin", pin);
+    var wk = $("#wk").value, n = +$("#qn").value, secs = +$("#secs").value, msg = $("#msg");
+    msg.textContent = "Reading the week’s quizzes…";
+    fetch("weeks/week-" + wk + ".html").then(function (r) { return r.text(); }).then(function (html) {
+      var qs = parseQuestions(html);
+      if (qs.length < 2) throw new Error("That week has no quizzes.");
+      for (var i = qs.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = qs[i]; qs[i] = qs[j]; qs[j] = t; }
+      qs = qs.slice(0, n);
+      var w = weeks.filter(function (x) { return pad(x.n) === wk; })[0];
+      return api("create", { week: wk, title: w ? w.title : "", questions: qs, secs: secs });
+    }).then(function (d) { S.code = d.code; S.sess = d.session; lobby(); poll(); S.iv = setInterval(poll, 2000); }).catch(function (e) { msg.textContent = e.message; });
+  }
+  function poll() {
+    if (!S.code) return;
+    fetch(API + "?code=" + S.code + "&board=1&dist=1", { cache: "no-store", headers: { "x-wall-pin": pin } }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.error) return;
+      var prevState = S.sess && S.sess.state, prevQi = S.sess && S.sess.qi;
+      S.sess = d; S.players = d.players || []; S.answered = d.answered || 0; S.dist = d.dist || null;
+      if (d.state === "lobby") { var j = $("#joined"); if (j) { j.innerHTML = S.players.map(function (p) { return "<span>" + esc(p.nick) + "</span>"; }).join("") || '<span class="muted">Waiting for the first player…</span>'; $("#jcount").textContent = (d.count || 0) + " joined"; } }
+      if (d.state === "q" || d.state === "reveal") { if (prevState !== d.state || prevQi !== d.qi) question(); else updateQ(); }
+      if (d.state === "ended" && prevState !== "ended") ended();
+    }).catch(function () {});
+  }
+  function lobby() {
+    var url = ORIGIN + "play.html?code=" + S.code;
+    stage.innerHTML = '<section class="lpanel dk"><div class="lobby"><div><p class="eyebrow"><span class="live"></span>Join on your phone · ' + esc(url.replace(/^https?:\/\//, "")) + '</p><div class="code lab-grad">' + S.code + '</div><p class="lede">Week ' + S.sess.week + " · " + esc(S.sess.title) + " · " + S.sess.n + " questions · " + S.sess.secs + ' s each</p><p class="muted" id="jcount" style="color:var(--dk-muted)">0 joined</p><div class="joined" id="joined"></div></div><div id="qr"></div></div>' +
+      '<div class="ctl"><button class="lbtn" type="button" id="start">Start question 1 ›</button><button class="lchip" type="button" data-proj style="background:transparent;color:#fff;border-color:var(--dk-line)">Full screen</button><button class="lchip" type="button" id="abort" style="background:transparent;color:#fff;border-color:var(--dk-line)">Cancel</button></div></section>';
+    try { new QRCode($("#qr"), { text: url, width: 220, height: 220, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch (e) { $("#qr").innerHTML = '<p style="color:#000;max-width:220px;font-size:.85rem">' + esc(url) + "</p>"; }
+    $("#start").addEventListener("click", function () { api("next").then(function (d) { S.sess = Object.assign(S.sess, d.session); question(); }).catch(function (e) { L.toast(e.message); }); });
+    $("#abort").addEventListener("click", function () { api("end").catch(function () {}); clearInterval(S.iv); S.code = null; setup(); });
+    document.querySelector("[data-proj]").addEventListener("click", function () { try { document.documentElement.requestFullscreen(); } catch (e) {} });
+  }
+  function question() {
+    clearInterval(S.tick);
+    var s = S.sess, q = s.question; if (!q) return;
+    var reveal = s.state === "reveal";
+    stage.innerHTML = '<section class="lpanel dk"><div class="hud"><span class="eyebrow" style="margin:0">Question ' + (s.qi + 1) + " of " + s.n + ' · <span id="ans">' + S.answered + "</span> answered · code " + S.code + '</span><span class="big-timer" id="bt">' + (reveal ? "" : s.secs) + "</span></div>" +
+      (reveal ? "" : '<div class="tbar"><i id="tb"></i></div>') +
+      '<p class="qbig">' + esc(q.q) + '</p><div class="qopts" id="opts">' + q.opts.map(function (o, k) { return '<div class="qopt c' + k + (reveal ? (s.reveal.right === k ? " right" : " dim") : "") + '"><span class="k">' + "ABCDEF"[k] + "</span><span>" + esc(o) + '</span><i class="bar" data-bar="' + k + '"></i></div>'; }).join("") + "</div>" +
+      (reveal ? '<p class="why">' + esc(s.reveal.why || "") + "</p>" : "") +
+      '<div class="ctl">' + (reveal ? '<button class="lbtn" type="button" id="next">' + (s.qi + 1 >= s.n ? "Show the final leaderboard ›" : "Next question ›") + "</button>" : '<button class="lbtn" type="button" id="reveal">Reveal the answer</button>') + '<button class="lchip" type="button" id="board" style="background:transparent;color:#fff;border-color:var(--dk-line)">Leaderboard</button></div>' +
+      '<div class="board" id="lb" hidden></div></section>';
+    if (!reveal) {
+      clearInterval(S.tick);
+      var started = s.qStart;
+      S.tick = setInterval(function () { var left = Math.max(0, Math.ceil((started + s.secs * 1000 - Date.now()) / 1000)); var bt = $("#bt"); if (bt) { bt.textContent = left; bt.classList.toggle("end", left <= 5); } var tb = $("#tb"); if (tb) tb.style.width = (left / s.secs * 100) + "%"; if (left <= 0) { clearInterval(S.tick); api("reveal").then(function (d) { S.sess = Object.assign(S.sess, d.session); question(); poll(); }).catch(function () {}); } }, 250);
+      $("#reveal").addEventListener("click", function () { clearInterval(S.tick); api("reveal").then(function (d) { S.sess = Object.assign(S.sess, d.session); question(); poll(); }); });
+    } else {
+      $("#next").addEventListener("click", function () { api("next").then(function (d) { S.sess = Object.assign(S.sess, d.session); if (S.sess.state === "ended") ended(); else question(); }); });
+      $("#lb").hidden = false; drawBoard();
+    }
+    $("#board").addEventListener("click", function () { var b = $("#lb"); b.hidden = !b.hidden; drawBoard(); });
+    updateQ();
+  }
+  function updateQ() {
+    var a = $("#ans"); if (a) a.textContent = S.answered;
+    if (S.dist) { var tot = S.dist.reduce(function (x, y) { return x + y; }, 0) || 1; S.dist.forEach(function (n, k) { var b = document.querySelector('[data-bar="' + k + '"]'); if (b) b.style.width = (n / tot * 100) + "%"; }); }
+    if (!$("#lb").hidden) drawBoard();
+  }
+  function drawBoard() { var lb = $("#lb"); if (!lb) return; lb.innerHTML = S.players.slice(0, 8).map(function (p) { return '<div class="brow' + (p.rank === 1 ? " top" : "") + '"><span class="rk">#' + p.rank + "</span><span>" + esc(p.nick) + '</span><span class="sc">' + p.score + "</span></div>"; }).join("") || '<p class="why">No scores yet.</p>'; }
+  function ended() {
+    clearInterval(S.tick);
+    var p = S.players;
+    stage.innerHTML = '<section class="lpanel dk has-orbs" style="overflow:hidden"><div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div><p class="eyebrow">Final leaderboard · Week ' + S.sess.week + "</p><h2 class=\"lbig\" style=\"color:#fff\">" + L.words("Round over.") + "</h2>" +
+      '<div class="podium">' + [1, 0, 2].map(function (i) { var x = p[i]; return x ? '<div class="pod p' + (i + 1) + '"><span class="eyebrow" style="color:rgba(255,255,255,.8)">#' + (i + 1) + "</span><b>" + esc(x.nick) + '</b><span class="sc">' + x.score + " pts</span></div>" : "<div></div>"; }).join("") + "</div>" +
+      '<div class="board" style="margin-top:14px">' + p.slice(3, 12).map(function (x) { return '<div class="brow"><span class="rk">#' + x.rank + "</span><span>" + esc(x.nick) + '</span><span class="sc">' + x.score + "</span></div>"; }).join("") + "</div>" +
+      '<div class="ctl" style="margin-top:14px"><button class="lbtn" type="button" id="again">New round</button></div></section>';
+    L.confetti(); setTimeout(L.confetti, 800);
+    $("#again").addEventListener("click", function () { clearInterval(S.iv); S.code = null; setup(); });
+  }
+  setup();
+})();
+</script>
+</body>
+</html>

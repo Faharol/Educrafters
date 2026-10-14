@@ -28,6 +28,21 @@
   .cw .nums b { display: block; font: 800 2rem/1 var(--font-display); letter-spacing: -.04em; }
   .cw .nums span { font-size: .82rem; color: var(--muted); }
   @media (max-width: 760px) { .cw { grid-template-columns: minmax(0, 1fr); } }
+  .lb { margin-top: 24px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 20px; align-items: start; }
+  .lb-join { background: var(--black); color: #fff; border-radius: var(--r); padding: clamp(22px, 3.6vw, 36px); display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; }
+  .lb-join::before { content: ""; position: absolute; width: 300px; height: 300px; right: -110px; top: -130px; border-radius: 50%; background: var(--glow); filter: blur(70px); opacity: .45; }
+  .lb-join > * { position: relative; }
+  .lb-join h3 { color: #fff; font-size: 1.6rem; margin: 0; }
+  .lb-join input { font: inherit; border: 1.5px solid var(--dk-line); background: var(--dk-2); color: #fff; border-radius: 12px; padding: 10px 14px; width: 100%; }
+  .lb-list { background: var(--panel-2); border-radius: var(--r); padding: 10px 14px; display: flex; flex-direction: column; }
+  .lb-row { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 10px 6px; border-bottom: 1px solid var(--line); font-size: .98rem; }
+  .lb-row:last-child { border-bottom: 0; }
+  .lb-row .rk { font: 800 1.1rem var(--font-display); color: var(--muted); }
+  .lb-row.top .rk { background: var(--glow); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lb-row.me { background: #fff; border-radius: 12px; }
+  .lb-row .xp { font: 700 .95rem var(--mono); }
+  .lb-row .wk { font-size: .8rem; color: var(--muted); }
+  @media (max-width: 760px) { .lb { grid-template-columns: minmax(0, 1fr); } }
 </style>
 </head>
 <body class="lab-home" data-root="">
@@ -67,10 +82,19 @@
   <section class="band" id="weeks">
     <div class="band-in">
       <p class="eyebrow">The weeks</p>
-      <h2 class="big">Fourteen weeks.<br><span class="muted">One mission each.</span></h2>
+      <h2 class="lbig">Fourteen weeks.<br><span class="muted">One mission each.</span></h2>
       <p class="lede">Every week runs the same way: a hook, the lesson, things to try, the Class Wall, then a boss round. Your XP and progress stay on this device.</p>
       <div class="cw" id="cw" style="margin-top:28px"></div>
       <div class="lab-bento" id="bento"></div>
+    </div>
+  </section>
+
+  <section class="band white" id="leaderboard">
+    <div class="band-in">
+      <p class="eyebrow">Leaderboard · opt in, nicknames only</p>
+      <h2 class="lbig">Who’s on top this week?</h2>
+      <p class="lede">XP from quizzes, writing, wall posts and boss rounds, across the whole class. Join with your nickname. Leave any time; your name disappears.</p>
+      <div class="lb" id="lb"></div>
     </div>
   </section>
 
@@ -81,7 +105,7 @@
     <div class="band-in wpromo">
       <div class="stack" style="display:flex;flex-direction:column;gap:18px">
         <p class="eyebrow"><span class="live"></span>Live</p>
-        <h2 class="big" style="margin:0">The Class Wall.<br><span class="lab-grad">Everyone’s voice.</span></h2>
+        <h2 class="lbig" style="margin:0">The Class Wall.<br><span class="lab-grad">Everyone’s voice.</span></h2>
         <p class="lede">Every week has its own board. Post one line from your phone, read what the class wrote, then we put it on the projector and talk. Nicknames only.</p>
         <div><a class="lbtn" href="wall.html">Open the Class Wall</a></div>
       </div>
@@ -96,7 +120,7 @@
   <section class="band" id="assessment">
     <div class="band-in">
       <p class="eyebrow">100% continuous assessment · no final exam</p>
-      <h2 class="big">Four assessments.<br><span class="muted">One hundred marks.</span></h2>
+      <h2 class="lbig">Four assessments.<br><span class="muted">One hundred marks.</span></h2>
       <div class="assess" id="assess"></div>
       <div class="lol" style="margin-top:16px">
         <div>Weeks 1 to 4 build the Reading Test.<b>Section B = Weeks 1 and 2.</b>Keep those notes.</div>
@@ -110,15 +134,15 @@
     <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="band-in">
       <p class="eyebrow">Out there</p>
-      <h2 class="big">Your classroom is<br><span class="lab-grad">bigger than one room.</span></h2>
+      <h2 class="lbig">Your classroom is<br><span class="lab-grad">bigger than one room.</span></h2>
       <p class="lede" style="margin-top:18px">Every reading, report and discussion this semester is about real engineering work. Swipe through a few of the worlds you are writing for.</p>
       <div class="gallery">
-        <figure class="ph tilt"><img src="assets/img/g-solar.jpg" alt="Technicians installing a field of solar panels" loading="lazy"><figcaption class="cap">Solar and the grid. Week 5: report it.</figcaption></figure>
-        <figure class="ph tilt"><img src="assets/img/g-datacentre.jpg" alt="Rows of server racks in a data centre corridor" loading="lazy"><figcaption class="cap">Data centres, energy and water. Week 3: paraphrase it.</figcaption></figure>
-        <figure class="ph tilt"><img src="assets/img/g-robot.jpg" alt="A yellow industrial robot arm in a factory" loading="lazy"><figcaption class="cap">Automation. Week 7: chart it honestly.</figcaption></figure>
-        <figure class="ph tilt"><img src="assets/img/g-ev.jpg" alt="An electric car being plugged in at a charging point" loading="lazy"><figcaption class="cap">EV batteries. Week 6: recommend something.</figcaption></figure>
-        <figure class="ph tilt"><img src="assets/img/g-wind.jpg" alt="A wind turbine under construction seen from above" loading="lazy"><figcaption class="cap">Wind at scale. Week 11: argue for it.</figcaption></figure>
-        <figure class="ph tilt"><img src="assets/img/g-rooftop.jpg" alt="An engineer in a high-visibility vest on a rooftop solar array" loading="lazy"><figcaption class="cap">Site work. Week 2: get the job.</figcaption></figure>
+        <figure class="lph ltilt"><img src="assets/img/g-solar.jpg" alt="Technicians installing a field of solar panels" loading="lazy"><figcaption class="cap">Solar and the grid. Week 5: report it.</figcaption></figure>
+        <figure class="lph ltilt"><img src="assets/img/g-datacentre.jpg" alt="Rows of server racks in a data centre corridor" loading="lazy"><figcaption class="cap">Data centres, energy and water. Week 3: paraphrase it.</figcaption></figure>
+        <figure class="lph ltilt"><img src="assets/img/g-robot.jpg" alt="A yellow industrial robot arm in a factory" loading="lazy"><figcaption class="cap">Automation. Week 7: chart it honestly.</figcaption></figure>
+        <figure class="lph ltilt"><img src="assets/img/g-ev.jpg" alt="An electric car being plugged in at a charging point" loading="lazy"><figcaption class="cap">EV batteries. Week 6: recommend something.</figcaption></figure>
+        <figure class="lph ltilt"><img src="assets/img/g-wind.jpg" alt="A wind turbine under construction seen from above" loading="lazy"><figcaption class="cap">Wind at scale. Week 11: argue for it.</figcaption></figure>
+        <figure class="lph ltilt"><img src="assets/img/g-rooftop.jpg" alt="An engineer in a high-visibility vest on a rooftop solar array" loading="lazy"><figcaption class="cap">Site work. Week 2: get the job.</figcaption></figure>
       </div>
     </div>
   </section>
@@ -136,7 +160,7 @@
 
   <section class="band black">
     <div class="band-in">
-      <h2 class="big">Engineering student life.<br><span class="muted">Honestly.</span></h2>
+      <h2 class="lbig">Engineering student life.<br><span class="muted">Honestly.</span></h2>
       <div class="lol">
         <div>Poster due<b>End of Week 12</b>Group chat wakes up<b class="lab-grad">Week 11, 11:40 PM</b></div>
         <div>Word limit<b>260</b>Your draft<b class="lab-grad">261</b></div>
@@ -148,13 +172,13 @@
   <section class="band" id="timeline">
     <div class="band-in">
       <p class="eyebrow">From the Scheme of Work · 5 Oct 2026 to 17 Jan 2027</p>
-      <h2 class="big">The semester at a glance.</h2>
+      <h2 class="lbig">The semester at a glance.</h2>
       <div class="prog" id="prog"></div>
       <p class="small muted" style="margin-top:14px">Attendance matters: face-to-face weeks include supervisions and assessments you cannot easily make up.</p>
     </div>
   </section>
 
-  <footer class="foot"><div class="band-in"><span>ETC Lab · SMB31202 English for Technical Communication · Jabatan Bahasa dan Pengajian Umum, FPK, UniMAP · Photos from Pexels and Unsplash, free to use. · Progress and XP are saved only in this browser. <a href="#" id="resetProg">Reset my progress</a></span><span id="motionBtn"></span></div></footer>
+  <footer class="foot"><div class="band-in"><span>ETC Lab · SMB31202 English for Technical Communication · Jabatan Bahasa dan Pengajian Umum, FPK, UniMAP · Photos from Pexels and Unsplash, free to use. · Progress and XP are saved only in this browser. <a href="#" id="resetProg">Reset my progress</a> · <a href="course.html">Course briefing</a> · Lecturer: <a href="live.html">Live round</a> · <a href="class-tools.html">Class tools</a></span><span id="motionBtn"></span></div></footer>
 </main>
 
 <script src="assets/js/course.js"></script>

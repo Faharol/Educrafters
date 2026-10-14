@@ -3,13 +3,19 @@
 Repo: `Faharol/Educrafters` (GitHub, branch `main`). Live site: https://smb31202-etc.netlify.app (Netlify site `smb31202-etc`, id `2e60accb-5e86-4542-a748-e72a0f2e186d`, team `faharol`).
 Owner: Dr. Faharol bin Zubir (UniMAP). Replies to the owner in casual Malay-English mix are fine.
 
-## What it is now (15 Oct 2026)
+## What it is now (15 Oct 2026, phase 2 done)
 
 A static site plus two Netlify Functions. No build step. Deployed with `npx -y @netlify/mcp@latest --site-id … --proxy-path …` (the Netlify MCP `deploy-site` operation gives the command). GitHub Pages is no longer the target; the old `faharol.github.io/Educrafters/` links will break because files moved into `public/`.
 
 | Path | What it is |
 |---|---|
 | `public/index.html` + `assets/js/hub.js` | Home, Walailak-style: black hero with photo and floating bubbles, scroll-lit statement, count-up stats, bento of 14 week tiles (photo, hook line, "This week" sticker, XP/done marks), two tickers, Class Wall promo, assessments, gallery, house rules, humour band, programme at a glance |
+| `public/live.html` + `public/play.html` + `netlify/functions/live.mts` | Live round (Kahoot-style): lecturer enters PIN, picks a week, the page reads that week's quizzes, creates a 4-letter code with a QR; students join on `play.html`, answer on their phones, fastest correct scores most (500 + up to 500 by speed); reveal, per-option bars, leaderboard, podium. Blobs store `live` |
+| `public/class-tools.html` | Lecturer tools: random name picker, group maker, timers with Speaking Assessment presets, projector mode. Class list stays in the browser |
+| `public/course.html` | The course briefing (COs, assessments, grade scale, 14 weeks, expectations) as its own page; Week 1 now opens on the lesson and carries the briefing as an appendix |
+| `public/assets/js/news.js` | "Now in the news": one real case per week (researched 15 Oct 2026, every figure checked against two sources), with verified facts, sources with dates, APA 7 reference list, two reading checks, a writing prompt with AI coach, a 10-minute class activity with timer. Injected by `deck.js` before the wall |
+| Listening lab (in `lab.js`, injected by `deck.js`) | Speaker button on every model sentence (Web Speech, en-GB, 0.8x/1x), dictation with word-by-word diff and XP, record-and-compare with the microphone (local only) |
+| `netlify/functions/board.mts` + home leaderboard | Opt-in XP leaderboard by nickname; devices post their XP after each award |
 | `public/wall.html` | Class Wall page: boards (General + one per week), composer with colour swatches and nickname, likes, lecturer mode (PIN) with pin-to-top and delete, projector mode |
 | `public/weeks/week-01…14.html` | The lecturers' lessons (unchanged content). `deck.js` wraps each in the new chrome |
 | `public/assets/js/deck.js` | Lesson engine. Builds: global nav, photo hero (Ken Burns, parallax, word-in title), sticky lesson nav with the mission rail (Hook · Learn · Try · Wall · Boss), the Hook band, the week's Class Wall, the Boss round (speed quiz auto-built from the page's `.quiz` widgets: 10 Qs, 3 lives, 90 s, XP by score), AI coach on write pads with min/max ≥ 30 words, finale, next issue |
@@ -34,11 +40,10 @@ Secrets: `WALL_PIN` is a Netlify environment variable on the site (not in the re
 
 ## Ideas not done yet
 
-- Live mode in class: lecturer starts a speed round, students join with a QR code, live leaderboard.
-- Audio: Web Speech buttons on model sentences, dictation, record-and-compare.
-- "Now in the news" case per week with verified sources (APA 7), and the `class-tools.html` page (name picker, group maker, timers).
-- Per-class leaderboard (opt-in nicknames) so XP has a social meaning.
-- Course page for the briefing material (COs, grade table) so Week 1 can open on the lesson.
+- Studio-quality recorded audio instead of browser speech.
+- Refresh the news cases each semester (they are dated 15 Oct 2026); the structure in `news.js` is reusable.
+- Class names in the live round and leaderboard are nicknames only by design; if marks ever depend on it, add a matric field server-side.
+- Note: class names in the Lab layer are prefixed (`lph`, `ltilt`, `wd`, `lchips`, `lbig`, `wl-sw`) because the lecturers' pages already use `.ph`, `.tilt`, `.w`, `.chips`, `.big`, `.swatches`.
 
 ## Known content items for the teaching team
 
