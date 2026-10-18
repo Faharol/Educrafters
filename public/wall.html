@@ -52,6 +52,7 @@
   var wall = new L.Wall({ board: board, mount: document.getElementById("wallmount") });
   bx.addEventListener("click", function (e) { var b = e.target.closest("[data-board]"); if (!b) return; board = b.getAttribute("data-board"); drawBoards(); wall.setBoard(board); try { history.replaceState(null, "", "?board=" + board); } catch (x) {} });
   document.getElementById("motionBtn").innerHTML = L.motionBtn();
+  L.presence("wall");
   L.setupMotion(document);
   document.getElementById("main").classList.add("enter");
 })();

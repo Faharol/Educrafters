@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin · ETC Lab</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Ctext x='32' y='43' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='30' text-anchor='middle' fill='%232997FF'%3EE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/lab.css">
+<style>
+  body.lab-admin { background: var(--bg); }
+  .awrap { max-width: 1240px; margin: 0 auto; padding: 20px 16px 80px; display: flex; flex-direction: column; gap: 16px; }
+  .login { max-width: 440px; margin: 10vh auto; background: #fff; border-radius: var(--r); padding: 32px; display: flex; flex-direction: column; gap: 12px; }
+  .login input { font: inherit; border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px; width: 100%; }
+  .atabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .atabs button { flex: 0 0 auto; border: 0; background: #fff; border-radius: 999px; padding: 10px 16px; font: 600 .9rem var(--font); cursor: pointer; color: var(--muted); min-height: 40px; }
+  .atabs button.on { background: var(--text); color: #fff; }
+  .atabs button b { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--mint); color: #000; font-size: .72rem; margin-left: 6px; }
+  .apanel { background: #fff; border-radius: var(--r); padding: clamp(18px, 3vw, 28px); display: flex; flex-direction: column; gap: 14px; }
+  .apanel h2 { margin: 0; font-size: 1.5rem; }
+  .ahead { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  .tbl th, .tbl td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .tbl th { font: 700 .72rem var(--font); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .tbl tr.present td:first-child::before { content: "●"; color: var(--mint); margin-right: 6px; }
+  .tbl tr.manual { background: rgba(255, 159, 10, .08); }
+  .tbl tr.absent td:first-child::before { content: "○"; color: var(--line-strong); margin-right: 6px; }
+  .tblwrap { overflow-x: auto; }
+  .live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .lcard { background: var(--panel-2); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .lcard b { font-size: 1rem; }
+  .lcard .ago { font-size: .78rem; color: var(--muted); }
+  .wcard { background: var(--panel-2); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; border: 2px solid transparent; transition: border-color .4s; }
+  .wcard.fresh { border-color: #2997ff; }
+  .wcard .who { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .wcard .txt { white-space: pre-wrap; font-size: .95rem; line-height: 1.5; max-height: 180px; overflow: auto; background: #fff; border-radius: 10px; padding: 8px 10px; }
+  .wcard .meta { font-size: .78rem; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+  .wgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+  .rev { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .rev > div { background: var(--panel-2); border-radius: 16px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .rev .st { font: 700 .72rem var(--font); letter-spacing: .06em; text-transform: uppercase; }
+  .rev .st.open { color: var(--ok); } .rev .st.locked { color: var(--bad); }
+  .rev .lchips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .rev .lchips .lchip { font-size: .8rem; padding: 6px 11px; }
+  .rev .lchip.on { background: var(--text); color: #fff; }
+  textarea.paste { width: 100%; min-height: 160px; font: .85rem var(--mono); border: 1.5px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .kpi { background: var(--panel-2); border-radius: 16px; padding: 14px; }
+  .kpi b { display: block; font: 800 2rem/1 var(--font-display); letter-spacing: -.04em; }
+  .kpi span { font-size: .8rem; color: var(--muted); }
+  select, input[type=date] { font: inherit; border: 1.5px solid var(--line); border-radius: 12px; padding: 8px 12px; background: #fff; }
+</style>
+</head>
+<body class="lab-admin" data-root="">
+<main id="main"><div class="awrap" id="app"></div></main>
+<script src="assets/js/course.js"></script>
+<script src="assets/js/hooks.js"></script>
+<script src="assets/js/lab.js"></script>
+<script>
+(function () {
+  var L = window.LAB, $ = L.$, $$ = L.$$, esc = L.esc, pad = L.pad, C = window.COURSE;
+  L.nav("admin", L.totalXp());
+  var app = $("#app");
+  var KEY = sessionStorage.getItem("etc_admin") || "";
+  var weeks = C.weeks.filter(function (w) { return typeof w.n === "number"; });
+  var H = { "content-type": "application/json" };
+  function hdr() { return { "content-type": "application/json", "x-admin-key": KEY }; }
+  function get(url) { return fetch(url, { cache: "no-store", headers: { "x-admin-key": KEY } }).then(function (r) { var ct = r.headers.get("content-type") || ""; if (!ct.includes("json")) throw new Error("The admin works on the class website (Netlify), not on this copy."); return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
+  function post(url, body) { return fetch(url, { method: "POST", headers: hdr(), body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
+  function ago(ts) { var s = Math.max(0, Math.round((Date.now() - ts) / 1000)); if (s < 10) return "just now"; if (s < 60) return s + " s ago"; var m = Math.round(s / 60); if (m < 60) return m + " min ago"; var h = Math.round(m / 60); if (h < 24) return h + " h ago"; return Math.round(h / 24) + " d ago"; }
+  function fmt(ts) { var d = new Date(ts + 8 * 3600000); return d.toISOString().slice(0, 10) + " " + d.toISOString().slice(11, 16); }
+  function dl(name, text) { var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/csv" })); a.download = name; a.click(); }
+  function csv(rows) { return rows.map(function (r) { return r.map(function (c) { c = String(c == null ? "" : c); return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c; }).join(","); }).join("\n"); }
+  var pageName = function (p) { if (/^w\d\d$/.test(p)) return "Week " + parseInt(p.slice(1), 10); return { home: "Home", wall: "Class Wall", play: "Live round", locked: "Locked page", course: "Course page" }[p] || p; };
+
+  function login(msg) {
+    app.innerHTML = '<div class="login"><p class="eyebrow">ETC Lab · Lecturer</p><h2 style="margin:0">Admin</h2><p class="muted" style="margin:0">Who is online, what they are writing, attendance, and when each week opens.</p><input id="pw" type="password" placeholder="Password" aria-label="Password"><button class="lbtn" id="go" type="button">Sign in</button><p class="small muted" id="msg" style="margin:0">' + esc(msg || "") + "</p></div>";
+    function go() { var pw = $("#pw").value; post("/api/admin", { action: "login", password: pw }).then(function () { KEY = pw; sessionStorage.setItem("etc_admin", pw); document.cookie = "etc_admin=" + encodeURIComponent(pw) + "; path=/; max-age=" + (3600 * 12) + "; samesite=lax"; shell(); }).catch(function (e) { $("#msg").textContent = e.message; }); }
+    $("#go").addEventListener("click", go); $("#pw").addEventListener("keydown", function (e) { if (e.key === "Enter") go(); }); $("#pw").focus();
+  }
+  var TAB = "online", timers = [];
+  function stopTimers() { timers.forEach(clearInterval); timers = []; }
+  function shell() {
+    stopTimers();
+    app.innerHTML = '<div class="ahead"><div><p class="eyebrow" style="margin:0 0 2px">ETC Lab · Admin</p><h1 style="font-size:clamp(1.8rem,4vw,2.6rem);margin:0">' + L.words("Lecturer") + " " + L.words("console.", 1, true) + '</h1></div><div class="lchips"><a class="lchip" href="live.html">Live round</a><a class="lchip" href="class-tools.html">Class tools</a><a class="lchip" href="wall.html">Class Wall</a><button class="lchip" type="button" id="out">Sign out</button></div></div>' +
+      '<div class="atabs" id="tabs">' + [["online", "Online now"], ["writing", "Live writing"], ["attendance", "Attendance"], ["reveal", "Reveal weeks"], ["visits", "Visit log"], ["roster", "Roster"]].map(function (t) { return '<button type="button" data-tab="' + t[0] + '" class="' + (t[0] === TAB ? "on" : "") + '">' + t[1] + (t[0] === "online" ? ' <b id="onlineN">–</b>' : "") + "</button>"; }).join("") + "</div>" +
+      '<section class="apanel" id="panel"></section>';
+    $("#out").addEventListener("click", function () { KEY = ""; sessionStorage.removeItem("etc_admin"); document.cookie = "etc_admin=; path=/; max-age=0"; login(); });
+    $("#tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (!b) return; TAB = b.getAttribute("data-tab"); $$("[data-tab]").forEach(function (x) { x.classList.toggle("on", x === b); }); render(); });
+    render();
+    timers.push(setInterval(function () { get("/api/track?online").then(function (d) { var n = $("#onlineN"); if (n) n.textContent = d.count; }).catch(function () {}); }, 15000));
+  }
+  function render() {
+    stopTimers(); var p = $("#panel"); p.innerHTML = '<p class="muted">Loading…</p>';
+    ({ online: online, writing: writing, attendance: attendance, reveal: reveal, visits: visits, roster: roster })[TAB]();
+    timers.push(setInterval(function () { get("/api/track?online").then(function (d) { var n = $("#onlineN"); if (n) n.textContent = d.count; }).catch(function () {}); }, 15000));
+  }
+  function fail(e) { var p = $("#panel"); p.innerHTML = '<p class="muted">' + esc(e.message) + "</p>"; if (/password/i.test(e.message)) login(e.message); }
+
+  /* online */
+  function online() {
+    var p = $("#panel");
+    function draw() {
+      get("/api/track?online").then(function (d) {
+        var n = $("#onlineN"); if (n) n.textContent = d.count;
+        var bySec = {}; d.online.forEach(function (o) { var k = o.section || (o.name ? "No section" : "Not identified"); (bySec[k] = bySec[k] || []).push(o); });
+        p.innerHTML = '<div class="ahead"><h2><span class="live"></span>' + d.count + " online now</h2><span class=\"small muted\">Seen in the last 90 seconds · refreshes every 10 s</span></div>" +
+          (d.count ? Object.keys(bySec).sort().map(function (k) { return '<p class="eyebrow" style="margin:8px 0 4px">' + esc(k) + " · " + bySec[k].length + '</p><div class="live-grid">' + bySec[k].map(function (o) { return '<div class="lcard"><b>' + esc(o.name || o.nick) + "</b>" + (o.name ? '<span class="small muted">' + esc(o.matric) + " · nickname " + esc(o.nick) + "</span>" : '<span class="small muted">nickname only</span>') + "<span>" + esc(pageName(o.page)) + '</span><span class="ago">active ' + ago(o.ts) + " · on since " + fmt(o.since).slice(11) + "</span></div>"; }).join("") + "</div>"; }).join("") : '<p class="muted">Nobody is on the site right now.</p>');
+      }).catch(fail);
+    }
+    draw(); timers.push(setInterval(draw, 10000));
+  }
+
+  /* writing */
+  var WWEEK = "w" + pad(L.currentWeek()), lastSeen = {};
+  function writing() {
+    var p = $("#panel");
+    p.innerHTML = '<div class="ahead"><h2>Live writing</h2><div class="lchips"><select id="ww">' + weeks.map(function (w) { return '<option value="w' + pad(w.n) + '"' + ("w" + pad(w.n) === WWEEK ? " selected" : "") + ">Week " + w.n + " · " + esc(w.title) + "</option>"; }).join("") + '</select><button class="lchip" type="button" id="wcsv">Download CSV</button></div></div><p class="small muted" style="margin:0">Every write pad on the week, latest text per student, updated as they type (about 2 s behind). Blue border = changed in the last 15 s. Click a card for its history.</p><div class="wgrid" id="wg"></div>';
+    $("#ww").addEventListener("change", function () { WWEEK = $("#ww").value; lastSeen = {}; draw(); });
+    var data = [];
+    $("#wcsv").addEventListener("click", function () { dl("writing-" + WWEEK + ".csv", csv([["name", "matric", "section", "nickname", "pad", "words", "updated", "text"]].concat(data.map(function (x) { return [x.name, x.matric, x.section, x.nick, x.label, x.words, fmt(x.ts), x.text]; })))); });
+    function draw() {
+      get("/api/track?writing=" + WWEEK).then(function (d) {
+        data = d.writing;
+        var g = $("#wg"); if (!g) return;
+        if (!d.writing.length) { g.innerHTML = '<p class="muted">Nothing written for this week yet.</p>'; return; }
+        g.innerHTML = d.writing.map(function (x) { var k = x.device + "/" + x.pad; var fresh = Date.now() - x.ts < 15000; return '<div class="wcard' + (fresh ? " fresh" : "") + '" data-h="' + esc(x.device) + "|" + esc(x.pad) + '"><div class="who"><b>' + esc(x.name || x.nick) + '</b><span class="small muted">' + esc(x.section || "") + "</span></div>" + '<div class="meta"><span>' + esc(x.label) + "</span><span>" + x.words + " words</span><span>" + ago(x.ts) + '</span></div><div class="txt">' + esc(x.text) + "</div></div>"; }).join("");
+        $$(".wcard", g).forEach(function (c) { c.addEventListener("click", function () { var a = c.getAttribute("data-h").split("|"); get("/api/track?history&week=" + WWEEK + "&device=" + a[0] + "&pad=" + a[1]).then(function (h) { var m = document.createElement("div"); m.className = "lmodal"; m.innerHTML = '<div class="lmodal__bg"></div><div class="lmodal__card" style="width:min(640px,100%);max-height:80vh;overflow:auto"><p class="eyebrow">History · snapshots every few minutes</p>' + (h.history.length ? h.history.map(function (s) { return '<div class="wcard"><div class="meta"><span>' + fmt(s.ts) + "</span><span>" + s.words + ' words</span></div><div class="txt">' + esc(s.text) + "</div></div>"; }).join("") : '<p class="muted">No snapshots yet.</p>') + '<button class="lchip" type="button" data-x>Close</button></div>'; document.body.appendChild(m); m.addEventListener("click", function (e) { if (e.target.closest("[data-x]") || e.target.classList.contains("lmodal__bg")) m.remove(); }); }); }); });
+      }).catch(fail);
+    }
+    draw(); timers.push(setInterval(draw, 5000));
+  }
+
+  /* attendance */
+  var AWEEK = "w" + pad(L.currentWeek());
+  function attendance() {
+    var p = $("#panel");
+    p.innerHTML = '<div class="ahead"><h2>Attendance</h2><div class="lchips"><select id="aw">' + weeks.map(function (w) { return '<option value="w' + pad(w.n) + '"' + ("w" + pad(w.n) === AWEEK ? " selected" : "") + ">Week " + w.n + " · " + esc(w.title) + "</option>"; }).join("") + '</select><button class="lchip" type="button" id="acsv">Download CSV</button></div></div><p class="small muted" style="margin:0">A student can record attendance only after every activity on the week is done and the page is scrolled to the end. One record per matric per week. Students whose matric number is not on the roster can still record attendance by typing their name and section; those rows are marked <b>MANUAL</b> so you can check them.</p><div class="kpis" id="ak"></div><div class="tblwrap"><table class="tbl" id="at"></table></div>';
+    $("#aw").addEventListener("change", function () { AWEEK = $("#aw").value; draw(); });
+    var rows = [];
+    $("#acsv").addEventListener("click", function () { dl("attendance-" + AWEEK + ".csv", csv([["section", "name", "matric", "present", "source", "recorded_at", "xp", "activities"]].concat(rows.map(function (r) { return [r.section, r.name, r.matric, r.present ? "YES" : "NO", r.manual ? "MANUAL (not on list)" : (r.present ? "roster" : ""), r.ts ? fmt(r.ts) : "", r.xp == null ? "" : r.xp, r.done == null ? "" : r.done + "/" + r.total]; })))); });
+    function draw() {
+      get("/api/track?attendance=" + AWEEK).then(function (d) {
+        rows = d.rows;
+        $("#ak").innerHTML = '<div class="kpi"><b>' + d.present + "</b><span>present of " + d.total + "</span></div>" + (d.manual ? '<div class="kpi" style="background:rgba(255,159,10,.18)"><b>' + d.manual + "</b><span>manual · not on list</span></div>" : "") + Object.keys(d.sections).sort().map(function (k) { var x = d.sections[k]; return '<div class="kpi"><b>' + x.present + "/" + x.total + "</b><span>" + esc(k) + (x.manual ? " · " + x.manual + " manual" : "") + "</span></div>"; }).join("");
+        var bySec = {}; d.rows.forEach(function (r) { (bySec[r.section] = bySec[r.section] || []).push(r); });
+        $("#at").innerHTML = "<thead><tr><th>Student</th><th>Matric</th><th>Recorded</th><th>XP</th><th>Activities</th><th></th></tr></thead><tbody>" + Object.keys(bySec).sort().map(function (k) { return '<tr><td colspan="6" style="background:var(--panel-2);font-weight:700">' + esc(k) + " · " + bySec[k].filter(function (r) { return r.present; }).length + "/" + bySec[k].length + "</td></tr>" + bySec[k].map(function (r) { return '<tr class="' + (r.present ? "present" : "absent") + (r.manual ? " manual" : "") + '"><td>' + esc(r.name) + (r.manual ? ' <span class="tag tag--amber">MANUAL · not on list</span>' : "") + "</td><td class=\"mono small\">" + esc(r.matric) + "</td><td>" + (r.ts ? fmt(r.ts) : '<span class="muted">–</span>') + "</td><td>" + (r.xp == null ? "" : r.xp) + "</td><td>" + (r.done == null ? "" : r.done + "/" + r.total) + "</td><td>" + (r.present ? '<button class="lchip" type="button" data-reset="' + esc(r.matric) + '" style="font-size:.75rem;padding:4px 9px">Undo</button>' : "") + "</td></tr>"; }).join(""); }).join("") + "</tbody>";
+        $$("[data-reset]").forEach(function (b) { b.addEventListener("click", function () { if (!confirm("Remove this attendance record?")) return; get("/api/track?reset-attendance=" + AWEEK + "&matric=" + encodeURIComponent(b.getAttribute("data-reset"))).then(draw); }); });
+      }).catch(fail);
+    }
+    draw(); timers.push(setInterval(draw, 20000));
+  }
+
+  /* reveal */
+  function reveal() {
+    var p = $("#panel");
+    function draw() {
+      get("/api/admin?reveal").then(function (d) {
+        p.innerHTML = '<div class="ahead"><h2>When each week opens</h2><span class="small muted">Automatic: two days before the week starts, at midnight. Override here any time.</span></div><div class="rev">' + weeks.map(function (w) { var k = "w" + pad(w.n), x = d.weeks[k]; return '<div><span class="st ' + (x.open ? "open" : "locked") + '">' + (x.open ? "Open" : "Locked") + (x.override ? " · manual" : " · automatic") + "</span><b>Week " + w.n + " · " + esc(w.title) + '</b><span class="small muted">Starts ' + L.fmtRange(w.start, w.end) + " · auto-opens " + L.fmtUnlock(x.unlock) + '</span><div class="lchips"><button class="lchip' + (x.override === "open" ? " on" : "") + '" type="button" data-rev="' + k + '" data-mode="open">Reveal now</button><button class="lchip' + (x.override === "locked" ? " on" : "") + '" type="button" data-rev="' + k + '" data-mode="locked">Lock</button><button class="lchip' + (!x.override ? " on" : "") + '" type="button" data-rev="' + k + '" data-mode="auto">Automatic</button></div></div>'; }).join("") + "</div>";
+        $$("[data-rev]").forEach(function (b) { b.addEventListener("click", function () { post("/api/admin", { action: "reveal", week: b.getAttribute("data-rev"), mode: b.getAttribute("data-mode") }).then(function () { L.toast("Saved."); draw(); }).catch(function (e) { L.toast(e.message); }); }); });
+      }).catch(fail);
+    }
+    draw();
+  }
+
+  /* visits */
+  function visits() {
+    var p = $("#panel");
+    var day = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10);
+    p.innerHTML = '<div class="ahead"><h2>Visit log</h2><div class="lchips"><input type="date" id="vd" value="' + day + '"><button class="lchip" type="button" id="vcsv">Download CSV</button></div></div><p class="small muted" style="margin:0">One row each time someone opens the site in a new browser session (Malaysia time).</p><div class="kpis" id="vk"></div><div class="tblwrap"><table class="tbl" id="vt"></table></div>';
+    var rows = [];
+    $("#vd").addEventListener("change", draw);
+    $("#vcsv").addEventListener("click", function () { dl("visits-" + $("#vd").value + ".csv", csv([["time", "name", "matric", "section", "nickname", "page"]].concat(rows.map(function (v) { return [fmt(v.ts), v.name, v.matric, v.section, v.nick, pageName(v.page)]; })))); });
+    function draw() {
+      get("/api/track?visits=" + $("#vd").value).then(function (d) {
+        rows = d.visits; var ident = d.visits.filter(function (v) { return v.name; }); var uniq = {}; d.visits.forEach(function (v) { uniq[v.device] = 1; });
+        $("#vk").innerHTML = '<div class="kpi"><b>' + d.count + '</b><span>visits</span></div><div class="kpi"><b>' + Object.keys(uniq).length + '</b><span>devices</span></div><div class="kpi"><b>' + ident.length + "</b><span>identified</span></div>";
+        $("#vt").innerHTML = "<thead><tr><th>Time</th><th>Student</th><th>Section</th><th>Opened</th></tr></thead><tbody>" + (d.visits.length ? d.visits.map(function (v) { return "<tr><td class=\"mono small\">" + fmt(v.ts).slice(11) + "</td><td>" + esc(v.name || v.nick) + (v.name ? ' <span class="small muted">' + esc(v.matric) + "</span>" : ' <span class="small muted">nickname</span>') + "</td><td>" + esc(v.section || "") + "</td><td>" + esc(pageName(v.page)) + "</td></tr>"; }).join("") : '<tr><td colspan="4" class="muted">No visits on this day.</td></tr>') + "</tbody>";
+      }).catch(fail);
+    }
+    draw();
+  }
+
+  /* roster */
+  function roster() {
+    var p = $("#panel");
+    function draw() {
+      get("/api/admin?roster").then(function (d) {
+        var bySec = {}; d.roster.forEach(function (r) { (bySec[r.section] = bySec[r.section] || []).push(r); });
+        p.innerHTML = '<div class="ahead"><h2>Class roster · ' + d.count + ' students</h2><span class="small muted">Only names, matric numbers and sections are stored. No phone numbers.</span></div><div class="kpis">' + Object.keys(bySec).sort().map(function (k) { return '<div class="kpi"><b>' + bySec[k].length + "</b><span>" + esc(k) + "</span></div>"; }).join("") + '</div><details><summary>Show the list</summary><div class="tblwrap"><table class="tbl"><thead><tr><th>Name</th><th>Matric</th><th>Section</th><th>Programme</th></tr></thead><tbody>' + d.roster.map(function (r) { return "<tr><td>" + esc(r.name) + "</td><td class=\"mono small\">" + esc(r.matric) + "</td><td>" + esc(r.section) + "</td><td class=\"small muted\">" + esc(r.programme) + "</td></tr>"; }).join("") + "</tbody></table></div></details>" +
+          '<h3 style="margin:10px 0 0">Import or update</h3><p class="small muted" style="margin:0">Paste the class list straight from the university system (the columns with name, matric, programme and section), or the compact format <span class="mono">matric ⇥ name ⇥ programme ⇥ section ⇥ slot</span>. Matric numbers already on the list are updated.</p><textarea class="paste" id="rpaste" placeholder="Paste here…"></textarea><div class="lchips"><button class="lbtn" type="button" id="rimport">Add to roster</button><button class="lchip" type="button" id="rreplace">Replace the whole roster</button></div><p class="small muted" id="rmsg" style="margin:0"></p>';
+        $("#rimport").addEventListener("click", function () { imp(true); }); $("#rreplace").addEventListener("click", function () { if (confirm("Replace the whole roster with the pasted list?")) imp(false); });
+        function imp(merge) { post("/api/admin", { action: "roster", text: $("#rpaste").value, merge: merge }).then(function (r) { L.toast("Imported " + r.imported + ". Roster now " + r.total + "."); draw(); }).catch(function (e) { $("#rmsg").textContent = e.message; }); }
+      }).catch(fail);
+    }
+    draw();
+  }
+
+  if (KEY) { get("/api/admin").then(shell).catch(function () { login(); }); } else login();
+})();
+</script>
+</body>
+</html>

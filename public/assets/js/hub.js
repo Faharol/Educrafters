@@ -32,15 +32,23 @@
   $("#cw").innerHTML = '<div><p class="eyebrow">On this device</p><h3 style="font-size:clamp(1.5rem,3vw,2.2rem);margin:0 0 .3em">' + (done ? "You’re " + done + " of 14 weeks in." : "Week " + cur.n + " is live. Start there.") + '</h3><p class="muted" style="margin:0">Rank: <b>' + rank + "</b>" + (nextAt ? " · " + (nextAt - xp) + " XP to the next rank" : " · top rank") + ". XP comes from quizzes, sorts, writing, wall posts and boss rounds.</p></div>" +
     '<div class="nums"><div><b class="lab-grad">' + done + '</b><span>of 14 weeks done</span></div><div><b>' + xp + '</b><span>XP earned</span></div><div><b>' + (cur.n) + '</b><span>this week</span></div></div>';
 
-  /* bento of weeks */
+  /* bento of weeks (locked until two days before the week starts) */
   var span = { 1: "w2", 3: "w2", 5: "", 8: "w2", 10: "w2", 12: "w2", 14: "w4" };
   var MODE = L.MODE;
-  $("#bento").innerHTML = weeks.map(function (w) {
-    var hk = H[w.n] || {};
-    var cls = "ltile ltilt " + (span[w.n] || "") + (w.mode === "test" ? " test" : "");
-    return '<a class="' + cls + '" href="weeks/week-' + pad(w.n) + '.html"><img src="assets/img/wk' + pad(w.n) + '.jpg" alt="" loading="lazy"><div class="tt"><span class="n">' + pad(w.n) + "</span><strong>" + esc(w.title) + '</strong><span class="a">' + esc(hk.head || (w.topics || [])[0] || "") + '</span><span class="d">' + L.fmtRange(w.start, w.end) + " · " + esc(MODE[w.mode] || "") + (w.flag ? " · " + esc(w.flag) : "") + "</span></div>" +
-      (w.n === cw ? '<span class="sticker">This week</span>' : "") + (weekDone(w.n) ? '<span class="done-mark">Done · ' + weekXp(w.n) + " XP</span>" : (weekXp(w.n) ? '<span class="done-mark" style="background:#fff">' + weekXp(w.n) + " XP</span>" : "")) + "</a>";
-  }).join("");
+  function drawBento(rev) {
+    $("#bento").innerHTML = weeks.map(function (w) {
+      var hk = H[w.n] || {};
+      var k = "w" + pad(w.n), r = rev && rev[k];
+      var open = r ? r.open : Date.now() >= L.unlockTs(k);
+      var unlock = r ? r.unlock : L.unlockTs(k);
+      var cls = "ltile ltilt " + (span[w.n] || "") + (w.mode === "test" ? " test" : "") + (open ? "" : " locked");
+      var inner = '<img src="assets/img/wk' + pad(w.n) + '.jpg" alt="" loading="lazy"><div class="tt"><span class="n">' + pad(w.n) + "</span><strong>" + esc(w.title) + '</strong><span class="a">' + esc(open ? (hk.head || (w.topics || [])[0] || "") : "Opens " + L.fmtUnlock(unlock) + (r && r.override === "locked" ? " · locked by your lecturer" : "")) + '</span><span class="d">' + L.fmtRange(w.start, w.end) + " · " + esc(MODE[w.mode] || "") + (w.flag ? " · " + esc(w.flag) : "") + "</span></div>" +
+        (open ? (w.n === cw ? '<span class="sticker">This week</span>' : "") + (weekDone(w.n) ? '<span class="done-mark">Done · ' + weekXp(w.n) + " XP</span>" : (weekXp(w.n) ? '<span class="done-mark" style="background:#fff">' + weekXp(w.n) + " XP</span>" : "")) : '<span class="lock">🔒 ' + L.fmtUnlock(unlock) + "</span>");
+      return open ? '<a class="' + cls + '" href="weeks/week-' + pad(w.n) + '.html">' + inner + "</a>" : '<a class="' + cls + '" href="locked.html?week=' + pad(w.n) + '" aria-label="Week ' + w.n + ' opens ' + L.fmtUnlock(unlock) + '">' + inner + "</a>";
+    }).join("");
+  }
+  drawBento(null);
+  L.reveal().then(function (rev) { drawBento(rev); L.setupMotion($("#bento")); });
 
   /* tickers */
   var mq1 = P.report.map(function (p, i) { return '<span class="' + (i % 2 ? "lab-grad" : "") + '">' + esc(p) + "</span>"; }).join("");
@@ -76,6 +84,7 @@
   $("#motionBtn").innerHTML = L.motionBtn();
   $("#resetProg").addEventListener("click", function (e) { e.preventDefault(); if (confirm("Reset your progress, XP and drafts on this device?")) { try { localStorage.removeItem("smb31202.progress.v1"); } catch (x) {} location.reload(); } });
 
+  L.presence("home");
   L.setupMotion(document);
   $("#main").classList.add("enter");
 })();

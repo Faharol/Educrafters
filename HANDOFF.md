@@ -52,3 +52,28 @@ Secrets: `WALL_PIN` is a Netlify environment variable on the site (not in the re
 ## How to check your work
 
 Serve `public/` (`python3 -m http.server`), open the home, `wall.html` and a few weeks at 1280 and 390 px, click a quiz answer (XP in the sticky nav goes up), run the boss round, and look for console errors. The wall and coach only work on the Netlify site (`/api/*`); locally they show an "offline" message.
+
+
+## Phase 3 (19 Oct 2026): attendance, live monitoring, reveal schedule. BUILT AND TESTED LOCALLY, NOT DEPLOYED
+
+The owner asked to hold the Netlify deploy until more changes are ready, then push once.
+
+| Piece | What it does |
+|---|---|
+| Mission HUD (`deck.js`) | Pill at bottom-left of every week: activities done / total and % of sections read. Tap for the to-do list (each item jumps to the activity or section). Every widget registers as required: quizzes, reveals, flip grids, sorters, gap fills, write pads (min words, or 20), checklists, build-up steps, tabs, self-ratings, pickers, the week's wall post, the boss round. A section counts as read after it fills most of the screen for about 1.5 s. |
+| Attendance | Unlocks only when every activity is done and every section read. Pop-up asks for the matric number (or confirms the remembered one). Not on the class list: the student types name and picks section, and the record is flagged **MANUAL · not on list** in the admin and the CSV. One record per matric per week. Server re-checks completeness and that the week is open. |
+| Identity | First visit to a week asks for the matric number (can skip). Matched against the roster in Blobs (`config/roster`), not in the repo. 100 students from 4 sections were parsed from the lists the owner sent; the paste file is outside the repo at `/home/claude/roster/roster-import.tsv` (no phone numbers) and must be imported from the admin Roster tab after deploy. |
+| Presence + visits | Heartbeat every 30 s from home, wall and week pages. Admin "Online now" lists everyone seen in the last 90 s, grouped by section, with page and time on. Visit log: one row per browser session per day, named once the student identifies. |
+| Live writing | Every write pad syncs about 2 s after typing stops; admin "Live writing" shows the latest text per student per pad, refreshing every 5 s, with snapshots every 3 minutes (click a card for history) and CSV. |
+| Reveal schedule | Week opens at 00:00 Malaysia time two days before its Monday. Edge function `netlify/edge-functions/gate.ts` redirects locked weeks to `locked.html` (countdown). Home tiles show a lock and the open date. Admin "Reveal weeks": Reveal now / Lock / Automatic per week. The lecturer passes the gate via the `etc_admin` cookie set at admin login. |
+| Admin | `admin.html`, password in env var `ADMIN_PASSWORD` (the owner chose 8080@8400). Tabs: Online now, Live writing, Attendance (per section, CSV, undo), Reveal weeks, Visit log, Roster (paste import, merge or replace). The admin password also works wherever the wall PIN does. |
+| New server code | `netlify/lib/shared.mts` (helpers, schedule), `netlify/functions/admin.mts`, `netlify/functions/track.mts`, `netlify/edge-functions/gate.ts`; `netlify.toml` declares the edge function. |
+
+### Deploy checklist (one push when the owner says go)
+1. Set env var `ADMIN_PASSWORD` = the owner's admin password on site `smb31202-etc` (functions + edge scopes).
+2. Deploy with the Netlify MCP `deploy-site` command (fresh proxy token each time).
+3. Sign in to `/admin.html`, Roster tab, paste `/home/claude/roster/roster-import.tsv` (or the raw class lists), Replace.
+4. Check: Week 4+ redirect to `locked.html` for a private window; admin can open them.
+
+### Local test rig
+`/home/claude/mock/`: `build.mjs` bundles the functions with an in-memory Blobs stand-in, `server.mjs` serves `public/` plus `/api/*` and the edge gate on port 8766, `e2e.py` runs a phone student (manual identity, all activities, reading, attendance) against an admin console.

@@ -24,7 +24,7 @@
   var WEEK = body.getAttribute("data-week") || "00";
   var TITLE = body.getAttribute("data-title") || document.title;
   var wk = store.weeks[WEEK] || (store.weeks[WEEK] = { seen: [], earned: {}, last: 0, total: 0 });
-  wk.seen = wk.seen || []; wk.earned = wk.earned || {};
+  wk.seen = wk.seen || []; wk.earned = wk.earned || {}; wk.done = wk.done || {}; wk.scroll = wk.scroll || 0; wk.viewed = wk.viewed || {};
 
   function xpTotal() {
     var t = 0; for (var k in wk.earned) t += wk.earned[k]; return t;
@@ -104,8 +104,12 @@
   /* XP: each widget gets a stable id from its order on the page */
   var widgetSeq = 0;
   function widgetId(prefix) { widgetSeq += 1; return prefix + widgetSeq; }
+  var REQ = [];   // required activities: { id, label, el }
+  function require(id, label, el) { var sl = el && el.closest ? el.closest(".slide, section") : null; var t = sl ? (sl.getAttribute("data-title") || "").replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "") : ""; REQ.push({ id: id, label: label + (t && label.indexOf(t) < 0 ? " · " + t : ""), el: el }); }
+  function markDone(id) { if (wk.done[id]) return; wk.done[id] = 1; save(); if (window.__missionTick) window.__missionTick(); }
   function award(id, pts, chip) {
     pts = pts || 10;
+    markDone(id);
     if (chip) { chip.classList.add("earned"); }
     if (wk.earned[id]) return false;
     wk.earned[id] = pts; save(); renderXP(true);
@@ -362,6 +366,7 @@
     var pts = +(q.getAttribute("data-xp") || 10);
     var id = widgetId("quiz");
     var chip = headFor(q, q.getAttribute("data-label") || "Quick check", id, pts);
+    require(id, q.getAttribute("data-label") || "Quick check", q);
     var fb = $(".quiz__fb", q) || q.appendChild(el("p", { class: "quiz__fb" }));
     var btns = $$(".quiz__opts button", q);
     if (btns.filter(function (x) { return x.hasAttribute("data-correct"); }).length !== 1) console.warn("Quiz without exactly one data-correct:", q);
@@ -393,9 +398,9 @@
   // Reveal: <details class="reveal" data-xp="5"><summary>..</summary><div class="reveal__body">..</div></details>
   $$("details.reveal").forEach(function (d) {
     var pts = +(d.getAttribute("data-xp") || 0);
-    if (!pts) return;
     var id = widgetId("rev");
-    d.addEventListener("toggle", function () { if (d.open) award(id, pts); });
+    require(id, "Check your answer", d);
+    d.addEventListener("toggle", function () { if (d.open) { markDone(id); if (pts) award(id, pts); } });
   });
 
   // Flip cards: .flip > .flip__front + .flip__back
@@ -411,11 +416,13 @@
     f.addEventListener("click", flip);
     f.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
   });
-  $$(".flip-grid[data-xp]").forEach(function (g) {
-    var pts = +g.getAttribute("data-xp"); var id = widgetId("flip");
+  $$(".flip-grid").forEach(function (g) {
+    var pts = +(g.getAttribute("data-xp") || 0); var id = widgetId("flip");
     var cards = $$(".flip", g), seen = {};
+    if (!cards.length) return;
+    require(id, "Flip all " + cards.length + " cards", g);
     cards.forEach(function (c, i) {
-      c.addEventListener("click", function () { seen[i] = 1; if (Object.keys(seen).length === cards.length) award(id, pts); });
+      c.addEventListener("click", function () { seen[i] = 1; if (Object.keys(seen).length === cards.length) { markDone(id); if (pts) award(id, pts); } });
     });
   });
 
@@ -424,6 +431,7 @@
     var pts = +(s.getAttribute("data-xp") || 15);
     var id = widgetId("sort");
     var chip = headFor(s, s.getAttribute("data-label") || "Sort it", id, pts);
+    require(id, s.getAttribute("data-label") || "Sort it", s);
     var pool = $(".sorter__pool", s);
     var chips = $$(".chip", pool);
     // shuffle chips
@@ -477,6 +485,7 @@
     var pts = +(g.getAttribute("data-xp") || 15);
     var id = widgetId("gap");
     var chip = headFor(g, g.getAttribute("data-label") || "Fill the gaps", id, pts);
+    require(id, g.getAttribute("data-label") || "Fill the gaps", g);
     var gaps = $$("input.gap", g);
     gaps.forEach(function (i) { i.setAttribute("autocomplete", "off"); i.setAttribute("spellcheck", "false"); i.setAttribute("aria-label", "Gap"); });
     var actions = el("div", { class: "gapfill__actions" },
@@ -500,6 +509,7 @@
       shown = true;
       gaps.forEach(function (i) { i.value = i.getAttribute("data-answer").split("|")[0]; i.classList.add("is-right"); i.classList.remove("is-wrong"); });
       fb.textContent = "Answers shown (no XP).";
+      markDone(id);
       fb.style.color = "var(--muted)";
     });
   });
@@ -511,6 +521,8 @@
     var id = widgetId("write");
     var key = WEEK + ":" + id;
     var chip = headFor(w, w.getAttribute("data-label") || "Your turn: write", id, pts);
+    var need = min || 20;
+    require(id, (w.getAttribute("data-label") || "Write") + " (" + need + "+ words)", w);
     var ta = $("textarea", w) || w.appendChild(el("textarea"));
     if (!ta.getAttribute("aria-label")) ta.setAttribute("aria-label", "Your writing");
     if (max >= 150 || min >= 150) ta.style.minHeight = "20rem";
@@ -529,10 +541,12 @@
       cnt.classList.toggle("over", !!max && n > max);
       fill.style.width = Math.min(100, (n / (max || min || 100)) * 100) + "%";
       if (min && n >= min) award(id, pts, chip);
+      if (n >= need) markDone(id);
     }
     ta.addEventListener("input", function () {
       upd(); clearTimeout(t);
       t = setTimeout(function () { store.drafts[key] = ta.value; save(); }, 400);
+      if (LAB && WN) LAB.syncWriting("w" + WEEK, id, w.getAttribute("data-label") || "Write", ta.value);
     });
     upd();
   });
@@ -542,6 +556,7 @@
     var pts = +(ul.getAttribute("data-xp") || 0);
     var id = widgetId("check");
     var items = $$("li", ul);
+    require(id, "Tick the checklist", ul);
     var barEl = el("div", { class: "checklist__bar" });
     ul.after(barEl);
     items.forEach(function (li, i) {
@@ -558,7 +573,7 @@
     function upd() {
       var done = $$("input", ul).filter(function (c) { return c.checked; }).length;
       barEl.textContent = done + " / " + items.length + " ticked";
-      if (pts && done === items.length) award(id, pts);
+      if (done === items.length) { markDone(id); if (pts) award(id, pts); }
     }
     upd();
   });
@@ -567,12 +582,13 @@
   $$("ol.steps[data-build]").forEach(function (ol) {
     var lis = $$(":scope > li", ol);
     var shown = 1;
+    var sid = widgetId("steps"); require(sid, "Reveal all the steps", ol);
     ol.classList.add("is-building");
     var btn = el("button", { class: "btn btn--sm steps__btn", type: "button" }, "Reveal next ▸");
     ol.before(btn);
     function upd() {
       lis.forEach(function (li, i) { li.classList.toggle("is-hidden", i >= shown); });
-      if (shown >= lis.length) { btn.textContent = "All shown ✓"; btn.disabled = true; }
+      if (shown >= lis.length) { btn.textContent = "All shown ✓"; btn.disabled = true; markDone(sid); }
     }
     btn.addEventListener("click", function () { shown++; upd(); });
     upd();
@@ -582,7 +598,9 @@
   $$(".tabs").forEach(function (t) {
     var btns = $$(".tabs__bar button", t), panels = $$(".tabs__panel", t);
     t.querySelector(".tabs__bar").setAttribute("role", "tablist");
+    var tid = widgetId("tabs"), viewed = {}; if (btns.length > 1) require(tid, "Open every tab", t);
     function show(name) {
+      viewed[name] = 1; if (Object.keys(viewed).length >= btns.length) markDone(tid);
       btns.forEach(function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === name ? "true" : "false"); });
       panels.forEach(function (p) { p.hidden = p.getAttribute("data-panel") !== name; });
     }
@@ -656,7 +674,9 @@
     val.textContent = saved ? inp.value : "?";
     if (!saved) inp.style.opacity = "0.5";
     function upd() { inp.style.opacity = ""; val.textContent = inp.value; store.drafts[key] = inp.value; save(); }
-    inp.addEventListener("input", upd);
+    require(id, "Rate yourself", r);
+    if (saved) markDone(id);
+    inp.addEventListener("input", function () { upd(); markDone(id); });
   });
 
   // Random picker: .picker[data-items='["a","b"]'] (data-label)
@@ -664,7 +684,9 @@
     var items; try { items = JSON.parse(p.getAttribute("data-items")); } catch (e) { items = []; }
     p.innerHTML = '<div class="widget__head" style="justify-content:center"><span>' + (p.getAttribute("data-label") || "Random pick") + '</span></div><div class="picker__out">Press spin</div><button class="btn btn--primary btn--sm" type="button">🎲 Spin</button>';
     var out = $(".picker__out", p);
+    var pid = widgetId("pick"); require(pid, p.getAttribute("data-label") || "Spin the picker", p);
     $("button", p).addEventListener("click", function () {
+      markDone(pid);
       var n = 0; out.classList.add("spinning");
       var iv = setInterval(function () {
         out.textContent = items[Math.floor(Math.random() * items.length)];
@@ -724,6 +746,7 @@
     var wm = $("[data-wallmount]");
     if (wm) {
       var wallXp = "wall-post";
+      require(wallXp, "Post on the Week " + WN + " wall", wm);
       new LAB.Wall({ board: "w" + WEEK, mount: wm, compact: true, onPosted: function () { award(wallXp, 15); } });
     }
     // Boss round from the page's own quizzes
@@ -737,7 +760,8 @@
         return { q: qt.innerHTML, opts: btns.map(function (b) { return b.innerHTML; }), right: right, why: rb.getAttribute("data-why") || "" };
       }).filter(Boolean);
       if (QS.length >= 4) {
-        LAB.boss(bm, QS, { xp: 40, blurb: HOOK ? HOOK.boss : "", onDone: function (score, n, xp) { if (xp > 0) { var id = "boss"; if (!wk.earned[id] || wk.earned[id] < xp) { wk.earned[id] = xp; save(); renderXP(true); showToast("+" + xp + " XP"); } } } });
+        require("boss", "Play the boss round", bm);
+        LAB.boss(bm, QS, { xp: 40, blurb: HOOK ? HOOK.boss : "", onDone: function (score, n, xp) { markDone("boss"); if (xp > 0) { var id = "boss"; if (!wk.earned[id] || wk.earned[id] < xp) { wk.earned[id] = xp; save(); renderXP(true); showToast("+" + xp + " XP"); } } } });
       } else {
         bm.innerHTML = '<p class="eyebrow">Boss round</p><h2 class="lbig">No quiz this week.<br><span class="muted">Assessment weeks are about the real thing.</span></h2><p class="lede">Use the Class Wall above, then open the Contents drawer to revise the weeks the test covers.</p>';
       }
@@ -766,6 +790,91 @@
     window.addEventListener("scroll", function () { requestAnimationFrame(railTick); }, { passive: true });
     railLinks.forEach(function (a) { a.addEventListener("click", function (e) { var t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); t.scrollIntoView({ behavior: "smooth", block: "start" }); } }); });
     railTick();
+    /* ---------- mission HUD: every activity + full scroll, then attendance ---------- */
+    if (WN) {
+      LAB.presence("w" + WEEK);
+      var hud = el("div", { class: "hud-m", id: "hudm" }, '<button class="hud-m__pill" type="button" aria-expanded="false" aria-controls="hudPanel"><span class="hud-m__ring"><i></i></span><span class="hud-m__txt">Mission</span></button><div class="hud-m__panel" id="hudPanel" hidden></div>');
+      body.appendChild(hud);
+      var pill = $(".hud-m__pill", hud), panel = $("#hudPanel", hud), ring = $(".hud-m__ring i", hud), txt = $(".hud-m__txt", hud);
+      function scrollPct() { var h = document.documentElement; var max = h.scrollHeight - h.clientHeight; if (max <= 0) return 100; var p = Math.min(100, Math.round(window.scrollY / max * 100)); var fin = $(".finale"); if (p >= 95 && fin && fin.getBoundingClientRect().top > h.clientHeight) p = 94; return p; }
+      /* "looked at": a section counts once it has filled most of the screen for about 1.5 s */
+      var VIEW = slides.filter(function (x) { return !$(".finale", x) && !x.classList.contains("slide--title") && x.offsetHeight > 0; }).concat($$("#hook"));
+      function vkey(x) { return x.id || x.getAttribute("data-title") || String(slides.indexOf(x)); }
+      var dwell = {};
+      setInterval(function () {
+        if (document.hidden) return;
+        var vh = innerHeight, changed = false;
+        VIEW.forEach(function (x) {
+          var k = vkey(x); if (wk.viewed[k]) return;
+          var r = x.getBoundingClientRect(); var vis = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+          if (vis <= 0) return;
+          if (vis / Math.max(1, Math.min(r.height, vh)) >= 0.6) { dwell[k] = (dwell[k] || 0) + 0.5; if (dwell[k] >= 1.5) { wk.viewed[k] = 1; changed = true; } }
+        });
+        if (changed) { save(); renderHud(); }
+      }, 500);
+      function viewedPct() { var n = VIEW.filter(function (x) { return wk.viewed[vkey(x)]; }).length; return VIEW.length ? Math.round(n / VIEW.length * 100) : 100; }
+      function missionState() {
+        var done = REQ.filter(function (r) { return wk.done[r.id]; }).length;
+        var missing = REQ.filter(function (r) { return !wk.done[r.id]; });
+        var unseen = VIEW.filter(function (x) { return !wk.viewed[vkey(x)]; });
+        var sc = viewedPct();
+        var complete = done === REQ.length && unseen.length === 0;
+        return { done: done, total: REQ.length, missing: missing, unseen: unseen, scroll: sc, complete: complete };
+      }
+      function renderHud() {
+        var st = missionState();
+        var pct = REQ.length ? Math.round((st.done / REQ.length) * 90 + Math.min(10, st.scroll / 10)) : st.scroll;
+        ring.style.setProperty("--p", pct);
+        hud.classList.toggle("is-complete", st.complete);
+        hud.classList.toggle("is-attended", !!wk.attended);
+        txt.textContent = wk.attended ? "Attended ✓" : st.complete ? "Record attendance" : st.done + "/" + st.total + " · " + st.scroll + "%";
+        pill.setAttribute("aria-label", wk.attended ? "Attendance recorded" : st.done + " of " + st.total + " activities done, " + st.scroll + " percent of sections read. Open the mission list.");
+        if (!panel.hidden) renderPanel(st);
+      }
+      function renderPanel(st) {
+        panel.innerHTML = '<div class="hud-m__head"><strong>Week ' + WN + ' mission</strong><span class="small muted">' + st.done + " of " + st.total + " activities · " + (VIEW.length - st.unseen.length) + " of " + VIEW.length + " sections read</span></div>" +
+          (wk.attended ? '<div class="hud-m__ok">Attendance recorded · ' + fmtTs(wk.attended.ts) + "<br><span class=\"small\">" + LAB.esc(wk.attended.name || "") + "</span></div>" :
+           st.complete ? '<p class="small">Everything done. Record your attendance for this week.</p><button class="lbtn" type="button" data-attend>Record my attendance</button>' :
+           '<p class="small muted" style="margin:0 0 6px">Finish these to unlock attendance:</p><ul class="hud-m__list">' + st.missing.slice(0, 12).map(function (r, i) { return '<li><button type="button" data-goto="' + i + '">' + LAB.esc(r.label) + "</button></li>"; }).join("") + (st.missing.length > 12 ? "<li class=\"muted small\">+" + (st.missing.length - 12) + " more activities</li>" : "") + st.unseen.slice(0, 8).map(function (x, i) { return '<li><button type="button" class="read" data-read="' + i + '">Read: ' + LAB.esc((x.getAttribute("data-title") || (x.id === "hook" ? "Hook" : "Section")).replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "")) + "</button></li>"; }).join("") + (st.unseen.length > 8 ? "<li class=\"muted small\">+" + (st.unseen.length - 8) + " more sections to read</li>" : "") + "</ul>") +
+          '<p class="small muted" style="margin:8px 0 0">' + (LAB.identity() ? "Signed in as " + LAB.esc(LAB.identity().name) + ' · <a href="#" data-whoami>change</a>' : '<a href="#" data-whoami>Enter your matric number</a> so your lecturer sees your name.') + "</p>";
+        $$("[data-goto]", panel).forEach(function (b) { b.addEventListener("click", function () { var r = st.missing[+b.getAttribute("data-goto")]; if (r && r.el) { r.el.scrollIntoView({ behavior: "smooth", block: "center" }); r.el.classList.add("hud-flash"); setTimeout(function () { r.el.classList.remove("hud-flash"); }, 1600); } }); });
+        $$("[data-read]", panel).forEach(function (b) { b.addEventListener("click", function () { var x = st.unseen[+b.getAttribute("data-read")]; if (x) x.scrollIntoView({ behavior: "smooth", block: "start" }); }); });
+        var at = $("[data-attend]", panel); if (at) at.addEventListener("click", doAttend);
+        var wi = $("[data-whoami]", panel); if (wi) wi.addEventListener("click", function (e) { e.preventDefault(); LAB.askIdentity({ optional: true, prefill: LAB.identity() ? LAB.identity().matric : "" }).then(function () { renderHud(); }); });
+      }
+      function fmtTs(ts) { var d = new Date(ts + 8 * 3600000); var M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return d.getUTCDate() + " " + M[d.getUTCMonth()] + ", " + String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0"); }
+      function doAttend() {
+        var st = missionState();
+        if (!st.complete) { showToast("Finish every activity first."); return; }
+        var go = function (idn) {
+          if (!idn) return;
+          var summary = { xp: xpTotal(), done: st.done, total: st.total, scroll: st.scroll, missing: [] };
+          LAB.attend("w" + WEEK, idn.matric, summary, idn).then(function (d) {
+            wk.attended = { ts: d.ts, name: d.name, matric: idn.matric }; save(); renderHud();
+            showToast(d.already ? "Already recorded for this week." : (d.manual ? "Recorded as a manual entry. Your lecturer will check it." : "Attendance recorded. Nice work."));
+            if (!d.already) confetti();
+          }).catch(function (e) { showToast(e.message === "offline" ? "Attendance works on the class website, not on this copy." : e.message); });
+        };
+        var idn = LAB.identity();
+        if (idn) {
+          var m = document.createElement("div"); m.className = "lmodal";
+          m.innerHTML = '<div class="lmodal__bg"></div><div class="lmodal__card"><p class="eyebrow">Attendance · Week ' + WN + '</p><h3>Record attendance as</h3><p style="margin:0"><b>' + LAB.esc(idn.name) + "</b><br><span class=\"muted\">" + LAB.esc(idn.matric) + " · " + LAB.esc(idn.section) + (idn.manual ? " · manual entry, your lecturer will check it" : "") + '</span></p><div class="lchips"><button class="lbtn" type="button" data-yes>Yes, record it</button><button class="lchip" type="button" data-change>Not me, change</button></div></div>';
+          body.appendChild(m);
+          $("[data-yes]", m).addEventListener("click", function () { m.remove(); go(idn); });
+          $("[data-change]", m).addEventListener("click", function () { m.remove(); LAB.askIdentity({ eyebrow: "Attendance · Week " + WN, title: "Enter your matric number" }).then(go); });
+        } else {
+          LAB.askIdentity({ eyebrow: "Attendance · Week " + WN, title: "Enter your matric number", text: "Your attendance for this week is recorded against your matric number." }).then(go);
+        }
+      }
+      pill.addEventListener("click", function () { if (!panel.hidden) { panel.hidden = true; pill.setAttribute("aria-expanded", "false"); return; } panel.hidden = false; pill.setAttribute("aria-expanded", "true"); renderPanel(missionState()); });
+      var scT;
+      window.addEventListener("scroll", function () { var p = scrollPct(); if (p > (wk.scroll || 0)) { wk.scroll = p; clearTimeout(scT); scT = setTimeout(function () { save(); renderHud(); }, 300); } }, { passive: true });
+      window.__missionTick = renderHud;
+      renderHud();
+      // first visit on this device: ask who they are (optional, can skip)
+      if (!LAB.identity() && !store.askedId) { store.askedId = 1; save(); setTimeout(function () { LAB.askIdentity({ optional: true }).then(function () { renderHud(); }); }, 2500); }
+    }
+
     LAB.setupMotion(document);
     main.classList.add("enter");
   }

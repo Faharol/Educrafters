@@ -1,5 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import type { Config } from "@netlify/functions";
+import { pinOk } from "../lib/shared.mts";
 
 /* Class Wall API for ETC Lab (SMB31202).
    One blob per post, key = "<board>/<reverse-timestamp>-<rand>" so keys list newest-first.
@@ -26,10 +27,6 @@ const clean = (s: unknown, max: number) =>
     .trim()
     .slice(0, max);
 
-const pinOk = (req: Request) => {
-  const pin = Netlify.env.get("WALL_PIN");
-  return Boolean(pin) && req.headers.get("x-wall-pin") === pin;
-};
 
 const boardOf = (url: URL) => {
   const b = url.searchParams.get("board") || "general";

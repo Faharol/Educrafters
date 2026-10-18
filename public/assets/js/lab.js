@@ -473,5 +473,60 @@
   function leaveBoard() { store.set("board", false); return fetch("/api/board", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: deviceId(), leave: true }) }).catch(function () {}); }
   function loadBoard() { return fetch("/api/board", { cache: "no-store" }).then(function (r) { var ct = r.headers.get("content-type") || ""; if (!ct.includes("json")) throw new Error("offline"); return r.json(); }); }
 
-  window.LAB = { syncBoard: syncBoard, leaveBoard: leaveBoard, loadBoard: loadBoard, deviceId: deviceId, speak: speak, canSpeak: canSpeak, addSpeakers: addSpeakers, listeningLab: listeningLab, rateToggle: rateToggle, $: $, $$: $$, esc: esc, pad: pad, store: store, nav: nav, setXp: setXp, totalXp: totalXpAll, words: words, scrubHtml: scrubHtml, toast: toast, confetti: confetti, burstFrom: burstFrom, setupMotion: setupMotion, motionBtn: motionBtn, Wall: Wall, wallPrompt: wallPrompt, wallName: wallName, coach: coach, boss: boss, nick: nick, currentWeek: currentWeek, weekInfo: weekInfo, fmtRange: fmtRange, MODE: MODE, TODAY: TODAY, REDUCE: REDUCE, setProj: setProj, root: ROOT };
+  /* ---------- identity, presence, writing sync, reveal ---------- */
+  var ID = store.get("identity", null);
+  function identity() { return ID; }
+  function setIdentity(obj) { ID = obj; store.set("identity", obj); setTimeout(function () { try { heartbeat(); } catch (e) {} }, 0); }
+  var SID = ss.get("sid"); if (!SID) { SID = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6); ss.set("sid", SID); }
+  var PAGE = "home";
+  function trackPost(body) { return fetch("/api/track", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(Object.assign({ device: deviceId(), nick: nick(), matric: ID ? ID.matric : "", name: ID ? ID.name : "", section: ID ? ID.section : "" }, body)) }).then(function (r) { var ct = r.headers.get("content-type") || ""; if (!ct.includes("json")) throw new Error("offline"); return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
+  function identify(matric) { return trackPost({ action: "identify", matric: matric }).then(function (d) { setIdentity({ matric: d.matric, name: d.name, section: d.section, slot: d.slot }); return d; }); }
+  var hbTimer = null, SINCE = Date.now();
+  function heartbeat() { if (document.hidden) return; trackPost({ action: "heartbeat", page: PAGE, sid: SID, since: SINCE }).catch(function () {}); }
+  function presence(page) { PAGE = page || "home"; heartbeat(); clearInterval(hbTimer); hbTimer = setInterval(heartbeat, 30000); document.addEventListener("visibilitychange", function () { if (!document.hidden) heartbeat(); }); }
+  var wTimers = {};
+  function syncWriting(week, pad, label, text) { clearTimeout(wTimers[pad]); wTimers[pad] = setTimeout(function () { trackPost({ action: "writing", week: week, pad: pad, label: label, text: text }).catch(function () {}); }, 2000); }
+  /* reveal schedule, mirrored from the server so pages can render before the API answers */
+  var WEEK_START = { w01: "2026-10-05", w02: "2026-10-12", w03: "2026-10-19", w04: "2026-10-26", w05: "2026-11-02", w06: "2026-11-09", w07: "2026-11-16", w08: "2026-11-23", w09: "2026-12-07", w10: "2026-12-14", w11: "2026-12-21", w12: "2026-12-28", w13: "2027-01-04", w14: "2027-01-11" };
+  function unlockTs(w) { var d = WEEK_START[w]; if (!d) return 0; return Date.parse(d + "T00:00:00Z") - 8 * 3600000 - 2 * 86400000; }
+  var REVEAL = null;
+  function reveal() { if (REVEAL) return Promise.resolve(REVEAL); return fetch("/api/admin?reveal", { cache: "no-store" }).then(function (r) { var ct = r.headers.get("content-type") || ""; if (!ct.includes("json")) throw 0; return r.json(); }).then(function (d) { REVEAL = d.weeks; return REVEAL; }).catch(function () { var w = {}; Object.keys(WEEK_START).forEach(function (k) { w[k] = { open: Date.now() >= unlockTs(k), unlock: unlockTs(k), override: null }; }); return w; }); }
+  function fmtUnlock(ts) { var d = new Date(ts + 8 * 3600000); var M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return d.getUTCDate() + " " + M[d.getUTCMonth()]; }
+
+  /* identity prompt (modal); a matric not on the list can fall back to a manual entry (name + section), flagged for the lecturer */
+  var SECTIONS = ["PEMBINAAN BANGUNAN 1", "PEMBINAAN BANGUNAN 2", "MEKATRONIK 1", "ROBOTIK DAN AUTOMASI 3"];
+  function askIdentity(opts) {
+    opts = opts || {};
+    return new Promise(function (resolve) {
+      var m = document.createElement("div"); m.className = "lmodal"; m.setAttribute("role", "dialog"); m.setAttribute("aria-modal", "true");
+      m.innerHTML = '<div class="lmodal__bg"></div><div class="lmodal__card"><p class="eyebrow">' + esc(opts.eyebrow || "Who are you?") + '</p><h3>' + esc(opts.title || "Enter your matric number") + '</h3><p class="muted" style="margin:0">' + esc(opts.text || "Once, on this device. Your name then appears for your lecturer, and your attendance can be recorded.") + '</p><p class="small muted" style="margin:0">Your lecturer can see when you are on the site and what you write in the activities.</p>' +
+        '<input data-matric inputmode="numeric" autocomplete="off" placeholder="e.g. 251362282" aria-label="Matric number" value="' + esc(opts.prefill || "") + '">' +
+        '<div data-manual hidden style="display:flex;flex-direction:column;gap:8px"><p class="small" style="margin:0;background:rgba(255,159,10,.15);border-radius:10px;padding:8px 10px">Not on the class list yet? Type your full name and pick your section. Your lecturer will see this record marked <b>manual</b>.</p><input data-name placeholder="Full name as on your student card" aria-label="Full name" style="font:500 1rem var(--font);letter-spacing:0;text-transform:uppercase"><select data-section aria-label="Section" style="font:inherit;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;background:#fff"><option value="">Choose your section…</option>' + SECTIONS.map(function (x) { return "<option>" + esc(x) + "</option>"; }).join("") + "</select></div>" +
+        '<p class="small" data-msg style="margin:0;min-height:1.2em;color:var(--muted)"></p>' +
+        '<div class="lchips"><button class="lbtn" type="button" data-ok>Continue</button><button class="lchip" type="button" data-notlisted hidden>Not on the list? Add my name</button>' + (opts.optional ? '<button class="lchip" type="button" data-skip>Not now</button>' : "") + "</div></div>";
+      document.body.appendChild(m);
+      var inp = $("[data-matric]", m), msg = $("[data-msg]", m), ok = $("[data-ok]", m), nl = $("[data-notlisted]", m), man = $("[data-manual]", m);
+      setTimeout(function () { inp.focus(); }, 50);
+      function close(v) { m.remove(); resolve(v); }
+      function go() {
+        var v = inp.value.trim(); if (v.replace(/\D/g, "").length < 9) { msg.textContent = "A matric number has 9 digits."; return; }
+        if (!man.hidden) {
+          var nm = $("[data-name]", m).value.trim(), sec = $("[data-section]", m).value;
+          if (nm.length < 3) { msg.textContent = "Type your full name."; return; }
+          if (!sec) { msg.textContent = "Choose your section."; return; }
+          var obj = { matric: v.replace(/\s/g, ""), name: nm.toUpperCase(), section: sec, manual: true };
+          setIdentity(obj); msg.innerHTML = "Noted, <b>" + esc(obj.name) + "</b>. Your lecturer will check this one."; setTimeout(function () { close(obj); }, 900); return;
+        }
+        ok.disabled = true; msg.textContent = "Checking…";
+        identify(v).then(function (d) { msg.innerHTML = "Hi, <b>" + esc(d.name) + "</b> · " + esc(d.section); setTimeout(function () { close(d); }, 700); }).catch(function (e) { ok.disabled = false; if (e.message === "offline") { msg.textContent = "Identification works on the class website, not on this copy."; return; } msg.textContent = e.message; nl.hidden = false; });
+      }
+      ok.addEventListener("click", go);
+      inp.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+      nl.addEventListener("click", function () { man.hidden = false; nl.hidden = true; msg.textContent = ""; ok.textContent = "Save my name"; $("[data-name]", m).focus(); });
+      var sk = $("[data-skip]", m); if (sk) sk.addEventListener("click", function () { close(null); });
+    });
+  }
+  function attend(week, matric, summary, idn) { var b = { action: "attend", week: week, matric: matric, summary: summary }; if (idn && idn.manual) { b.manual = true; b.manualName = idn.name; b.manualSection = idn.section; } return trackPost(b); }
+
+  window.LAB = { identity: identity, setIdentity: setIdentity, identify: identify, askIdentity: askIdentity, presence: presence, syncWriting: syncWriting, attend: attend, reveal: reveal, unlockTs: unlockTs, fmtUnlock: fmtUnlock, WEEK_START: WEEK_START, trackPost: trackPost, syncBoard: syncBoard, leaveBoard: leaveBoard, loadBoard: loadBoard, deviceId: deviceId, speak: speak, canSpeak: canSpeak, addSpeakers: addSpeakers, listeningLab: listeningLab, rateToggle: rateToggle, $: $, $$: $$, esc: esc, pad: pad, store: store, nav: nav, setXp: setXp, totalXp: totalXpAll, words: words, scrubHtml: scrubHtml, toast: toast, confetti: confetti, burstFrom: burstFrom, setupMotion: setupMotion, motionBtn: motionBtn, Wall: Wall, wallPrompt: wallPrompt, wallName: wallName, coach: coach, boss: boss, nick: nick, currentWeek: currentWeek, weekInfo: weekInfo, fmtRange: fmtRange, MODE: MODE, TODAY: TODAY, REDUCE: REDUCE, setProj: setProj, root: ROOT };
 })();

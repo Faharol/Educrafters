@@ -1,5 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import type { Config } from "@netlify/functions";
+import { pinOk } from "../lib/shared.mts";
 
 /* Live round: a lecturer-run speed quiz the class joins by code or QR.
    Blobs (store "live"):
@@ -11,7 +12,6 @@ import type { Config } from "@netlify/functions";
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
 const clean = (s: unknown, max: number) => String(s ?? "").replace(/[\u0000-\u001F\u007F]/g, "").trim().slice(0, max);
-const pinOk = (req: Request) => { const pin = Netlify.env.get("WALL_PIN"); return Boolean(pin) && req.headers.get("x-wall-pin") === pin; };
 const CODE_RE = /^[A-Z0-9]{4}$/;
 const PID_RE = /^[a-z0-9]{6,16}$/;
 

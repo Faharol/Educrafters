@@ -456,3 +456,40 @@ body.lab-week .news { background: #fff; }
 .lbtn.dark { background: var(--text); }
 .ll-grid .lchip { font-size: .85rem; padding: 6px 12px; }
 @media (max-width: 900px) { .ll-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* mission HUD */
+.hud-m { position: fixed; left: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 88; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; max-width: calc(100vw - 32px); }
+.hud-m__pill { display: inline-flex; align-items: center; gap: 10px; background: var(--text); color: #fff; border: 0; border-radius: 999px; padding: 8px 16px 8px 8px; font: 600 .88rem var(--font); cursor: pointer; box-shadow: 0 12px 30px -12px rgba(0, 0, 0, .5); min-height: 44px; }
+.hud-m__ring { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(#2997ff calc(var(--p, 0) * 1%), rgba(255, 255, 255, .18) 0); display: grid; place-items: center; }
+.hud-m__ring i { width: 18px; height: 18px; border-radius: 50%; background: var(--text); }
+.hud-m.is-complete .hud-m__pill { background: var(--glow); background-size: 300% 100%; animation: shine 6s linear infinite; color: #000; }
+.hud-m.is-complete .hud-m__ring { background: #000; } .hud-m.is-complete .hud-m__ring i { background: #fff; }
+.hud-m.is-attended .hud-m__pill { background: var(--mint); color: #000; animation: none; }
+.hud-m.is-attended .hud-m__ring { background: #000; } .hud-m.is-attended .hud-m__ring i { background: var(--mint); }
+.hud-m__panel { background: #fff; color: var(--text); border-radius: 20px; padding: 16px 18px; width: min(360px, calc(100vw - 32px)); box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .45); display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow: auto; animation: pop .25s cubic-bezier(.2, .8, .2, 1.2); }
+.hud-m__head { display: flex; flex-direction: column; gap: 2px; }
+.hud-m__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.hud-m__list button { width: 100%; text-align: left; background: var(--panel-2); border: 0; border-radius: 10px; padding: 9px 12px; font: 500 .88rem var(--font); cursor: pointer; color: var(--text); min-height: 40px; }
+.hud-m__list button:hover { background: var(--line); }
+.hud-m__list button::before { content: "○ "; color: var(--muted); }
+.hud-m__ok { background: rgba(48, 209, 88, .15); border-radius: 12px; padding: 10px 12px; font-weight: 600; }
+.hud-flash { outline: 3px solid #2997ff; outline-offset: 6px; border-radius: 12px; transition: outline-color .6s; }
+@media (max-width: 760px) { .hud-m { left: 12px; } }
+
+/* modal */
+.lmodal { position: fixed; inset: 0; z-index: 97; display: grid; place-items: center; padding: 16px; }
+.lmodal__bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.lmodal__card { position: relative; background: #fff; color: var(--text); border-radius: 24px; padding: 24px; width: min(440px, 100%); display: flex; flex-direction: column; gap: 12px; animation: pop .3s cubic-bezier(.2, .8, .2, 1.2); box-shadow: 0 30px 80px -30px rgba(0, 0, 0, .6); }
+.lmodal__card h3 { margin: 0; font-size: 1.4rem; }
+.lmodal__card input { font: 700 1.3rem var(--font-mono); letter-spacing: .08em; border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px; width: 100%; }
+.lmodal__card input:focus { outline: none; border-color: #0071e3; }
+
+/* locked tiles on the home page */
+.ltile.locked { cursor: default; }
+.ltile.locked img { filter: grayscale(1) brightness(.5); }
+.ltile.locked .lock { position: absolute; top: 16px; right: 16px; z-index: 2; background: rgba(0, 0, 0, .55); color: #fff; font: 700 .72rem var(--font); letter-spacing: .04em; padding: 5px 11px; border-radius: 999px; display: inline-flex; gap: 6px; align-items: center; }
+.ltile.locked:hover { transform: none; }
+.ltile.locked:hover img { transform: none; }
+.hud-m__list button.read::before { content: "◌ "; }
+@media (max-width: 760px) { .hud-m__pill { padding: 6px 12px 6px 6px; font-size: .8rem; min-height: 40px; gap: 7px; opacity: .96; } .hud-m__ring { width: 24px; height: 24px; } .hud-m__ring i { width: 15px; height: 15px; } }
+body.lab-week .boss, body.lab-week .wweek, body.lab-week .site-foot { padding-bottom: 96px; }
