@@ -19,7 +19,7 @@
     get: function (k) { try { return sessionStorage.getItem(k) || ""; } catch (e) { return ""; } },
     set: function (k, v) { try { v ? sessionStorage.setItem(k, v) : sessionStorage.removeItem(k); } catch (e) {} }
   };
-  var ROOT = document.body.getAttribute("data-root") || "";
+  var ROOT = document.body.getAttribute("data-root") || (/\/weeks\/[^/]*$/.test(location.pathname) ? "../" : "");
   var REDUCE = !!store.get("calm", false) || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) || /[?&]static\b/.test(location.search);
   if (store.get("calm", false)) document.documentElement.classList.add("calm");
   var FINE = (function () { try { return matchMedia("(hover:hover) and (pointer:fine)").matches; } catch (e) { return false; } })();
