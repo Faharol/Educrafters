@@ -77,3 +77,9 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 
 ### Local test rig
 `/home/claude/mock/`: `build.mjs` bundles the functions with an in-memory Blobs stand-in, `server.mjs` serves `public/` plus `/api/*` and the edge gate on port 8766, `e2e.py` runs a phone student (manual identity, all activities, reading, attendance) against an admin console.
+
+## 19 Oct 2026: attendance rule loosened, overlap fixes
+- Attendance unlocks when every **core** item is done (all write pads, the week's wall post, the boss round), **70%** of the small activities (quizzes, sorters, flips, reveals, checklists, steps, tabs, rates, pickers, gap fills), and every section is read. `LIGHT_SHARE = 0.7` in both `deck.js` and `track.mts`; change both together. Week 3: 37 of 50 needed; Week 4: about 51 of 69.
+- Mission panel lists core items as MUST, then "Any N more of these small activities".
+- Mission pill slides away while scrolling down, returns on scroll up, near the page end, or for 2.5 s when progress ticks (it used to sit on top of buttons).
+- Top bars are now opaque (text no longer shows through). Week numbers in the top bar fade at the edges and centre the current week on phones. Finale confetti fires once and only with XP > 0.

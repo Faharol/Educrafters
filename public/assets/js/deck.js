@@ -105,7 +105,8 @@
   var widgetSeq = 0;
   function widgetId(prefix) { widgetSeq += 1; return prefix + widgetSeq; }
   var REQ = [];   // required activities: { id, label, el }
-  function require(id, label, el) { var sl = el && el.closest ? el.closest(".slide, section") : null; var t = sl ? (sl.getAttribute("data-title") || "").replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "") : ""; REQ.push({ id: id, label: label + (t && label.indexOf(t) < 0 ? " · " + t : ""), el: el }); }
+  var LIGHT_SHARE = 0.7; // share of the small activities needed for attendance; write pads, wall post and boss round are always required
+  function require(id, label, el, core) { var sl = el && el.closest ? el.closest(".slide, section") : null; var t = sl ? (sl.getAttribute("data-title") || "").replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "") : ""; REQ.push({ id: id, label: label + (t && label.indexOf(t) < 0 ? " · " + t : ""), el: el, core: !!core }); }
   function markDone(id) { if (wk.done[id]) return; wk.done[id] = 1; save(); if (window.__missionTick) window.__missionTick(); }
   function award(id, pts, chip) {
     pts = pts || 10;
@@ -522,7 +523,7 @@
     var key = WEEK + ":" + id;
     var chip = headFor(w, w.getAttribute("data-label") || "Your turn: write", id, pts);
     var need = min || 20;
-    require(id, (w.getAttribute("data-label") || "Write") + " (" + need + "+ words)", w);
+    require(id, (w.getAttribute("data-label") || "Write") + " (" + need + "+ words)", w, true);
     var ta = $("textarea", w) || w.appendChild(el("textarea"));
     if (!ta.getAttribute("aria-label")) ta.setAttribute("aria-label", "Your writing");
     if (max >= 150 || min >= 150) ta.style.minHeight = "20rem";
@@ -714,7 +715,7 @@
   }
   document.addEventListener("slide:enter", function (e) {
     var f = $(".finale", e.target);
-    if (f) { renderFinale(f); confetti(); }
+    if (f) { renderFinale(f); if (!f.__cf && xpTotal() > 0) { f.__cf = 1; confetti(); } }
   });
 
   function confetti() {
@@ -746,7 +747,7 @@
     var wm = $("[data-wallmount]");
     if (wm) {
       var wallXp = "wall-post";
-      require(wallXp, "Post on the Week " + WN + " wall", wm);
+      require(wallXp, "Post on the Week " + WN + " wall", wm, true);
       new LAB.Wall({ board: "w" + WEEK, mount: wm, compact: true, onPosted: function () { award(wallXp, 15); } });
     }
     // Boss round from the page's own quizzes
@@ -760,7 +761,7 @@
         return { q: qt.innerHTML, opts: btns.map(function (b) { return b.innerHTML; }), right: right, why: rb.getAttribute("data-why") || "" };
       }).filter(Boolean);
       if (QS.length >= 4) {
-        require("boss", "Play the boss round", bm);
+        require("boss", "Play the boss round", bm, true);
         LAB.boss(bm, QS, { xp: 40, blurb: HOOK ? HOOK.boss : "", onDone: function (score, n, xp) { markDone("boss"); if (xp > 0) { var id = "boss"; if (!wk.earned[id] || wk.earned[id] < xp) { wk.earned[id] = xp; save(); renderXP(true); showToast("+" + xp + " XP"); } } } });
       } else {
         bm.innerHTML = '<p class="eyebrow">Boss round</p><h2 class="lbig">No quiz this week.<br><span class="muted">Assessment weeks are about the real thing.</span></h2><p class="lede">Use the Class Wall above, then open the Contents drawer to revise the weeks the test covers.</p>';
@@ -814,30 +815,39 @@
       }, 500);
       function viewedPct() { var n = VIEW.filter(function (x) { return wk.viewed[vkey(x)]; }).length; return VIEW.length ? Math.round(n / VIEW.length * 100) : 100; }
       function missionState() {
-        var done = REQ.filter(function (r) { return wk.done[r.id]; }).length;
-        var missing = REQ.filter(function (r) { return !wk.done[r.id]; });
+        var core = REQ.filter(function (r) { return r.core; }), light = REQ.filter(function (r) { return !r.core; });
+        var isDone = function (r) { return !!wk.done[r.id]; };
+        var coreDone = core.filter(isDone).length, lightDone = light.filter(isDone).length;
+        var lightNeed = Math.ceil(light.length * LIGHT_SHARE);
+        var need = core.length + lightNeed;
+        var prog = coreDone + Math.min(lightDone, lightNeed);
+        var coreMissing = core.filter(function (r) { return !isDone(r); });
+        var lightMissing = light.filter(function (r) { return !isDone(r); });
         var unseen = VIEW.filter(function (x) { return !wk.viewed[vkey(x)]; });
         var sc = viewedPct();
-        var complete = done === REQ.length && unseen.length === 0;
-        return { done: done, total: REQ.length, missing: missing, unseen: unseen, scroll: sc, complete: complete };
+        var complete = coreMissing.length === 0 && lightDone >= lightNeed && unseen.length === 0;
+        return { done: coreDone + lightDone, total: REQ.length, need: need, prog: prog, coreDone: coreDone, coreTotal: core.length, lightDone: lightDone, lightTotal: light.length, lightNeed: lightNeed, lightLeft: Math.max(0, lightNeed - lightDone), coreMissing: coreMissing, lightMissing: lightMissing, unseen: unseen, scroll: sc, complete: complete };
       }
       function renderHud() {
         var st = missionState();
-        var pct = REQ.length ? Math.round((st.done / REQ.length) * 90 + Math.min(10, st.scroll / 10)) : st.scroll;
+        var pct = st.need ? Math.round((st.prog / st.need) * 90 + Math.min(10, st.scroll / 10)) : st.scroll;
         ring.style.setProperty("--p", pct);
         hud.classList.toggle("is-complete", st.complete);
         hud.classList.toggle("is-attended", !!wk.attended);
-        txt.textContent = wk.attended ? "Attended ✓" : st.complete ? "Record attendance" : st.done + "/" + st.total + " · " + st.scroll + "%";
-        pill.setAttribute("aria-label", wk.attended ? "Attendance recorded" : st.done + " of " + st.total + " activities done, " + st.scroll + " percent of sections read. Open the mission list.");
+        txt.textContent = wk.attended ? "Attended ✓" : st.complete ? "Record attendance" : st.prog + "/" + st.need + " · " + st.scroll + "%";
+        pill.setAttribute("aria-label", wk.attended ? "Attendance recorded" : st.prog + " of " + st.need + " activities needed, " + st.scroll + " percent of sections read. Open the mission list.");
         if (!panel.hidden) renderPanel(st);
       }
       function renderPanel(st) {
-        panel.innerHTML = '<div class="hud-m__head"><strong>Week ' + WN + ' mission</strong><span class="small muted">' + st.done + " of " + st.total + " activities · " + (VIEW.length - st.unseen.length) + " of " + VIEW.length + " sections read</span></div>" +
+        panel.innerHTML = '<div class="hud-m__head"><strong>Week ' + WN + ' mission</strong><span class="small muted">' + st.done + " of " + st.total + " activities done · " + (VIEW.length - st.unseen.length) + " of " + VIEW.length + " sections read</span></div>" +
           (wk.attended ? '<div class="hud-m__ok">Attendance recorded · ' + fmtTs(wk.attended.ts) + "<br><span class=\"small\">" + LAB.esc(wk.attended.name || "") + "</span></div>" :
-           st.complete ? '<p class="small">Everything done. Record your attendance for this week.</p><button class="lbtn" type="button" data-attend>Record my attendance</button>' :
-           '<p class="small muted" style="margin:0 0 6px">Finish these to unlock attendance:</p><ul class="hud-m__list">' + st.missing.slice(0, 12).map(function (r, i) { return '<li><button type="button" data-goto="' + i + '">' + LAB.esc(r.label) + "</button></li>"; }).join("") + (st.missing.length > 12 ? "<li class=\"muted small\">+" + (st.missing.length - 12) + " more activities</li>" : "") + st.unseen.slice(0, 8).map(function (x, i) { return '<li><button type="button" class="read" data-read="' + i + '">Read: ' + LAB.esc((x.getAttribute("data-title") || (x.id === "hook" ? "Hook" : "Section")).replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "")) + "</button></li>"; }).join("") + (st.unseen.length > 8 ? "<li class=\"muted small\">+" + (st.unseen.length - 8) + " more sections to read</li>" : "") + "</ul>") +
+           st.complete ? '<p class="small">Unlocked. Record your attendance for this week.' + (st.done < st.total ? ' You can still finish the other ' + (st.total - st.done) + " activities for XP." : "") + '</p><button class="lbtn" type="button" data-attend>Record my attendance</button>' :
+           '<p class="small muted" style="margin:0 0 6px">To unlock attendance:</p><ul class="hud-m__list">' +
+             st.coreMissing.map(function (r, i) { return '<li><button type="button" class="must" data-goto="c' + i + '"><b>Must</b> ' + LAB.esc(r.label) + "</button></li>"; }).join("") +
+             (st.lightLeft ? '<li class="hud-m__sub">Any ' + st.lightLeft + " more of these small activities (" + st.lightDone + " of " + st.lightNeed + " needed):</li>" + st.lightMissing.slice(0, 10).map(function (r, i) { return '<li><button type="button" data-goto="l' + i + '">' + LAB.esc(r.label) + "</button></li>"; }).join("") + (st.lightMissing.length > 10 ? "<li class=\"muted small\">+" + (st.lightMissing.length - 10) + " more to choose from</li>" : "") : "") +
+             st.unseen.slice(0, 8).map(function (x, i) { return '<li><button type="button" class="read" data-read="' + i + '">Read: ' + LAB.esc((x.getAttribute("data-title") || (x.id === "hook" ? "Hook" : "Section")).replace(/^Part [A-Z0-9]+\s*[·:\-–]\s*/i, "")) + "</button></li>"; }).join("") + (st.unseen.length > 8 ? "<li class=\"muted small\">+" + (st.unseen.length - 8) + " more sections to read</li>" : "") + "</ul>") +
           '<p class="small muted" style="margin:8px 0 0">' + (LAB.identity() ? "Signed in as " + LAB.esc(LAB.identity().name) + ' · <a href="#" data-whoami>change</a>' : '<a href="#" data-whoami>Enter your matric number</a> so your lecturer sees your name.') + "</p>";
-        $$("[data-goto]", panel).forEach(function (b) { b.addEventListener("click", function () { var r = st.missing[+b.getAttribute("data-goto")]; if (r && r.el) { r.el.scrollIntoView({ behavior: "smooth", block: "center" }); r.el.classList.add("hud-flash"); setTimeout(function () { r.el.classList.remove("hud-flash"); }, 1600); } }); });
+        $$("[data-goto]", panel).forEach(function (b) { b.addEventListener("click", function () { var g = b.getAttribute("data-goto"); var r = (g.charAt(0) === "c" ? st.coreMissing : st.lightMissing)[+g.slice(1)]; if (r && r.el) { r.el.scrollIntoView({ behavior: "smooth", block: "center" }); r.el.classList.add("hud-flash"); setTimeout(function () { r.el.classList.remove("hud-flash"); }, 1600); } }); });
         $$("[data-read]", panel).forEach(function (b) { b.addEventListener("click", function () { var x = st.unseen[+b.getAttribute("data-read")]; if (x) x.scrollIntoView({ behavior: "smooth", block: "start" }); }); });
         var at = $("[data-attend]", panel); if (at) at.addEventListener("click", doAttend);
         var wi = $("[data-whoami]", panel); if (wi) wi.addEventListener("click", function (e) { e.preventDefault(); LAB.askIdentity({ optional: true, prefill: LAB.identity() ? LAB.identity().matric : "" }).then(function () { renderHud(); }); });
@@ -845,10 +855,10 @@
       function fmtTs(ts) { var d = new Date(ts + 8 * 3600000); var M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return d.getUTCDate() + " " + M[d.getUTCMonth()] + ", " + String(d.getUTCHours()).padStart(2, "0") + ":" + String(d.getUTCMinutes()).padStart(2, "0"); }
       function doAttend() {
         var st = missionState();
-        if (!st.complete) { showToast("Finish every activity first."); return; }
+        if (!st.complete) { showToast("Not yet. Open the mission list to see what is left."); return; }
         var go = function (idn) {
           if (!idn) return;
-          var summary = { xp: xpTotal(), done: st.done, total: st.total, scroll: st.scroll, missing: [] };
+          var summary = { xp: xpTotal(), done: st.done, total: st.total, coreDone: st.coreDone, coreTotal: st.coreTotal, lightDone: st.lightDone, lightTotal: st.lightTotal, scroll: st.scroll, missing: [] };
           LAB.attend("w" + WEEK, idn.matric, summary, idn).then(function (d) {
             wk.attended = { ts: d.ts, name: d.name, matric: idn.matric }; save(); renderHud();
             showToast(d.already ? "Already recorded for this week." : (d.manual ? "Recorded as a manual entry. Your lecturer will check it." : "Attendance recorded. Nice work."));
@@ -869,7 +879,15 @@
       pill.addEventListener("click", function () { if (!panel.hidden) { panel.hidden = true; pill.setAttribute("aria-expanded", "false"); return; } panel.hidden = false; pill.setAttribute("aria-expanded", "true"); renderPanel(missionState()); });
       var scT;
       window.addEventListener("scroll", function () { var p = scrollPct(); if (p > (wk.scroll || 0)) { wk.scroll = p; clearTimeout(scT); scT = setTimeout(function () { save(); renderHud(); }, 300); } }, { passive: true });
-      window.__missionTick = renderHud;
+      /* keep the pill off the content: slide it away while scrolling down, back on scroll up, at the end of the page, or when progress ticks */
+      var lastY = window.scrollY, peekT;
+      function hudShow(ms) { hud.classList.remove("is-away"); clearTimeout(peekT); if (ms) peekT = setTimeout(function () { peekT = 0; }, ms); }
+      window.addEventListener("scroll", function () {
+        var y = window.scrollY, dy = y - lastY; if (Math.abs(dy) < 6) return; lastY = y;
+        var nearEnd = innerHeight + y >= document.documentElement.scrollHeight - 160;
+        if (!panel.hidden || nearEnd || dy < 0) hudShow(); else if (!peekT) hud.classList.add("is-away");
+      }, { passive: true });
+      window.__missionTick = function () { renderHud(); hudShow(2500); };
       renderHud();
       // first visit on this device: ask who they are (optional, can skip)
       if (!LAB.identity() && !store.askedId) { store.askedId = 1; save(); setTimeout(function () { LAB.askIdentity({ optional: true }).then(function () { renderHud(); }); }, 2500); }

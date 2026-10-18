@@ -15,6 +15,7 @@ import { json, clean, adminOk, normMatric, WEEK_RE, DEV_RE, isOpen, mytDate, typ
 
 type Entry = { matric: string; key: string; name: string; programme: string; section: string; slot: string };
 const ONLINE_MS = 90 * 1000;
+const LIGHT_SHARE = 0.7; // keep in step with deck.js
 
 async function roster(): Promise<Entry[]> {
   const cfg = getStore({ name: "config", consistency: "strong" });
@@ -164,8 +165,14 @@ export default async (req: Request) => {
       manual = true;
     }
     const s = body.summary || {};
-    const summary = { xp: Math.max(0, Math.round(Number(s.xp) || 0)), done: Math.max(0, Math.round(Number(s.done) || 0)), total: Math.max(0, Math.round(Number(s.total) || 0)), scroll: Math.max(0, Math.min(100, Math.round(Number(s.scroll) || 0))), missing: Array.isArray(s.missing) ? s.missing.slice(0, 30).map((x: any) => clean(x, 60)) : [] };
-    if (summary.total && summary.done < summary.total) return json({ error: "Finish every activity first. " + (summary.total - summary.done) + " left." }, 412);
+    const n = (v: any) => Math.max(0, Math.round(Number(v) || 0));
+    const summary = { xp: n(s.xp), done: n(s.done), total: n(s.total), coreDone: n(s.coreDone), coreTotal: n(s.coreTotal), lightDone: n(s.lightDone), lightTotal: n(s.lightTotal), scroll: Math.max(0, Math.min(100, Math.round(Number(s.scroll) || 0))), missing: Array.isArray(s.missing) ? s.missing.slice(0, 30).map((x: any) => clean(x, 60)) : [] };
+    // rule: every write pad, the wall post and the boss round (core), plus 70% of the small activities
+    if (summary.coreTotal || summary.lightTotal) {
+      if (summary.coreDone < summary.coreTotal) return json({ error: "Finish the writing tasks, the wall post and the boss round first. " + (summary.coreTotal - summary.coreDone) + " left." }, 412);
+      const lightNeed = Math.ceil(summary.lightTotal * LIGHT_SHARE);
+      if (summary.lightDone < lightNeed) return json({ error: "Do " + (lightNeed - summary.lightDone) + " more small activities first." }, 412);
+    } else if (summary.total && summary.done < summary.total) return json({ error: "Finish every activity first. " + (summary.total - summary.done) + " left." }, 412);
     if (summary.scroll < 97) return json({ error: "Scroll through the whole week first." }, 412);
     const key = `att/${week}/${e.key}`;
     const prev = (await store.get(key, { type: "json" }).catch(() => null)) as any;

@@ -79,7 +79,7 @@
     el.className = "gn"; el.setAttribute("aria-label", "Main"); el.innerHTML = html;
     document.body.insertBefore(el, document.body.firstChild);
     var on = $(".gl.on", el), links = $(".gn-links", el);
-    if (on && links.scrollWidth > links.clientWidth) links.scrollLeft = on.offsetLeft - links.clientWidth / 2 + on.offsetWidth / 2;
+    if (on && links.scrollWidth > links.clientWidth) links.scrollLeft = (on.getBoundingClientRect().left - links.getBoundingClientRect().left + links.scrollLeft) - links.clientWidth / 2 + on.offsetWidth / 2;
     return el;
   }
   function setXp(n, bump) {
