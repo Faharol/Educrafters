@@ -19,6 +19,7 @@
     get: function (k) { try { return sessionStorage.getItem(k) || ""; } catch (e) { return ""; } },
     set: function (k, v) { try { v ? sessionStorage.setItem(k, v) : sessionStorage.removeItem(k); } catch (e) {} }
   };
+  function isLecturer() { try { return /(?:^|;\s*)etc_admin=/.test(document.cookie) || !!sessionStorage.getItem("etc_admin"); } catch (e) { return false; } }
   var ROOT = document.body.getAttribute("data-root") || (/\/weeks\/[^/]*$/.test(location.pathname) ? "../" : "");
   var REDUCE = !!store.get("calm", false) || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) || /[?&]static\b/.test(location.search);
   if (store.get("calm", false)) document.documentElement.classList.add("calm");
@@ -73,7 +74,8 @@
       '<a class="gl ' + (current === "home" ? "on" : "") + '" href="' + ROOT + 'index.html">Home</a>' +
       weeks.map(function (w) { var id = "w" + pad(w.n); return '<a class="gl ' + (current === id ? "on" : "") + '" href="' + ROOT + "weeks/week-" + pad(w.n) + '.html" title="' + esc(w.title) + '">' + pad(w.n) + (w.n === cw ? '<span class="live" style="width:6px;height:6px;margin:0 0 0 4px;background:#ff9f0a;animation:none" aria-label="this week"></span>' : "") + "</a>"; }).join("") +
       '<a class="gl ' + (current === "wall" ? "on" : "") + '" href="' + ROOT + 'wall.html"><span class="live"></span>Wall</a>' +
-      '<a class="gl ' + (current === "course" ? "on" : "") + '" href="' + ROOT + 'course.html">Course</a></div>' +
+      '<a class="gl ' + (current === "course" ? "on" : "") + '" href="' + ROOT + 'course.html">Course</a>' +
+      (isLecturer() ? '<a class="gl gl-admin is-in" href="' + ROOT + 'admin.html">🔑 Admin</a>' : '<a class="gl gl-admin" href="' + ROOT + 'admin.html" title="Lecturer sign-in">🔒 Lecturer</a>') + '</div>' +
       '<span class="gn-xp" id="gnXp" title="Experience points on this device">⚡ ' + (totalXp || 0) + ' XP</span></div><div class="gprog" id="gprog"></div>';
     var el = document.createElement("nav");
     el.className = "gn"; el.setAttribute("aria-label", "Main"); el.innerHTML = html;

@@ -66,7 +66,8 @@
   var L = window.LAB, $ = L.$, $$ = L.$$, esc = L.esc, pad = L.pad, C = window.COURSE;
   L.nav("admin", L.totalXp());
   var app = $("#app");
-  var KEY = sessionStorage.getItem("etc_admin") || "";
+  var KEY = sessionStorage.getItem("etc_admin") || (function () { var m = document.cookie.match(/(?:^|;\s*)etc_admin=([^;]*)/); try { return m ? decodeURIComponent(m[1]) : ""; } catch (e) { return ""; } })();
+  if (KEY) { try { sessionStorage.setItem("etc_admin", KEY); } catch (e) {} }
   var weeks = C.weeks.filter(function (w) { return typeof w.n === "number"; });
   var H = { "content-type": "application/json" };
   function hdr() { return { "content-type": "application/json", "x-admin-key": KEY }; }

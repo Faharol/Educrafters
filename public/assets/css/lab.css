@@ -500,3 +500,5 @@ body.lab-week .boss, body.lab-week .wweek, body.lab-week .site-foot { padding-bo
 
 .hud-m.is-away { transform: translateY(calc(100% + 40px)); opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .hud-m { transition: none; } }
+.gn .gl.gl-admin { color: rgba(255, 255, 255, .55); white-space: nowrap; }
+.gn .gl.gl-admin.is-in { color: #000; background: var(--mint, #30d158); font-weight: 700; }

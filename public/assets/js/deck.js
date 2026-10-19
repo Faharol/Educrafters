@@ -260,9 +260,9 @@
       var sec = el("section", { class: "next-issue" },
         '<a class="next-issue__card ltilt" href="week-' + nn + '.html"><img src="' + IMG + "wk" + nn + '.jpg" alt="" loading="lazy"><div class="next-issue__body"><div class="k">Next issue · Week ' + n + '</div><h3>' + TITLES[n - 1] + '</h3><p class="muted">Keep going. Your progress and XP are saved on this device.</p><span class="link-arrow btn--ghost">Read Week ' + n + '</span></div></a>');
       last.after(sec);
-      sec.after(el("footer", { class: "site-foot" }, '<p><a href="' + ROOTP + 'index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
+      sec.after(el("footer", { class: "site-foot" }, '<p><a href="' + ROOTP + 'index.html">← All 14 weeks</a> · <a href="' + ROOTP + 'admin.html">Lecturer: Admin</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
     } else {
-      last.after(el("footer", { class: "site-foot" }, '<p><a href="' + ROOTP + 'index.html">← All 14 weeks</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
+      last.after(el("footer", { class: "site-foot" }, '<p><a href="' + ROOTP + 'index.html">← All 14 weeks</a> · <a href="' + ROOTP + 'admin.html">Lecturer: Admin</a></p><p>SMB31202 English for Technical Communication · Department of Languages &amp; General Studies, FPK, UniMAP · Semester 1, 2026/2027. Photos from Pexels and Unsplash, free to use.</p>'));
     }
   })();
 
