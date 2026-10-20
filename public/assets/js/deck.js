@@ -18,6 +18,7 @@
   } catch (e) { /* private mode or blocked: run without saving */ }
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {}
+    try { if (window.LAB && window.LAB.pushProgress) window.LAB.pushProgress(store); } catch (e) {}
   }
 
   var body = document.body;
@@ -865,15 +866,21 @@
             if (!d.already) confetti();
           }).catch(function (e) { showToast(e.message === "offline" ? "Attendance works on the class website, not on this copy." : e.message); });
         };
+        /* a new matric: load that student's saved progress first; record only if nothing changes */
+        var goChecked = function (idn2) {
+          if (!idn2) return;
+          if (!applyProgress) { go(idn2); return; }
+          LAB.syncProgress(store, function (next, info) { applyProgress(next, info); if (!info.changed) go(idn2); }).then(function (r) { if (r === null) go(idn2); });
+        };
         var idn = LAB.identity();
         if (idn) {
           var m = document.createElement("div"); m.className = "lmodal";
           m.innerHTML = '<div class="lmodal__bg"></div><div class="lmodal__card"><p class="eyebrow">Attendance · Week ' + WN + '</p><h3>Record attendance as</h3><p style="margin:0"><b>' + LAB.esc(idn.name) + "</b><br><span class=\"muted\">" + LAB.esc(idn.matric) + " · " + LAB.esc(idn.section) + (idn.manual ? " · manual entry, your lecturer will check it" : "") + '</span></p><div class="lchips"><button class="lbtn" type="button" data-yes>Yes, record it</button><button class="lchip" type="button" data-change>Not me, change</button></div></div>';
           body.appendChild(m);
           $("[data-yes]", m).addEventListener("click", function () { m.remove(); go(idn); });
-          $("[data-change]", m).addEventListener("click", function () { m.remove(); LAB.askIdentity({ eyebrow: "Attendance · Week " + WN, title: "Enter your matric number" }).then(go); });
+          $("[data-change]", m).addEventListener("click", function () { m.remove(); LAB.askIdentity({ eyebrow: "Attendance · Week " + WN, title: "Enter your matric number" }).then(goChecked); });
         } else {
-          LAB.askIdentity({ eyebrow: "Attendance · Week " + WN, title: "Enter your matric number", text: "Your attendance for this week is recorded against your matric number." }).then(go);
+          LAB.askIdentity({ eyebrow: "Attendance · Week " + WN, title: "Enter your matric number", text: "Your attendance for this week is recorded against your matric number." }).then(goChecked);
         }
       }
       pill.addEventListener("click", function () { if (!panel.hidden) { panel.hidden = true; pill.setAttribute("aria-expanded", "false"); return; } panel.hidden = false; pill.setAttribute("aria-expanded", "true"); renderPanel(missionState()); });
@@ -899,6 +906,23 @@
 
   /* expose a tiny API for week-specific scripts */
   window.Deck = { award: award, widgetId: widgetId, go: go, toast: showToast, week: WEEK };
+
+  /* ---------- progress backup: bring back this student's progress from the server ---------- */
+  if (LAB && LAB.syncProgress) {
+    var applyProgress = function (next, info) {
+      if (!info.changed) { if (store.owner !== next.owner) { store.owner = next.owner; save(); } return; }
+      store.weeks = next.weeks; store.checks = next.checks; store.owner = next.owner;
+      if (info.switched) store.drafts = {};
+      save();
+      try {
+        var sig = next.owner + ":" + JSON.stringify(next).length;
+        if (sessionStorage.getItem("etc-prog-reload") !== sig) { sessionStorage.setItem("etc-prog-reload", sig); sessionStorage.setItem("etc-prog-msg", info.switched ? "switched" : "restored"); location.reload(); }
+      } catch (e) {}
+    };
+    LAB.syncProgress(store, applyProgress);
+    document.addEventListener("lab:identity", function () { LAB.syncProgress(store, applyProgress); });
+    try { var pm = sessionStorage.getItem("etc-prog-msg"); if (pm) { sessionStorage.removeItem("etc-prog-msg"); setTimeout(function () { showToast(pm === "switched" ? "Loaded the progress saved for this matric number." : "Your saved progress is back."); }, 1200); } } catch (e) {}
+  }
 
   /* ---------- start ---------- */
   renderXP(false);

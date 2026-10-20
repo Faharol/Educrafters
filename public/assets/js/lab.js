@@ -478,7 +478,56 @@
   /* ---------- identity, presence, writing sync, reveal ---------- */
   var ID = store.get("identity", null);
   function identity() { return ID; }
-  function setIdentity(obj) { ID = obj; store.set("identity", obj); setTimeout(function () { try { heartbeat(); } catch (e) {} }, 0); }
+  function setIdentity(obj) { var prev = ID; ID = obj; store.set("identity", obj); setTimeout(function () { try { heartbeat(); } catch (e) {} }, 0); if (obj && (!prev || prev.matric !== obj.matric)) { try { document.dispatchEvent(new CustomEvent("lab:identity", { detail: obj })); } catch (e) {} } }
+  /* ---------- progress backup on the server, keyed by matric ----------
+     Only weeks (done, earned XP, read sections, attendance) and checklist ticks travel.
+     Draft text stays on the device, so typing a friend's matric never shows their writing. */
+  var PKEY = "smb31202.progress.v1";
+  function mkey(m) { return String(m || "").toUpperCase().replace(/[^A-Z0-9]/g, ""); }
+  function pickProg(p) { return { weeks: (p && p.weeks) || {}, checks: (p && p.checks) || {} }; }
+  function mergeWeek(a, b) {
+    a = a || {}; b = b || {};
+    var o = {}; var uni = function (x, y) { var r = (x || []).slice(); (y || []).forEach(function (v) { if (r.indexOf(v) < 0) r.push(v); }); return r; };
+    var orMap = function (x, y) { var r = {}; [x || {}, y || {}].forEach(function (m) { for (var k in m) if (m[k]) r[k] = m[k]; }); return r; };
+    var maxMap = function (x, y) { var r = {}; [x || {}, y || {}].forEach(function (m) { for (var k in m) r[k] = Math.max(r[k] || 0, +m[k] || 0); }); return r; };
+    o.seen = uni(a.seen, b.seen); o.earned = maxMap(a.earned, b.earned); o.done = orMap(a.done, b.done); o.viewed = orMap(a.viewed, b.viewed);
+    o.scroll = Math.max(+a.scroll || 0, +b.scroll || 0); o.total = Math.max(+a.total || 0, +b.total || 0); o.last = Math.max(+a.last || 0, +b.last || 0);
+    var at = a.attended || b.attended; if (at) o.attended = at;
+    return o;
+  }
+  function mergeProgress(a, b) {
+    a = pickProg(a); b = pickProg(b); var w = {}, k;
+    for (k in a.weeks) w[k] = mergeWeek(a.weeks[k], b.weeks[k]);
+    for (k in b.weeks) if (!w[k]) w[k] = mergeWeek(null, b.weeks[k]);
+    var c = {}; for (k in b.checks) if (b.checks[k]) c[k] = true; for (k in a.checks) if (a.checks[k]) c[k] = true;
+    return { weeks: w, checks: c };
+  }
+  function hasProgress(p) { /* kept for reference */
+    p = pickProg(p); return Object.keys(p.weeks).some(function (k) { var w = p.weeks[k] || {}; return Object.keys(w.done || {}).length || Object.keys(w.earned || {}).length || (w.seen || []).length; }); }
+  var pushT = null, pushLast = null;
+  function pushProgress(local) {
+    if (!ID || !ID.matric || !local) return;
+    var me = mkey(ID.matric); if (local.owner && local.owner !== me) return;
+    clearTimeout(pushT);
+    pushT = setTimeout(function () { var body = JSON.stringify(pickProg(local)); if (body === pushLast) return; pushLast = body; trackPost({ action: "progress", progress: pickProg(local) }).catch(function () { pushLast = null; }); }, 4000);
+  }
+  /* on page load and when the student signs in: merge the server copy into this browser.
+     apply(next, info) gets { weeks, checks, owner } and info.changed / info.switched. */
+  function syncProgress(local, apply) {
+    if (!ID || !ID.matric) return Promise.resolve(null);
+    var me = mkey(ID.matric), owner = local && local.owner, mine = !owner || owner === me;
+    return trackPost({ action: "progress", progress: mine ? pickProg(local) : null }).then(function (d) {
+      var server = d.progress || { weeks: {}, checks: {} }, next, switched = false;
+      // this browser holds another student's progress: never hand it to the new matric
+      if (mine) next = mergeProgress(local, server);
+      else { next = mergeProgress(server, {}); switched = true; }
+      next.owner = me;
+      var changed = switched || JSON.stringify(mergeProgress(next, {})) !== JSON.stringify(mergeProgress(local, {}));
+      pushLast = JSON.stringify(pickProg(next));
+      apply(next, { changed: changed, switched: switched });
+      return next;
+    }).catch(function () { return null; });
+  }
   var SID = ss.get("sid"); if (!SID) { SID = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6); ss.set("sid", SID); }
   var PAGE = "home";
   function trackPost(body) { return fetch("/api/track", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(Object.assign({ device: deviceId(), nick: nick(), matric: ID ? ID.matric : "", name: ID ? ID.name : "", section: ID ? ID.section : "" }, body)) }).then(function (r) { var ct = r.headers.get("content-type") || ""; if (!ct.includes("json")) throw new Error("offline"); return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
@@ -530,5 +579,5 @@
   }
   function attend(week, matric, summary, idn) { var b = { action: "attend", week: week, matric: matric, summary: summary }; if (idn && idn.manual) { b.manual = true; b.manualName = idn.name; b.manualSection = idn.section; } return trackPost(b); }
 
-  window.LAB = { identity: identity, setIdentity: setIdentity, identify: identify, askIdentity: askIdentity, presence: presence, syncWriting: syncWriting, attend: attend, reveal: reveal, unlockTs: unlockTs, fmtUnlock: fmtUnlock, WEEK_START: WEEK_START, trackPost: trackPost, syncBoard: syncBoard, leaveBoard: leaveBoard, loadBoard: loadBoard, deviceId: deviceId, speak: speak, canSpeak: canSpeak, addSpeakers: addSpeakers, listeningLab: listeningLab, rateToggle: rateToggle, $: $, $$: $$, esc: esc, pad: pad, store: store, nav: nav, setXp: setXp, totalXp: totalXpAll, words: words, scrubHtml: scrubHtml, toast: toast, confetti: confetti, burstFrom: burstFrom, setupMotion: setupMotion, motionBtn: motionBtn, Wall: Wall, wallPrompt: wallPrompt, wallName: wallName, coach: coach, boss: boss, nick: nick, currentWeek: currentWeek, weekInfo: weekInfo, fmtRange: fmtRange, MODE: MODE, TODAY: TODAY, REDUCE: REDUCE, setProj: setProj, root: ROOT };
+  window.LAB = { identity: identity, setIdentity: setIdentity, syncProgress: syncProgress, pushProgress: pushProgress, mergeProgress: mergeProgress, PKEY: PKEY, identify: identify, askIdentity: askIdentity, presence: presence, syncWriting: syncWriting, attend: attend, reveal: reveal, unlockTs: unlockTs, fmtUnlock: fmtUnlock, WEEK_START: WEEK_START, trackPost: trackPost, syncBoard: syncBoard, leaveBoard: leaveBoard, loadBoard: loadBoard, deviceId: deviceId, speak: speak, canSpeak: canSpeak, addSpeakers: addSpeakers, listeningLab: listeningLab, rateToggle: rateToggle, $: $, $$: $$, esc: esc, pad: pad, store: store, nav: nav, setXp: setXp, totalXp: totalXpAll, words: words, scrubHtml: scrubHtml, toast: toast, confetti: confetti, burstFrom: burstFrom, setupMotion: setupMotion, motionBtn: motionBtn, Wall: Wall, wallPrompt: wallPrompt, wallName: wallName, coach: coach, boss: boss, nick: nick, currentWeek: currentWeek, weekInfo: weekInfo, fmtRange: fmtRange, MODE: MODE, TODAY: TODAY, REDUCE: REDUCE, setProj: setProj, root: ROOT };
 })();

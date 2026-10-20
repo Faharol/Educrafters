@@ -83,3 +83,8 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - Mission panel lists core items as MUST, then "Any N more of these small activities".
 - Mission pill slides away while scrolling down, returns on scroll up, near the page end, or for 2.5 s when progress ticks (it used to sit on top of buttons).
 - Top bars are now opaque (text no longer shows through). Week numbers in the top bar fade at the edges and centre the current week on phones. Finale confetti fires once and only with XP > 0.
+
+## 20 Oct 2026: progress backup by matric
+- `track.mts` action `progress`: stores `prog/<matricKey>` in store `track` and merges (union of done/read/seen, max XP per activity, attendance kept). Client pushes 4 s after each save once the student has a matric (`LAB.pushProgress`), and on page load or sign-in merges the server copy into the browser (`LAB.syncProgress`), reloading once if something came back.
+- The browser blob carries `owner` (matric). If a different matric signs in on that browser, the browser takes that matric's server copy (or starts empty) and never hands the previous owner's progress to the new matric. Draft text is not synced (privacy); writing stays visible in admin Live writing.
+- Purpose: moving to a custom domain (e.g. smb31202.faharol.com) or switching phone/laptop keeps progress once the student types their matric. Only students who have entered a matric are backed up.

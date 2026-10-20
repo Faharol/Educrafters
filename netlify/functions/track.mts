@@ -34,6 +34,27 @@ async function listJson(store: any, prefix: string) {
   return (await Promise.all(blobs.map((b: any) => store.get(b.key, { type: "json" }).then((v: any) => v && Object.assign(v, { _key: b.key })).catch(() => null)))).filter(Boolean) as any[];
 }
 
+
+/* same merge rules as lab.js: union of done / read / seen, highest XP per activity, attendance kept */
+function mergeWeek(a: any, b: any) {
+  a = a || {}; b = b || {};
+  const uni = (x: any[], y: any[]) => { const r = Array.isArray(x) ? x.slice(0, 400) : []; (Array.isArray(y) ? y : []).slice(0, 400).forEach((v) => { if (!r.includes(v)) r.push(v); }); return r; };
+  const orMap = (x: any, y: any) => { const r: Record<string, number> = {}; [x || {}, y || {}].forEach((m: any) => { Object.keys(m).slice(0, 600).forEach((k) => { if (m[k]) r[String(k).slice(0, 80)] = 1; }); }); return r; };
+  const maxMap = (x: any, y: any) => { const r: Record<string, number> = {}; [x || {}, y || {}].forEach((m: any) => { Object.keys(m).slice(0, 600).forEach((k) => { const kk = String(k).slice(0, 80); r[kk] = Math.max(r[kk] || 0, Math.min(1000, Number(m[k]) || 0)); }); }); return r; };
+  const o: any = { seen: uni(a.seen, b.seen), earned: maxMap(a.earned, b.earned), done: orMap(a.done, b.done), viewed: orMap(a.viewed, b.viewed),
+    scroll: Math.max(Number(a.scroll) || 0, Number(b.scroll) || 0), total: Math.max(Number(a.total) || 0, Number(b.total) || 0), last: Math.max(Number(a.last) || 0, Number(b.last) || 0) };
+  const at = a.attended || b.attended; if (at && typeof at === "object") o.attended = { ts: Number(at.ts) || 0, name: String(at.name || "").slice(0, 80), matric: String(at.matric || "").slice(0, 16) };
+  return o;
+}
+function mergeProgress(a: any, b: any) {
+  const w: Record<string, any> = {};
+  const keys = new Set([...Object.keys(a.weeks || {}), ...Object.keys(b.weeks || {})].filter((k) => /^\d\d$/.test(k)));
+  keys.forEach((k) => { w[k] = mergeWeek((a.weeks || {})[k], (b.weeks || {})[k]); });
+  const c: Record<string, boolean> = {};
+  [a.checks || {}, b.checks || {}].forEach((m: any) => Object.keys(m).slice(0, 1000).forEach((k) => { if (m[k]) c[String(k).slice(0, 80)] = true; }));
+  return { weeks: w, checks: c };
+}
+
 export default async (req: Request) => {
   const url = new URL(req.url);
   const store = getStore({ name: "track", consistency: "strong" });
@@ -148,6 +169,23 @@ export default async (req: Request) => {
     }
     await store.setJSON(key, rec);
     return json({ ok: true, ts: now });
+  }
+
+  if (action === "progress") {
+    // backup of a student's progress, keyed by matric; merged so no device can wipe another's
+    const key = normMatric(body.matric);
+    if (!key || !(/^\d{9}\d?$/.test(key) || (await lookup(body.matric)))) return json({ error: "Bad matric" }, 400);
+    const pkey = "prog/" + key;
+    const stored = ((await store.get(pkey, { type: "json" }).catch(() => null)) as any) || null;
+    let merged = stored ? { weeks: stored.weeks || {}, checks: stored.checks || {} } : { weeks: {}, checks: {} };
+    if (body.progress && typeof body.progress === "object") {
+      const raw = JSON.stringify(body.progress);
+      if (raw.length > 200000) return json({ error: "Progress too large" }, 413);
+      const inc = { weeks: (body.progress.weeks && typeof body.progress.weeks === "object") ? body.progress.weeks : {}, checks: (body.progress.checks && typeof body.progress.checks === "object") ? body.progress.checks : {} };
+      const next = mergeProgress(merged, inc);
+      if (JSON.stringify(next) !== JSON.stringify(merged)) { merged = next; await store.setJSON(pkey, { ...merged, ts: now, device }); }
+    }
+    return json({ progress: merged });
   }
 
   if (action === "attend") {

@@ -85,6 +85,15 @@
   $("#resetProg").addEventListener("click", function (e) { e.preventDefault(); if (confirm("Reset your progress, XP and drafts on this device?")) { try { localStorage.removeItem("smb31202.progress.v1"); } catch (x) {} location.reload(); } });
 
   L.presence("home");
+  /* progress backup: merge this student's server copy into this browser (once), then redraw */
+  function applyHome(next, info) {
+    var cur = {}; try { cur = JSON.parse(localStorage.getItem(L.PKEY) || "{}"); } catch (e) {}
+    cur.owner = next.owner;
+    if (info.changed) { cur.weeks = next.weeks; cur.checks = next.checks; if (info.switched) cur.drafts = {}; }
+    try { localStorage.setItem(L.PKEY, JSON.stringify(cur)); } catch (e) {}
+    if (info.changed) { try { var sig = next.owner + ":" + JSON.stringify(next).length; if (sessionStorage.getItem("etc-prog-reload") !== sig) { sessionStorage.setItem("etc-prog-reload", sig); location.reload(); } } catch (e) {} }
+  }
+  if (L.syncProgress) { L.syncProgress(prog, applyHome); document.addEventListener("lab:identity", function () { var p2 = {}; try { p2 = JSON.parse(localStorage.getItem(L.PKEY) || "{}"); } catch (e) {} L.syncProgress(p2, applyHome); }); }
   L.setupMotion(document);
   $("#main").classList.add("enter");
 })();
