@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="robots" content="noindex">
+<title>Attendance · ETC Lab</title>
+<style>
+  :root { --bg: #f5f5f7; --card: #fff; --text: #1d1d1f; --muted: #6e6e73; --line: #d2d2d7; --blue: #0071e3; --mint: #30d158; --orange: #ff9f0a; --red: #ff3b30; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font: 17px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; }
+  body { padding: max(18px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); }
+  .wrap { max-width: 440px; margin: 0 auto; }
+  .brand { font-weight: 700; letter-spacing: -.02em; margin: 4px 0 18px; display: flex; align-items: center; gap: 8px; }
+  .brand i { font-style: normal; width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #2997ff, #bf5af2); color: #fff; display: grid; place-items: center; font-size: .8rem; }
+  .card { background: var(--card); border-radius: 22px; padding: 22px 20px; box-shadow: 0 10px 30px -18px rgba(0,0,0,.25); }
+  .tag { display: inline-block; font-size: .78rem; font-weight: 600; background: #e8f2fe; color: var(--blue); border-radius: 999px; padding: 4px 10px; margin-bottom: 8px; }
+  h1 { font-size: 1.6rem; letter-spacing: -.02em; margin: 0 0 6px; line-height: 1.15; }
+  p { margin: 0 0 14px; color: var(--muted); }
+  label { display: block; font-size: .85rem; font-weight: 600; margin: 12px 0 6px; }
+  input, select { width: 100%; font: inherit; font-size: 1.15rem; padding: 14px; border: 1.5px solid var(--line); border-radius: 14px; background: #fff; color: var(--text); }
+  input:focus, select:focus { outline: none; border-color: var(--blue); }
+  #m { letter-spacing: .06em; text-align: center; font-weight: 600; }
+  button { width: 100%; font: inherit; font-weight: 700; font-size: 1.05rem; color: #fff; background: var(--blue); border: 0; border-radius: 14px; padding: 15px; margin-top: 14px; cursor: pointer; }
+  button:disabled { opacity: .6; }
+  button.ghost { background: transparent; color: var(--blue); font-weight: 600; margin-top: 6px; }
+  .err { color: var(--red); font-size: .92rem; min-height: 1.3em; margin-top: 10px; }
+  .manual { background: #fff6e8; border-radius: 14px; padding: 12px 14px; margin-top: 12px; font-size: .9rem; color: #7a4b00; }
+  .ok { text-align: center; }
+  .tick { width: 96px; height: 96px; border-radius: 50%; background: var(--mint); color: #fff; font-size: 3.2rem; display: grid; place-items: center; margin: 6px auto 14px; animation: pop .4s cubic-bezier(.2,.8,.2,1.4); }
+  .tick.warn { background: var(--orange); }
+  @keyframes pop { from { transform: scale(.4); opacity: 0; } }
+  .ok h1 { font-size: 1.35rem; }
+  .meta { font-size: .95rem; color: var(--muted); }
+  .big-ico { font-size: 3rem; text-align: center; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><i>E</i>ETC Lab · Attendance</div>
+  <div class="card" id="app"><p>Checking the QR code…</p></div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var app = document.getElementById("app");
+  var SECTIONS = ["PEMBINAAN BANGUNAN 1", "PEMBINAAN BANGUNAN 2", "MEKATRONIK 1", "ROBOTIK DAN AUTOMASI 3"];
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function lsGet(k) { try { var v = localStorage.getItem("etclab:" + k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem("etclab:" + k, JSON.stringify(v)); } catch (e) {} }
+  var dev = lsGet("devid"); if (!dev || !/^[a-z0-9]{8,24}$/.test(dev)) { dev = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6); lsSet("devid", dev); }
+
+  // read the QR, then wipe it from the address bar so a copied link carries nothing
+  var h = (location.hash || "").replace(/^#/, "").split("."), SID = h[0] || "", CODE = h[1] || "";
+  try { history.replaceState(null, "", location.pathname); } catch (e) {}
+  var T = null; // { s, ticket, ts, section, week }
+  try { var saved = JSON.parse(sessionStorage.getItem("qatt-ticket") || "null"); if (saved && (!SID || saved.s === SID) && Date.now() - saved.got < 170000) T = saved; } catch (e) {}
+
+  function post(body) {
+    return fetch("/api/qatt", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(Object.assign({ device: dev }, body)) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) { var e = new Error(d.error || "Something went wrong. Try again."); e.data = d; e.status = r.status; throw e; } return d; }); });
+  }
+  function fmtTime(ts) { var d = new Date(ts); return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
+  function weekLabel(w) { return w ? "Week " + parseInt(String(w).replace(/\D/g, ""), 10) + " · " : ""; }
+
+  function msg(icon, title, text) { app.innerHTML = '<div class="big-ico">' + icon + "</div><h1 style=\"text-align:center\">" + esc(title) + '</h1><p style="text-align:center">' + esc(text) + "</p>"; }
+  function done(d, again) {
+    var warn = d.manual;
+    app.innerHTML = '<div class="ok"><div class="tick' + (warn ? " warn" : "") + '">✓</div><h1>' + (again ? "Already recorded" : "You are marked present") + '</h1><p style="margin:0;color:var(--text);font-weight:600">' + esc(d.name || "") + '</p><p class="meta">' + esc(d.section || "") + (d.ts ? " · " + fmtTime(d.ts) : "") + "</p>" +
+      (warn ? '<div class="manual">Your name is not on the class list yet, so this is recorded as a <b>manual</b> entry. Your lecturer will check it.</div>' : "") +
+      (d.other ? '<div class="manual">You are listed in another class (' + esc(d.section) + "). Your lecturer will see this.</div>" : "") + "</div>";
+    try { sessionStorage.removeItem("qatt-ticket"); } catch (e) {}
+  }
+
+  function form(manual, prefill, err) {
+    var idn = lsGet("identity") || {};
+    var m = prefill != null ? prefill : (idn.matric || "");
+    app.innerHTML = '<span class="tag">' + esc(weekLabel(T.week) + T.section) + "</span><h1>Record your attendance</h1><p>Type your matric number.</p>" +
+      '<label for="m">Matric number</label><input id="m" inputmode="numeric" autocomplete="off" placeholder="e.g. 251234567" value="' + esc(m) + '">' +
+      (manual ? '<div class="manual">This matric number is not on the class list yet. Add your full name and class. Your lecturer will see it marked <b>manual</b>.</div>' +
+        '<label for="n">Full name (as on your student card)</label><input id="n" autocomplete="name" style="text-transform:uppercase" value="' + esc(idn.manual ? idn.name : "") + '">' +
+        '<label for="sec">Class</label><select id="sec">' + SECTIONS.map(function (x) { return "<option" + (x === T.section ? " selected" : "") + ">" + esc(x) + "</option>"; }).join("") + "</select>" : "") +
+      '<button id="go" type="button">' + (manual ? "Add my name and record" : "I am here") + "</button>" +
+      (manual ? '<button class="ghost" id="back" type="button">I typed my matric wrongly</button>' : "") +
+      '<div class="err" id="err">' + esc(err || "") + "</div>";
+    var go = document.getElementById("go"), inp = document.getElementById("m");
+    if (!m) inp.focus();
+    var submit = function () {
+      var mv = inp.value.trim(); if (!mv) { document.getElementById("err").textContent = "Type your matric number."; return; }
+      var body = { action: "mark", s: T.s, ticket: T.ticket, ts: T.ts, matric: mv };
+      if (manual) { body.manual = true; body.name = document.getElementById("n").value.trim(); body.section = document.getElementById("sec").value; if (body.name.length < 3) { document.getElementById("err").textContent = "Type your full name."; return; } }
+      go.disabled = true; go.textContent = "Saving…";
+      post(body).then(function (d) {
+        lsSet("identity", { matric: d.matric || mv, name: d.name, section: d.section, manual: !!d.manual });
+        done(d, d.already);
+      }).catch(function (e) {
+        if (e.data && e.data.notFound) { form(true, mv); return; }
+        if (e.data && e.data.expired) { msg("⏱", "Scan again", e.message); return; }
+        go.disabled = false; go.textContent = manual ? "Add my name and record" : "I am here";
+        document.getElementById("err").textContent = e.message;
+      });
+    };
+    go.addEventListener("click", submit);
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    var back = document.getElementById("back"); if (back) back.addEventListener("click", function () { form(false, ""); });
+  }
+
+  function ready(d) {
+    T = { s: SID || T.s, ticket: d.ticket, ts: d.ts, section: d.section, week: d.week, got: Date.now() };
+    try { sessionStorage.setItem("qatt-ticket", JSON.stringify(T)); } catch (e) {}
+    if (d.already) { done({ name: d.already.name, section: d.section }, true); return; }
+    form(false);
+  }
+
+  if (SID && CODE) {
+    post({ action: "check", s: SID, c: CODE }).then(ready).catch(function (e) {
+      if (e.data && e.data.expired) msg("⏱", "Scan again", e.message);
+      else msg("🚫", "Cannot record", e.message);
+    });
+  } else if (T) {
+    form(false);
+  } else {
+    msg("📷", "Scan the QR in class", "Attendance is recorded by scanning the QR code your lecturer shows on the screen.");
+  }
+})();
+</script>
+</body>
+</html>

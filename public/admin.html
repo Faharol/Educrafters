@@ -89,7 +89,7 @@
   function shell() {
     stopTimers();
     app.innerHTML = '<div class="ahead"><div><p class="eyebrow" style="margin:0 0 2px">ETC Lab · Admin</p><h1 style="font-size:clamp(1.8rem,4vw,2.6rem);margin:0">' + L.words("Lecturer") + " " + L.words("console.", 1, true) + '</h1></div><div class="lchips"><a class="lchip" href="live.html">Live round</a><a class="lchip" href="class-tools.html">Class tools</a><a class="lchip" href="wall.html">Class Wall</a><button class="lchip" type="button" id="out">Sign out</button></div></div>' +
-      '<div class="atabs" id="tabs">' + [["present", "📱 Present"], ["online", "Online now"], ["writing", "Live writing"], ["attendance", "Attendance"], ["reveal", "Reveal weeks"], ["visits", "Visit log"], ["roster", "Roster"]].map(function (t) { return '<button type="button" data-tab="' + t[0] + '" class="' + (t[0] === TAB ? "on" : "") + '">' + t[1] + (t[0] === "online" ? ' <b id="onlineN">–</b>' : "") + "</button>"; }).join("") + "</div>" +
+      '<div class="atabs" id="tabs">' + [["present", "📱 Present"], ["qatt", "📷 QR attendance"], ["online", "Online now"], ["writing", "Live writing"], ["attendance", "Attendance"], ["reveal", "Reveal weeks"], ["visits", "Visit log"], ["roster", "Roster"]].map(function (t) { return '<button type="button" data-tab="' + t[0] + '" class="' + (t[0] === TAB ? "on" : "") + '">' + t[1] + (t[0] === "online" ? ' <b id="onlineN">–</b>' : "") + "</button>"; }).join("") + "</div>" +
       '<section class="apanel" id="panel"></section>';
     $("#out").addEventListener("click", function () { KEY = ""; sessionStorage.removeItem("etc_admin"); document.cookie = "etc_admin=; path=/; max-age=0"; login(); });
     $("#tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (!b) return; TAB = b.getAttribute("data-tab"); $$("[data-tab]").forEach(function (x) { x.classList.toggle("on", x === b); }); render(); });
@@ -98,7 +98,7 @@
   }
   function render() {
     stopTimers(); var p = $("#panel"); p.innerHTML = '<p class="muted">Loading…</p>';
-    ({ present: present, online: online, writing: writing, attendance: attendance, reveal: reveal, visits: visits, roster: roster })[TAB]();
+    ({ present: present, qatt: qatt, online: online, writing: writing, attendance: attendance, reveal: reveal, visits: visits, roster: roster })[TAB]();
     timers.push(setInterval(function () { get("/api/track?online").then(function (d) { var n = $("#onlineN"); if (n) n.textContent = d.count; }).catch(function () {}); }, 15000));
   }
   function fail(e) { var p = $("#panel"); p.innerHTML = '<p class="muted">' + esc(e.message) + "</p>"; if (/password/i.test(e.message)) login(e.message); }
@@ -113,6 +113,71 @@
       '<div class="lchips" style="flex-wrap:wrap;gap:8px">' + weeks.map(function (w) { var n = String(w.n).padStart(2, "0"); return '<a class="' + (w.n === cw ? "lbtn" : "lchip") + '" href="weeks/week-' + n + '.html?remote=start">Week ' + w.n + (w.n === cw ? " · this week" : "") + "</a>"; }).join("") +
       '<a class="lchip" href="index.html?remote=start">Home page</a><a class="lchip" href="wall.html?remote=start">Class Wall</a></div>' +
       '<p class="muted small" style="margin:16px 0 0">Tip: on any page of the site, the <b>📱 Remote</b> button in the top menu does the same. The remote stays connected when you move between pages, and ends after 6 hours or when you tap End.</p>';
+  }
+
+  /* QR attendance per class: only the lecturer opens the QR; it changes every 10 s */
+  var QSECTIONS = ["PEMBINAAN BANGUNAN 1", "PEMBINAAN BANGUNAN 2", "MEKATRONIK 1", "ROBOTIK DAN AUTOMASI 3"];
+  function loadQR() { if (window.QRCode) return Promise.resolve(); return new Promise(function (res, rej) { var sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }); }
+  var qscreen = null, qtimer = null;
+  function qattScreen(id) {
+    if (qscreen) qscreen.remove(); clearInterval(qtimer);
+    qscreen = document.createElement("div");
+    qscreen.style.cssText = "position:fixed;inset:0;z-index:400;background:#000;color:#fff;display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,380px);gap:32px;align-items:center;padding:32px 48px;font-family:var(--font)";
+    qscreen.innerHTML = '<div style="text-align:center"><p style="margin:0 0 6px;color:#2997ff;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.85rem">Attendance · scan now</p><h2 id="qcls" style="margin:0 0 18px;font:800 clamp(1.4rem,3vw,2.4rem)/1.1 var(--font-display);color:#fff"></h2><div id="qbox" style="background:#fff;padding:22px;border-radius:28px;display:inline-block"></div><p style="margin:14px 0 0;color:#a1a1a6">The code changes every 10 seconds. <span id="qnext"></span></p></div>' +
+      '<div><div style="font:800 clamp(3rem,8vw,6rem)/1 var(--font-display);letter-spacing:-.04em"><span id="qn">0</span><span style="color:#6e6e73;font-size:.45em"> / <span id="qt">0</span></span></div><p style="margin:4px 0 18px;color:#a1a1a6">present</p><div id="qrecent" style="display:flex;flex-direction:column;gap:6px;min-height:200px"></div>' +
+      '<div style="display:flex;gap:8px;margin-top:22px;flex-wrap:wrap"><button type="button" id="qhide" style="background:#2a2a2c;color:#fff;border:0;border-radius:999px;padding:10px 18px;font:600 .95rem var(--font);cursor:pointer">Hide (keep open)</button><button type="button" id="qstop" style="background:#ff453a;color:#fff;border:0;border-radius:999px;padding:10px 18px;font:600 .95rem var(--font);cursor:pointer">Close attendance</button></div></div>';
+    document.body.appendChild(qscreen);
+    var lastCode = "", box = $("#qbox", qscreen);
+    var size = Math.min(window.innerHeight - 260, window.innerWidth * 0.42, 460);
+    function close() { clearInterval(qtimer); qtimer = null; if (qscreen) { qscreen.remove(); qscreen = null; } if (TAB === "qatt") render(); }
+    $("#qhide", qscreen).addEventListener("click", close);
+    $("#qstop", qscreen).addEventListener("click", function () { if (!confirm("Close attendance for this class? Students can no longer scan.")) return; post("/api/qatt", { action: "stop", s: id }).then(close).catch(function (e) { L.toast(e.message); }); });
+    function tick() {
+      get("/api/qatt?live=" + id).then(function (d) {
+        if (!qscreen) return;
+        $("#qcls", qscreen).textContent = (d.week ? "Week " + parseInt(d.week.slice(1), 10) + " · " : "") + d.section;
+        $("#qn", qscreen).textContent = d.present; $("#qt", qscreen).textContent = d.total;
+        $("#qrecent", qscreen).innerHTML = d.recent.map(function (r) { return '<div style="background:#1c1c1e;border-radius:12px;padding:8px 12px;font-weight:600">' + esc(r.name) + (r.manual ? ' <span style="color:#ff9f0a;font-size:.8rem">· manual</span>' : "") + (r.other ? ' <span style="color:#64d2ff;font-size:.8rem">· other class</span>' : "") + "</div>"; }).join("");
+        if (!d.open) { box.innerHTML = '<p style="color:#000;margin:40px;font-weight:700">Attendance closed</p>'; lastCode = ""; return; }
+        if (d.code !== lastCode) { lastCode = d.code; var url = location.origin + "/hadir.html#" + id + "." + d.code; loadQR().then(function () { box.innerHTML = ""; new QRCode(box, { text: url, width: size, height: size, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); }); }
+        $("#qnext", qscreen).textContent = "Next code in " + Math.ceil(d.nextIn / 1000) + " s";
+      }).catch(function (e) { if (qscreen) $("#qnext", qscreen).textContent = e.message; });
+    }
+    tick(); qtimer = setInterval(tick, 2000);
+  }
+  function qatt() {
+    var p = $("#panel");
+    var cw = L.currentWeek ? L.currentWeek() : 1;
+    p.innerHTML = '<div class="ahead"><h2>QR attendance by class</h2><span class="small muted">Only you can open the QR. It changes every 10 seconds, so a photo forwarded to a friend has already expired. One phone records one student per class.</span></div>' +
+      '<div class="lchips" style="flex-wrap:wrap;gap:8px;margin:12px 0 18px"><select id="qsec">' + QSECTIONS.map(function (x) { return "<option>" + esc(x) + "</option>"; }).join("") + '</select><select id="qwk">' + weeks.map(function (w) { return '<option value="w' + pad(w.n) + '"' + (w.n === cw ? " selected" : "") + ">Week " + w.n + "</option>"; }).join("") + '</select><button class="lbtn" type="button" id="qgo">Show attendance QR</button></div>' +
+      '<h3 style="margin:8px 0">Classes</h3><div id="qlist"><p class="muted">Loading…</p></div><div id="qview"></div>';
+    $("#qgo").addEventListener("click", function () {
+      post("/api/qatt", { action: "start", section: $("#qsec").value, week: $("#qwk").value }).then(function (d) { qattScreen(d.id); }).catch(fail);
+    });
+    function list() {
+      get("/api/qatt?sessions").then(function (d) {
+        $("#qlist").innerHTML = d.sessions.length ? '<table class="tbl"><thead><tr><th>When</th><th>Class</th><th>Week</th><th>Present</th><th></th></tr></thead><tbody>' + d.sessions.map(function (x) {
+          return "<tr><td>" + fmt(x.created) + "</td><td>" + esc(x.section) + "</td><td>" + (x.week ? parseInt(x.week.slice(1), 10) : "") + "</td><td><b>" + x.present + "</b>" + (x.open ? ' <span class="tag" style="background:rgba(48,209,88,.18)">open</span>' : "") + '</td><td style="white-space:nowrap"><button class="lchip" type="button" data-qv="' + x.id + '">Records</button>' + (x.open ? ' <button class="lchip" type="button" data-qs="' + x.id + '">Show QR</button>' : "") + (!x.present ? ' <button class="lchip" type="button" data-qd="' + x.id + '">Delete</button>' : "") + "</td></tr>";
+        }).join("") + "</tbody></table>" : '<p class="muted">No class yet. Pick a class above and show the QR.</p>';
+        $$("[data-qs]").forEach(function (b) { b.addEventListener("click", function () { qattScreen(b.getAttribute("data-qs")); }); });
+        $$("[data-qv]").forEach(function (b) { b.addEventListener("click", function () { view(b.getAttribute("data-qv")); }); });
+        $$("[data-qd]").forEach(function (b) { b.addEventListener("click", function () { if (!confirm("Delete this empty class session?")) return; post("/api/qatt", { action: "delete", s: b.getAttribute("data-qd") }).then(function () { $("#qview").innerHTML = ""; list(); }).catch(fail); }); });
+      }).catch(fail);
+    }
+    function view(id) {
+      get("/api/qatt?records=" + id).then(function (d) {
+        var S = d.session, rows = d.rows, man = rows.filter(function (r) { return r.manual; }).length;
+        $("#qview").innerHTML = '<div class="ahead" style="margin-top:22px"><h3 style="margin:0">' + esc(S.section) + (S.week ? " · Week " + parseInt(S.week.slice(1), 10) : "") + ' <span class="small muted">' + fmt(S.created) + '</span></h3><div class="lchips"><button class="lchip" type="button" id="qcsv">Download CSV</button></div></div>' +
+          '<div class="kpis" style="margin:10px 0"><div class="kpi"><b>' + d.present + "</b><span>present of " + d.total + "</span></div>" + (man ? '<div class="kpi" style="background:rgba(255,159,10,.18)"><b>' + man + "</b><span>manual · not on list</span></div>" : "") + '<div class="kpi"><b>' + Math.max(0, d.total - rows.filter(function (r) { return r.present && !r.manual && !r.other; }).length) + "</b><span>absent</span></div></div>" +
+          '<table class="tbl"><thead><tr><th>Student</th><th>Matric</th><th>Time</th><th></th></tr></thead><tbody>' + rows.map(function (r) {
+            return '<tr class="' + (r.present ? "present" : "absent") + (r.manual ? " manual" : "") + '"><td>' + esc(r.name) + (r.manual ? ' <span class="tag tag--amber">MANUAL · not on list</span>' : "") + (r.other ? ' <span class="tag">other class: ' + esc(r.section) + "</span>" : "") + '</td><td class="mono small">' + esc(r.matric) + "</td><td>" + (r.ts ? fmt(r.ts).slice(11) : '<span class="muted">absent</span>') + "</td><td>" + (r.present ? '<button class="lchip" type="button" data-qu="' + esc(r.matric) + '">Undo</button>' : "") + "</td></tr>";
+          }).join("") + "</tbody></table>";
+        $("#qcsv").addEventListener("click", function () { dl("qr-attendance-" + S.section.replace(/\s+/g, "-") + "-" + (S.week || "") + ".csv", csv([["class", "week", "name", "matric", "present", "source", "time"]].concat(rows.map(function (r) { return [S.section, S.week, r.name, r.matric, r.present ? "yes" : "no", r.manual ? "MANUAL (not on list)" : r.other ? "other class: " + r.section : r.present ? "class list" : "", r.ts ? fmt(r.ts) : ""]; })))); });
+        $$("[data-qu]").forEach(function (b) { b.addEventListener("click", function () { if (!confirm("Remove this record?")) return; post("/api/qatt", { action: "undo", s: id, matric: b.getAttribute("data-qu") }).then(function () { view(id); list(); }).catch(fail); }); });
+        $("#qview").scrollIntoView({ behavior: "smooth", block: "start" });
+      }).catch(fail);
+    }
+    list(); timers.push(setInterval(list, 15000));
   }
 
   /* online */

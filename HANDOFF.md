@@ -94,3 +94,9 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - Screen side `public/assets/js/remote-screen.js`, loaded by `lab.js` only for the lecturer (admin cookie). Top menu shows "📱 Remote"; `?remote=start` on any page opens the QR. Session id lives in sessionStorage, so it survives page changes.
 - Phone page `public/remote.html#<id>.<token>`: no password; the QR carries a per-session token (owner asked for no typing on the phone). The QR hides itself once the phone connects. Without a token the page falls back to asking for the admin password.
 - Admin has a "📱 Present" tab with one link per week that opens it with the QR.
+
+## 1 Nov 2026: QR attendance by class
+- `netlify/functions/qatt.mts` (`/api/qatt`, store `qatt`). Admin starts a session for a section and week; the QR code is an HMAC of the session secret and a 10-second time step, accepted for the current or previous step (about 20 s), so a forwarded photo has expired. A valid scan gets a 3-minute ticket bound to the phone (device id `etclab:devid`); one phone records one matric per session. Matric not on the roster: name + class, saved with `manual:true`; a student from another section is saved with `other:true`.
+- Student page `public/hadir.html#<id>.<code>`: wipes the code from the address bar on load, so a copied link carries nothing. Sets `etclab:identity` so the portal knows the student afterwards.
+- Admin tab "📷 QR attendance": choose class and week, full-screen QR with live count and latest names, Hide or Close; list of classes with Records (present/absent per roster, MANUAL and other-class tags, Undo, CSV) and Delete for empty sessions.
+- Separate from the activity-based weekly attendance (`/api/track` attend); both can be used.
