@@ -88,3 +88,9 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - `track.mts` action `progress`: stores `prog/<matricKey>` in store `track` and merges (union of done/read/seen, max XP per activity, attendance kept). Client pushes 4 s after each save once the student has a matric (`LAB.pushProgress`), and on page load or sign-in merges the server copy into the browser (`LAB.syncProgress`), reloading once if something came back.
 - The browser blob carries `owner` (matric). If a different matric signs in on that browser, the browser takes that matric's server copy (or starts empty) and never hands the previous owner's progress to the new matric. Draft text is not synced (privacy); writing stays visible in admin Live writing.
 - Purpose: moving to a custom domain (e.g. smb31202.faharol.com) or switching phone/laptop keeps progress once the student types their matric. Only students who have entered a matric are backed up.
+
+## 1 Nov 2026: phone remote for the projector
+- `netlify/functions/remote.mts` (`/api/remote`, store `remote`): admin password on every call. `start` makes a 6-hour session; the phone posts `cmd` (next, prev, up, down, top, goto, week, react, answers, timer, black, qr, wall, clear, home); the screen long-polls `?wait=<id>&after=<seq>` (up to 7 s, checks every 300 ms) and posts its `state` (title, sections, current section) for the phone.
+- Screen side `public/assets/js/remote-screen.js`, loaded by `lab.js` only for the lecturer (admin cookie). Top menu shows "📱 Remote"; `?remote=start` on any page opens the QR. Session id lives in sessionStorage, so it survives page changes.
+- Phone page `public/remote.html#<id>`: asks for the admin password once (kept in localStorage `etc-remote-key`), so a student who scans the QR on the projector cannot control anything.
+- Admin has a "📱 Present" tab with one link per week that opens it with the QR.

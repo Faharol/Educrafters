@@ -89,7 +89,7 @@
   function shell() {
     stopTimers();
     app.innerHTML = '<div class="ahead"><div><p class="eyebrow" style="margin:0 0 2px">ETC Lab · Admin</p><h1 style="font-size:clamp(1.8rem,4vw,2.6rem);margin:0">' + L.words("Lecturer") + " " + L.words("console.", 1, true) + '</h1></div><div class="lchips"><a class="lchip" href="live.html">Live round</a><a class="lchip" href="class-tools.html">Class tools</a><a class="lchip" href="wall.html">Class Wall</a><button class="lchip" type="button" id="out">Sign out</button></div></div>' +
-      '<div class="atabs" id="tabs">' + [["online", "Online now"], ["writing", "Live writing"], ["attendance", "Attendance"], ["reveal", "Reveal weeks"], ["visits", "Visit log"], ["roster", "Roster"]].map(function (t) { return '<button type="button" data-tab="' + t[0] + '" class="' + (t[0] === TAB ? "on" : "") + '">' + t[1] + (t[0] === "online" ? ' <b id="onlineN">–</b>' : "") + "</button>"; }).join("") + "</div>" +
+      '<div class="atabs" id="tabs">' + [["present", "📱 Present"], ["online", "Online now"], ["writing", "Live writing"], ["attendance", "Attendance"], ["reveal", "Reveal weeks"], ["visits", "Visit log"], ["roster", "Roster"]].map(function (t) { return '<button type="button" data-tab="' + t[0] + '" class="' + (t[0] === TAB ? "on" : "") + '">' + t[1] + (t[0] === "online" ? ' <b id="onlineN">–</b>' : "") + "</button>"; }).join("") + "</div>" +
       '<section class="apanel" id="panel"></section>';
     $("#out").addEventListener("click", function () { KEY = ""; sessionStorage.removeItem("etc_admin"); document.cookie = "etc_admin=; path=/; max-age=0"; login(); });
     $("#tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (!b) return; TAB = b.getAttribute("data-tab"); $$("[data-tab]").forEach(function (x) { x.classList.toggle("on", x === b); }); render(); });
@@ -98,10 +98,22 @@
   }
   function render() {
     stopTimers(); var p = $("#panel"); p.innerHTML = '<p class="muted">Loading…</p>';
-    ({ online: online, writing: writing, attendance: attendance, reveal: reveal, visits: visits, roster: roster })[TAB]();
+    ({ present: present, online: online, writing: writing, attendance: attendance, reveal: reveal, visits: visits, roster: roster })[TAB]();
     timers.push(setInterval(function () { get("/api/track?online").then(function (d) { var n = $("#onlineN"); if (n) n.textContent = d.count; }).catch(function () {}); }, 15000));
   }
   function fail(e) { var p = $("#panel"); p.innerHTML = '<p class="muted">' + esc(e.message) + "</p>"; if (/password/i.test(e.message)) login(e.message); }
+
+  /* present with the phone remote */
+  function present() {
+    var p = $("#panel");
+    var C = window.COURSE || {}, weeks = (C.weeks || []).filter(function (w) { return typeof w.n === "number"; });
+    var cw = L.currentWeek ? L.currentWeek() : 0;
+    p.innerHTML = '<h2 style="margin:0 0 6px">Present with your phone as a remote</h2>' +
+      '<p class="muted" style="margin:0 0 14px">Open a page on this computer (the one on the projector). A QR code appears; scan it with your phone. Your phone needs the admin password once, so students who scan the QR get nothing. From the phone you can go to the next or previous section, scroll, send reactions, show answers, run a timer, blank the screen and switch weeks.</p>' +
+      '<div class="lchips" style="flex-wrap:wrap;gap:8px">' + weeks.map(function (w) { var n = String(w.n).padStart(2, "0"); return '<a class="' + (w.n === cw ? "lbtn" : "lchip") + '" href="weeks/week-' + n + '.html?remote=start">Week ' + w.n + (w.n === cw ? " · this week" : "") + "</a>"; }).join("") +
+      '<a class="lchip" href="index.html?remote=start">Home page</a><a class="lchip" href="wall.html?remote=start">Class Wall</a></div>' +
+      '<p class="muted small" style="margin:16px 0 0">Tip: on any page of the site, the <b>📱 Remote</b> button in the top menu does the same. The remote stays connected when you move between pages, and ends after 6 hours or when you tap End.</p>';
+  }
 
   /* online */
   function online() {

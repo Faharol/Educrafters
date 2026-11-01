@@ -75,11 +75,12 @@
       weeks.map(function (w) { var id = "w" + pad(w.n); return '<a class="gl ' + (current === id ? "on" : "") + '" href="' + ROOT + "weeks/week-" + pad(w.n) + '.html" title="' + esc(w.title) + '">' + pad(w.n) + (w.n === cw ? '<span class="live" style="width:6px;height:6px;margin:0 0 0 4px;background:#ff9f0a;animation:none" aria-label="this week"></span>' : "") + "</a>"; }).join("") +
       '<a class="gl ' + (current === "wall" ? "on" : "") + '" href="' + ROOT + 'wall.html"><span class="live"></span>Wall</a>' +
       '<a class="gl ' + (current === "course" ? "on" : "") + '" href="' + ROOT + 'course.html">Course</a>' +
-      (isLecturer() ? '<a class="gl gl-admin is-in" href="' + ROOT + 'admin.html">🔑 Admin</a>' : '<a class="gl gl-admin" href="' + ROOT + 'admin.html" title="Lecturer sign-in">🔒 Lecturer</a>') + '</div>' +
+      (isLecturer() ? '<a class="gl gl-remote" href="#" title="Control this screen from your phone">📱 Remote</a><a class="gl gl-admin is-in" href="' + ROOT + 'admin.html">🔑 Admin</a>' : '<a class="gl gl-admin" href="' + ROOT + 'admin.html" title="Lecturer sign-in">🔒 Lecturer</a>') + '</div>' +
       '<span class="gn-xp" id="gnXp" title="Experience points on this device">⚡ ' + (totalXp || 0) + ' XP</span></div><div class="gprog" id="gprog"></div>';
     var el = document.createElement("nav");
     el.className = "gn"; el.setAttribute("aria-label", "Main"); el.innerHTML = html;
     document.body.insertBefore(el, document.body.firstChild);
+    if (isLecturer() && !window.__rmLoaded) { window.__rmLoaded = 1; setTimeout(function () { var sc = document.createElement("script"); sc.src = ROOT + "assets/js/remote-screen.js"; document.body.appendChild(sc); }, 0); }
     var on = $(".gl.on", el), links = $(".gn-links", el);
     if (on && links.scrollWidth > links.clientWidth) links.scrollLeft = (on.getBoundingClientRect().left - links.getBoundingClientRect().left + links.scrollLeft) - links.clientWidth / 2 + on.offsetWidth / 2;
     return el;
