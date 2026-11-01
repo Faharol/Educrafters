@@ -107,9 +107,9 @@
   function closeModal() { if (modal) { modal.remove(); modal = null; } }
   function showPair(id) {
     closeModal();
-    var url = location.origin + "/remote.html#" + id;
+    var url = location.origin + "/remote.html#" + id + "." + ((sess && sess.token) || "");
     modal = document.createElement("div"); modal.className = "rm-modal";
-    modal.innerHTML = '<div class="rm-card"><p style="margin:0;color:#2997ff;font-weight:600">📱 Phone remote</p><h3>Scan with your phone</h3><p>Your phone must be signed in as lecturer. Students who scan this get nothing.</p><div class="rm-qr"></div><p class="rm-st">Waiting for your phone…</p><button type="button" class="ghost" data-hide>Hide</button><button type="button" class="ghost" data-stop>Stop remote</button></div>';
+    modal.innerHTML = '<div class="rm-card"><p style="margin:0;color:#2997ff;font-weight:600">📱 Phone remote</p><h3>Scan with your phone</h3><p>Scan with your phone camera. No password needed. This QR hides itself once your phone connects.</p><div class="rm-qr"></div><p class="rm-st">Waiting for your phone…</p><button type="button" class="ghost" data-hide>Hide</button><button type="button" class="ghost" data-stop>Stop remote</button></div>';
     document.body.appendChild(modal);
     drawQR($(".rm-qr", modal), url, 240);
     $("[data-hide]", modal).addEventListener("click", closeModal);
@@ -161,9 +161,9 @@
     });
   }
   function start() {
-    if (sess) { showPair(sess.id); return; }
+    if (sess && sess.token) { showPair(sess.id); return; }
     api("POST", "", { action: "start" }).then(function (d) {
-      sess = { id: d.id, after: Date.now() * 1000 }; setSess(sess); navBtn(); showPair(d.id); postState(true); poll();
+      sess = { id: d.id, token: d.token, after: Date.now() * 1000 }; setSess(sess); navBtn(); showPair(d.id); postState(true); poll();
     }).catch(function (e) { toast(e.status === 401 ? "Sign in as lecturer first (Admin)." : "Could not start the remote. " + e.message); });
   }
   function stop() {

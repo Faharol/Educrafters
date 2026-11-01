@@ -28,8 +28,12 @@ async function cmdsAfter(store: any, id: string, after: number) {
   return (await Promise.all(keys.slice(0, 20).map((k: string) => store.get(k, { type: "json" }).catch(() => null)))).filter(Boolean);
 }
 
+/* the phone proves itself with the session token carried in the QR (no password to type);
+   the computer proves itself with the admin password */
+function tokenOk(req: Request, s: any) { const t = req.headers.get("x-remote-token") || ""; return !!(s && s.token && t && t === s.token); }
+
 export default async (req: Request) => {
-  if (!adminOk(req)) return json({ error: "Admin password required" }, 401);
+  const admin = adminOk(req);
   const store = getStore({ name: "remote", consistency: "strong" });
   const url = new URL(req.url);
   const now = Date.now();
@@ -38,12 +42,15 @@ export default async (req: Request) => {
     // phone: current screen state
     if (url.searchParams.has("state")) {
       const id = clean(url.searchParams.get("state"), 12);
-      if (!(await live(store, id))) return json({ error: "This remote session has ended. Start a new one on the computer." }, 404);
+      const ses = await live(store, id);
+      if (ses && !admin && !tokenOk(req, ses)) return json({ error: "Scan the QR code on the computer again." }, 401);
+      if (!ses) return json({ error: "This remote session has ended. Start a new one on the computer." }, 404);
       const st = (await store.get("st/" + id, { type: "json" }).catch(() => null)) as any;
       return json({ state: st || null, now });
     }
     // screen: wait for commands
     if (url.searchParams.has("wait")) {
+      if (!admin) return json({ error: "Admin password required" }, 401);
       const id = clean(url.searchParams.get("wait"), 12);
       const after = Number(url.searchParams.get("after")) || 0;
       if (!(await live(store, id))) return json({ error: "ended", ended: true }, 404);
@@ -64,13 +71,17 @@ export default async (req: Request) => {
   const action = clean(body.action, 10);
 
   if (action === "start") {
+    if (!admin) return json({ error: "Admin password required" }, 401);
+    const token = Array.from({ length: 16 }, () => "abcdefghjkmnpqrstuvwxyz23456789"[Math.floor(Math.random() * 31)]).join("");
     const id = Array.from({ length: 10 }, () => "abcdefghjkmnpqrstuvwxyz23456789"[Math.floor(Math.random() * 31)]).join("");
-    await store.setJSON("s/" + id, { id, created: now, expires: now + LIFE });
-    return json({ id, expires: now + LIFE });
+    await store.setJSON("s/" + id, { id, token, created: now, expires: now + LIFE });
+    return json({ id, token, expires: now + LIFE });
   }
 
   const id = clean(body.id, 12);
-  if (!(await live(store, id))) return json({ error: "This remote session has ended. Start a new one on the computer." }, 404);
+  const ses = await live(store, id);
+  if (!ses) return json({ error: "This remote session has ended. Start a new one on the computer." }, 404);
+  if (!admin && !(tokenOk(req, ses) && (action === "cmd" || action === "end"))) return json({ error: "Scan the QR code on the computer again." }, 401);
 
   if (action === "state") {
     const st = body.state && typeof body.state === "object" ? body.state : {};

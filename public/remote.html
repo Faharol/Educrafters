@@ -52,7 +52,8 @@
 (function () {
   "use strict";
   var app = document.getElementById("app");
-  var ID = (location.hash || "").replace(/^#/, "").trim();
+  var HASH = (location.hash || "").replace(/^#/, "").trim().split(".");
+  var ID = HASH[0] || "", TOKEN = HASH[1] || "";
   var KEYS = "etc-remote-key";
   function $(s) { return app.querySelector(s); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
@@ -63,7 +64,7 @@
   }
   function flash(t) { var f = document.getElementById("flash"); f.textContent = t; f.classList.add("show"); clearTimeout(flash.t); flash.t = setTimeout(function () { f.classList.remove("show"); }, 1200); }
   function api(method, q, body) {
-    return fetch("/api/remote" + (q || ""), { method: method, cache: "no-store", headers: Object.assign({ "x-admin-key": key() }, body ? { "content-type": "application/json" } : {}), body: body ? JSON.stringify(body) : undefined })
+    return fetch("/api/remote" + (q || ""), { method: method, cache: "no-store", headers: Object.assign({ "x-admin-key": key(), "x-remote-token": TOKEN }, body ? { "content-type": "application/json" } : {}), body: body ? JSON.stringify(body) : undefined })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) { var e = new Error(d.error || "Error " + r.status); e.status = r.status; throw e; } return d; }); });
   }
 
@@ -91,10 +92,11 @@
   function send(cmd, arg) {
     try { if (navigator.vibrate) navigator.vibrate(12); } catch (e) {}
     return api("POST", "", { action: "cmd", id: ID, cmd: cmd, arg: arg == null ? "" : String(arg) }).catch(function (e) {
-      if (e.status === 401) { try { localStorage.removeItem(KEYS); } catch (x) {} gate("The password changed. Enter it again."); }
+      if (e.status === 401) { if (TOKEN) rescan(); else gate("Enter the admin password."); }
       else if (e.status === 404) ended(); else flash("Not sent. Check the connection.");
     });
   }
+  function rescan() { app.innerHTML = '<div class="gate"><div style="font-size:3rem">📷</div><h2>Scan again</h2><p class="muted">On the computer, tap <b>📱 Remote</b> and scan the new QR code.</p></div>'; ST = "ended"; }
   function ended() { app.innerHTML = '<div class="gate"><div style="font-size:3rem">⏹</div><h2>Remote ended</h2><p class="muted">Start a new remote on the computer and scan the new QR code.</p></div>'; ST = "ended"; }
 
   function render() {
@@ -132,7 +134,7 @@
     api("GET", "?state=" + ID).then(function (d) {
       busy = false; var k = JSON.stringify(d.state || {});
       if (k !== lastKey) { lastKey = k; var y = window.scrollY; ST = d.state || {}; render(); window.scrollTo(0, y); }
-    }).catch(function (e) { busy = false; if (e.status === 404) ended(); else if (e.status === 401) gate("Enter the admin password."); });
+    }).catch(function (e) { busy = false; if (e.status === 404) ended(); else if (e.status === 401) { if (TOKEN) rescan(); else gate("Enter the admin password."); } });
   }
   function connect() {
     ST = {}; render();
@@ -140,7 +142,7 @@
   }
   setInterval(refresh, 2500);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); });
-  if (!key()) gate(); else connect();
+  if (TOKEN || key()) connect(); else gate();
 })();
 </script>
 </body>

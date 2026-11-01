@@ -92,5 +92,5 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 ## 1 Nov 2026: phone remote for the projector
 - `netlify/functions/remote.mts` (`/api/remote`, store `remote`): admin password on every call. `start` makes a 6-hour session; the phone posts `cmd` (next, prev, up, down, top, goto, week, react, answers, timer, black, qr, wall, clear, home); the screen long-polls `?wait=<id>&after=<seq>` (up to 7 s, checks every 300 ms) and posts its `state` (title, sections, current section) for the phone.
 - Screen side `public/assets/js/remote-screen.js`, loaded by `lab.js` only for the lecturer (admin cookie). Top menu shows "📱 Remote"; `?remote=start` on any page opens the QR. Session id lives in sessionStorage, so it survives page changes.
-- Phone page `public/remote.html#<id>`: asks for the admin password once (kept in localStorage `etc-remote-key`), so a student who scans the QR on the projector cannot control anything.
+- Phone page `public/remote.html#<id>.<token>`: no password; the QR carries a per-session token (owner asked for no typing on the phone). The QR hides itself once the phone connects. Without a token the page falls back to asking for the admin password.
 - Admin has a "📱 Present" tab with one link per week that opens it with the QR.
