@@ -148,16 +148,20 @@
     }
     setTimeout(function () { postState(); }, 900);
   }
+  /* check for phone commands about once a second (edge function: billed per request, no compute time) */
+  function pollUrl() { return "/api/remote-poll?wait=" + sess.id + "&after=" + (sess.after || 0); }
   function poll() {
     if (!sess || polling) return; polling = true;
-    api("GET", "?wait=" + sess.id + "&after=" + (sess.after || 0)).then(function (d) {
+    fetch(pollUrl(), { cache: "no-store", headers: { "x-admin-key": adminKey() } }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) { var e = new Error(d.error || "Error"); e.status = r.status; throw e; } return d; });
+    }).then(function (d) {
       polling = false;
       (d.cmds || []).forEach(function (c) { if (c.seq > (sess.after || 0)) { sess.after = c.seq; setSess(sess); act(c); } });
-      poll();
+      setTimeout(poll, document.hidden ? 4000 : 1000);
     }).catch(function (e) {
       polling = false;
       if (e.status === 404 || e.status === 401) { toast(e.status === 401 ? "Sign in as lecturer again to use the remote." : "Remote session ended."); sess = null; setSess(null); navBtn(); return; }
-      setTimeout(poll, 2500);
+      setTimeout(poll, 3000);
     });
   }
   function start() {

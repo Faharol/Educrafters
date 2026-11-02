@@ -8,12 +8,11 @@ import { json, clean, adminOk } from "../lib/shared.mts";
      s/<id>            session { id, created, expires }
      st/<id>           screen state { title, url, week, sections[], cur, ts } (written by the screen)
      c/<id>/<seq>      one command { cmd, arg, ts } (written by the phone)
-   The screen long-polls GET ?wait=<id>&after=<seq> (returns as soon as a command lands, or after ~7 s). */
+   Polling (screen for commands, phone for state) goes through the edge function remote-poll.ts. */
 
 const ID_RE = /^[a-z0-9]{10}$/;
 const LIFE = 6 * 3600 * 1000;
 const CMDS = new Set(["hello", "next", "prev", "up", "down", "top", "goto", "week", "react", "answers", "timer", "black", "qr", "wall", "clear", "home"]);
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const seqKey = (n: number) => String(n).padStart(13, "0");
 
 async function live(store: any, id: string) {
@@ -54,13 +53,8 @@ export default async (req: Request) => {
       const id = clean(url.searchParams.get("wait"), 12);
       const after = Number(url.searchParams.get("after")) || 0;
       if (!(await live(store, id))) return json({ error: "ended", ended: true }, 404);
-      const until = now + 7000;
-      while (Date.now() < until) {
-        const c = await cmdsAfter(store, id, after);
-        if (c.length) return json({ cmds: c });
-        await sleep(300);
-      }
-      return json({ cmds: [] });
+      // kept for old pages; polling now goes through the edge function /api/remote-poll (no compute cost)
+      return json({ cmds: await cmdsAfter(store, id, after) });
     }
     return json({ error: "Unknown query" }, 400);
   }

@@ -131,7 +131,7 @@
   var lastKey = "";
   function refresh() {
     if (busy || ST === "ended" || document.hidden) return; busy = true;
-    api("GET", "?state=" + ID).then(function (d) {
+    fetch("/api/remote-poll?state=" + ID, { cache: "no-store", headers: { "x-admin-key": key(), "x-remote-token": TOKEN } }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) { var e = new Error(d.error || "Error"); e.status = r.status; throw e; } return d; }); }).then(function (d) {
       busy = false; var k = JSON.stringify(d.state || {});
       if (k !== lastKey) { lastKey = k; var y = window.scrollY; ST = d.state || {}; render(); window.scrollTo(0, y); }
     }).catch(function (e) { busy = false; if (e.status === 404) ended(); else if (e.status === 401) { if (TOKEN) rescan(); else gate("Enter the admin password."); } });
@@ -140,7 +140,7 @@
     ST = {}; render();
     send("hello").then(function () { flash("Connected"); refresh(); });
   }
-  setInterval(refresh, 2500);
+  setInterval(refresh, 3000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) refresh(); });
   if (TOKEN || key()) connect(); else gate();
 })();

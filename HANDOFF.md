@@ -100,3 +100,8 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - Student page `public/hadir.html#<id>.<code>`: wipes the code from the address bar on load, so a copied link carries nothing. Sets `etclab:identity` so the portal knows the student afterwards.
 - Admin tab "📷 QR attendance": choose class and week, full-screen QR with live count and latest names, Hide or Close; list of classes with Records (present/absent per roster, MANUAL and other-class tags, Undo, CSV) and Delete for empty sessions.
 - Separate from the activity-based weekly attendance (`/api/track` attend); both can be used.
+
+## 2 Nov 2026: remote made cheap on credits
+- Netlify credit plan (Personal, 1,000 credits/month): functions are billed by compute time (10 credits per GB-hour), Edge Functions only per request (2 credits per 10,000). The old remote long-poll kept a function running all class (~10 credits/hour).
+- Polling now goes through `netlify/edge-functions/remote-poll.ts` (`/api/remote-poll`): the computer checks for commands every 1 s (4 s when the tab is hidden), the phone reads the screen state every 3 s. Estimated well under 1 credit per hour. `remote.mts` keeps start/state/cmd/end; its `?wait` now answers immediately.
+- Each production deploy costs 15 credits, so batch changes before deploying.
