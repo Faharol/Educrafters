@@ -70,6 +70,8 @@
   if (KEY) { try { sessionStorage.setItem("etc_admin", KEY); } catch (e) {} }
   var weeks = C.weeks.filter(function (w) { return typeof w.n === "number"; });
   var H = { "content-type": "application/json" };
+  var WHO = null; // { role, name, sections }
+  function whoami() { return post("/api/admin", { action: "login", password: KEY }).then(function (d) { WHO = d; QSECTIONS = d.sections && d.sections.length ? d.sections : QSECTIONS; return d; }); }
   function hdr() { return { "content-type": "application/json", "x-admin-key": KEY }; }
   function get(url) { return fetch(url, { cache: "no-store", headers: { "x-admin-key": KEY } }).then(function (r) { var ct = r.headers.get("content-type") || ""; if (!ct.includes("json")) throw new Error("The admin works on the class website (Netlify), not on this copy."); return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
   function post(url, body) { return fetch(url, { method: "POST", headers: hdr(), body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || "Error"); return d; }); }); }
@@ -81,15 +83,15 @@
 
   function login(msg) {
     app.innerHTML = '<div class="login"><p class="eyebrow">ETC Lab · Lecturer</p><h2 style="margin:0">Admin</h2><p class="muted" style="margin:0">Who is online, what they are writing, attendance, and when each week opens.</p><input id="pw" type="password" placeholder="Password" aria-label="Password"><button class="lbtn" id="go" type="button">Sign in</button><p class="small muted" id="msg" style="margin:0">' + esc(msg || "") + "</p></div>";
-    function go() { var pw = $("#pw").value; post("/api/admin", { action: "login", password: pw }).then(function () { KEY = pw; sessionStorage.setItem("etc_admin", pw); document.cookie = "etc_admin=" + encodeURIComponent(pw) + "; path=/; max-age=" + (3600 * 12) + "; samesite=lax"; shell(); }).catch(function (e) { $("#msg").textContent = e.message; }); }
+    function go() { var pw = $("#pw").value; post("/api/admin", { action: "login", password: pw }).then(function (d) { WHO = d; if (d.sections && d.sections.length) QSECTIONS = d.sections; KEY = pw; sessionStorage.setItem("etc_admin", pw); document.cookie = "etc_admin=" + encodeURIComponent(pw) + "; path=/; max-age=" + (3600 * 12) + "; samesite=lax"; shell(); }).catch(function (e) { $("#msg").textContent = e.message; }); }
     $("#go").addEventListener("click", go); $("#pw").addEventListener("keydown", function (e) { if (e.key === "Enter") go(); }); $("#pw").focus();
   }
   var TAB = "online", timers = [];
   function stopTimers() { timers.forEach(clearInterval); timers = []; }
   function shell() {
     stopTimers();
-    app.innerHTML = '<div class="ahead"><div><p class="eyebrow" style="margin:0 0 2px">ETC Lab · Admin</p><h1 style="font-size:clamp(1.8rem,4vw,2.6rem);margin:0">' + L.words("Lecturer") + " " + L.words("console.", 1, true) + '</h1></div><div class="lchips"><a class="lchip" href="live.html">Live round</a><a class="lchip" href="class-tools.html">Class tools</a><a class="lchip" href="wall.html">Class Wall</a><button class="lchip" type="button" id="out">Sign out</button></div></div>' +
-      '<div class="atabs" id="tabs">' + [["present", "📱 Present"], ["qatt", "📷 QR attendance"], ["online", "Online now"], ["writing", "Live writing"], ["attendance", "Attendance"], ["reveal", "Reveal weeks"], ["visits", "Visit log"], ["roster", "Roster"]].map(function (t) { return '<button type="button" data-tab="' + t[0] + '" class="' + (t[0] === TAB ? "on" : "") + '">' + t[1] + (t[0] === "online" ? ' <b id="onlineN">–</b>' : "") + "</button>"; }).join("") + "</div>" +
+    app.innerHTML = '<div class="ahead"><div><p class="eyebrow" style="margin:0 0 2px">ETC Lab · Admin' + (WHO && WHO.name && WHO.role !== "owner" ? " · " + esc(WHO.name) + " (" + (WHO.sections || []).length + " classes)" : "") + '</p><h1 style="font-size:clamp(1.8rem,4vw,2.6rem);margin:0">' + L.words("Lecturer") + " " + L.words("console.", 1, true) + '</h1></div><div class="lchips"><a class="lchip" href="live.html">Live round</a><a class="lchip" href="class-tools.html">Class tools</a><a class="lchip" href="wall.html">Class Wall</a><button class="lchip" type="button" id="out">Sign out</button></div></div>' +
+      '<div class="atabs" id="tabs">' + [["present", "📱 Present"], ["qatt", "📷 QR attendance"], ["online", "Online now"], ["writing", "Live writing"], ["attendance", "Attendance"], ["reveal", "Reveal weeks"], ["visits", "Visit log"], ["roster", "Roster"]].filter(function (t) { return !(WHO && WHO.role !== "owner" && (t[0] === "reveal" || t[0] === "roster")); }).map(function (t) { return '<button type="button" data-tab="' + t[0] + '" class="' + (t[0] === TAB ? "on" : "") + '">' + t[1] + (t[0] === "online" ? ' <b id="onlineN">–</b>' : "") + "</button>"; }).join("") + "</div>" +
       '<section class="apanel" id="panel"></section>';
     $("#out").addEventListener("click", function () { KEY = ""; sessionStorage.removeItem("etc_admin"); document.cookie = "etc_admin=; path=/; max-age=0"; login(); });
     $("#tabs").addEventListener("click", function (e) { var b = e.target.closest("[data-tab]"); if (!b) return; TAB = b.getAttribute("data-tab"); $$("[data-tab]").forEach(function (x) { x.classList.toggle("on", x === b); }); render(); });
@@ -279,7 +281,7 @@
     draw();
   }
 
-  if (KEY) { get("/api/admin").then(shell).catch(function () { login(); }); } else login();
+  if (KEY) { whoami().then(shell).catch(function () { login(); }); } else login();
 })();
 </script>
 </body>

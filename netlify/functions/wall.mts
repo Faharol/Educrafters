@@ -38,7 +38,7 @@ export default async (req: Request) => {
   const store = getStore({ name: "class-wall", consistency: "strong" });
 
   if (req.method === "GET") {
-    if (url.searchParams.has("auth")) return pinOk(req) ? json({ ok: true }) : json({ error: "Wrong PIN" }, 401);
+    if (url.searchParams.has("auth")) return (await pinOk(req)) ? json({ ok: true }) : json({ error: "Wrong PIN" }, 401);
     const board = boardOf(url);
     if (!board) return json({ error: "Unknown board" }, 400);
     const { blobs } = await store.list({ prefix: board + "/" });
@@ -88,7 +88,7 @@ export default async (req: Request) => {
   }
 
   if (req.method === "DELETE") {
-    if (!pinOk(req)) return json({ error: "Lecturer PIN required" }, 401);
+    if (!(await pinOk(req))) return json({ error: "Lecturer PIN required" }, 401);
     const board = boardOf(url);
     const id = url.searchParams.get("id") || "";
     if (!board || !ID_RE.test(id)) return json({ error: "Bad request" }, 400);
@@ -102,7 +102,7 @@ export default async (req: Request) => {
 
   if (req.method === "PATCH") {
     // pin / unpin: ?board=&id=&pin=1|0
-    if (!pinOk(req)) return json({ error: "Lecturer PIN required" }, 401);
+    if (!(await pinOk(req))) return json({ error: "Lecturer PIN required" }, 401);
     const board = boardOf(url);
     const id = url.searchParams.get("id") || "";
     if (!board || !ID_RE.test(id)) return json({ error: "Bad request" }, 400);

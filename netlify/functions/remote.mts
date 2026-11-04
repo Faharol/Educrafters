@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import type { Config } from "@netlify/functions";
-import { json, clean, adminOk } from "../lib/shared.mts";
+import { json, clean, whoAmI } from "../lib/shared.mts";
 
 /* Phone remote for the projector screen. Admin password required on both sides,
    so a student who scans the QR on the projector gets nothing.
@@ -32,7 +32,7 @@ async function cmdsAfter(store: any, id: string, after: number) {
 function tokenOk(req: Request, s: any) { const t = req.headers.get("x-remote-token") || ""; return !!(s && s.token && t && t === s.token); }
 
 export default async (req: Request) => {
-  const admin = adminOk(req);
+  const admin = req.headers.get("x-admin-key") ? !!(await whoAmI(req)) : false;
   const store = getStore({ name: "remote", consistency: "strong" });
   const url = new URL(req.url);
   const now = Date.now();

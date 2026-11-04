@@ -45,7 +45,8 @@
 (function () {
   "use strict";
   var app = document.getElementById("app");
-  var SECTIONS = ["PEMBINAAN BANGUNAN 1", "PEMBINAAN BANGUNAN 2", "MEKATRONIK 1", "ROBOTIK DAN AUTOMASI 3"];
+  var SECTIONS = ["PEMBINAAN BANGUNAN 1", "PEMBINAAN BANGUNAN 2", "MEKATRONIK 1", "ROBOTIK DAN AUTOMASI 3", "KOMPUTER 1", "KOMPUTER 2", "KOMPUTER 3", "SISTEM ELEKTRIK 1", "SISTEM ELEKTRONIK 1", "ELEKTRONIK INDUSTRI 1", "ROBOTIK DAN AUTOMASI 1", "ROBOTIK DAN AUTOMASI 2"];
+  try { fetch("/api/admin?sections", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (d) { if (d && d.sections && d.sections.length) { SECTIONS.length = 0; Array.prototype.push.apply(SECTIONS, d.sections); } }).catch(function () {}); } catch (e) {}
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function lsGet(k) { try { var v = localStorage.getItem("etclab:" + k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem("etclab:" + k, JSON.stringify(v)); } catch (e) {} }

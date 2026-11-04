@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import type { Config } from "@netlify/functions";
-import { json, clean, adminOk, normMatric, WEEK_RE, DEV_RE, isOpen, mytDate, type RevealConfig } from "../lib/shared.mts";
+import { json, clean, normMatric, WEEK_RE, DEV_RE, isOpen, mytDate, whoAmI, canSee, type RevealConfig } from "../lib/shared.mts";
 
 /* Student tracking: identify (matric), presence heartbeats, live writing, attendance.
    Blobs, store "track":
@@ -61,29 +61,33 @@ export default async (req: Request) => {
 
   /* ---------- admin reads ---------- */
   if (req.method === "GET") {
-    if (!adminOk(req)) return json({ error: "Admin password required" }, 401);
+    const who = await whoAmI(req);
+    if (!who) return json({ error: "Admin password required" }, 401);
+    const mine = (x: any) => canSee(who, x && x.section); // a lecturer sees only students of their own classes
     const now = Date.now();
     if (url.searchParams.has("online")) {
       const all = await listJson(store, "pres/");
-      const online = all.filter((p) => now - p.ts < ONLINE_MS).sort((a, b) => b.ts - a.ts);
+      const online = all.filter((p) => now - p.ts < ONLINE_MS && mine(p)).sort((a, b) => b.ts - a.ts);
       return json({ now, count: online.length, online: online.map((p) => ({ device: p.device, nick: p.nick, matric: p.matric || "", name: p.name || "", section: p.section || "", page: p.page, ts: p.ts, since: p.since || p.ts })) });
     }
     if (url.searchParams.has("visits")) {
       const day = clean(url.searchParams.get("visits"), 10) || mytDate(now);
-      const v = await listJson(store, "visit/" + day + "/");
+      const v = (await listJson(store, "visit/" + day + "/")).filter(mine);
       v.sort((a, b) => a.ts - b.ts);
       return json({ day, count: v.length, visits: v.map((x) => ({ device: x.device, nick: x.nick, matric: x.matric || "", name: x.name || "", section: x.section || "", page: x.page, ts: x.ts })) });
     }
     if (url.searchParams.has("writing")) {
       const week = clean(url.searchParams.get("writing"), 3);
       if (!WEEK_RE.test(week)) return json({ error: "Bad week" }, 400);
-      const w = await listJson(store, "w/" + week + "/");
+      const w = (await listJson(store, "w/" + week + "/")).filter(mine);
       w.sort((a, b) => b.ts - a.ts);
       return json({ now, week, count: w.length, writing: w.map((x) => ({ device: x.device, pad: x.pad, label: x.label, nick: x.nick, matric: x.matric || "", name: x.name || "", section: x.section || "", text: x.text, words: x.words, ts: x.ts })) });
     }
     if (url.searchParams.has("history")) {
       const week = clean(url.searchParams.get("week"), 3), device = clean(url.searchParams.get("device"), 24), pad = clean(url.searchParams.get("pad"), 24);
       if (!WEEK_RE.test(week) || !DEV_RE.test(device) || !pad) return json({ error: "Bad request" }, 400);
+      const latest = (await store.get(`w/${week}/${device}/${pad}`, { type: "json" }).catch(() => null)) as any;
+      if (!latest || !mine(latest)) return json({ history: [] });
       const h = await listJson(store, `wh/${week}/${device}/${pad}/`);
       h.sort((a, b) => a.ts - b.ts);
       return json({ history: h.map((x) => ({ ts: x.ts, words: x.words, text: x.text })) });
@@ -91,8 +95,8 @@ export default async (req: Request) => {
     if (url.searchParams.has("attendance")) {
       const week = clean(url.searchParams.get("attendance"), 3);
       if (!WEEK_RE.test(week)) return json({ error: "Bad week" }, 400);
-      const att = await listJson(store, "att/" + week + "/");
-      const ros = await roster();
+      const att = (await listJson(store, "att/" + week + "/")).filter(mine);
+      const ros = (await roster()).filter(mine);
       const byKey: Record<string, any> = {}; att.forEach((a) => { byKey[a.key] = a; });
       const rows = ros.map((r) => { const a = byKey[r.key]; return { matric: r.matric, name: r.name, section: r.section, present: !!a, manual: false, ts: a ? a.ts : null, xp: a ? a.summary?.xp : null, done: a ? a.summary?.done : null, total: a ? a.summary?.total : null }; });
       const extra = att.filter((a) => !ros.some((r) => r.key === a.key)).map((a) => ({ matric: a.matric, name: a.name || "(no name)", section: a.section || "", present: true, manual: true, ts: a.ts, xp: a.summary?.xp, done: a.summary?.done, total: a.summary?.total }));
@@ -103,12 +107,18 @@ export default async (req: Request) => {
     }
     if (url.searchParams.has("attendance-all")) {
       const out: Record<string, number> = {};
-      for (let n = 1; n <= 14; n++) { const w = "w" + String(n).padStart(2, "0"); const { blobs } = await store.list({ prefix: "att/" + w + "/" }); out[w] = blobs.length; }
-      return json({ counts: out, roster: (await roster()).length });
+      for (let n = 1; n <= 14; n++) {
+        const w = "w" + String(n).padStart(2, "0");
+        if (!who.sections) { const { blobs } = await store.list({ prefix: "att/" + w + "/" }); out[w] = blobs.length; }
+        else out[w] = (await listJson(store, "att/" + w + "/")).filter(mine).length;
+      }
+      return json({ counts: out, roster: (await roster()).filter(mine).length });
     }
     if (url.searchParams.has("reset-attendance")) {
       const week = clean(url.searchParams.get("reset-attendance"), 3), matric = normMatric(url.searchParams.get("matric"));
       if (!WEEK_RE.test(week) || !matric) return json({ error: "Bad request" }, 400);
+      const rec = (await store.get(`att/${week}/${matric}`, { type: "json" }).catch(() => null)) as any;
+      if (rec && !mine(rec)) return json({ error: "This student is not in your classes." }, 403);
       await store.delete(`att/${week}/${matric}`);
       return json({ ok: true });
     }

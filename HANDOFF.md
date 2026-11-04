@@ -105,3 +105,11 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - Netlify credit plan (Personal, 1,000 credits/month): functions are billed by compute time (10 credits per GB-hour), Edge Functions only per request (2 credits per 10,000). The old remote long-poll kept a function running all class (~10 credits/hour).
 - Polling now goes through `netlify/edge-functions/remote-poll.ts` (`/api/remote-poll`): the computer checks for commands every 1 s (4 s when the tab is hidden), the phone reads the screen state every 3 s. Estimated well under 1 credit per hour. `remote.mts` keeps start/state/cmd/end; its `?wait` now answers immediately.
 - Each production deploy costs 15 credits, so batch changes before deploying.
+
+## 4 Nov 2026: second lecturer (Ms. Farahhein Johari)
+- Roster now 345 students in 12 classes: the owner's 4 classes plus Ms. Farahhein's 8 (KOMPUTER 1, 2, 3, SISTEM ELEKTRIK 1, SISTEM ELEKTRONIK 1, ELEKTRONIK INDUSTRI 1, ROBOTIK DAN AUTOMASI 1, 2), imported from her i-Attendance sheet without phones or emails. The import file is kept outside the repo.
+- Two students appear in both lecturers' class lists; the roster keeps one class per student and currently holds them in her classes until the owner confirms.
+- Multi-lecturer login: `config/lecturers` = [{ id, name, hash: sha256("etc:"+password), sections }], set by the owner with POST /api/admin {action:"lecturers"}. `shared.mts` `whoAmI(req)` returns the owner (ADMIN_PASSWORD, sees all) or a lecturer (sees own sections only). Applied to track (online, visits, writing, history, attendance, undo), qatt (start only own classes; sessions and records filtered), remote, wall and live PIN, the edge gate cookie and remote-poll. Reveal weeks, roster import and the lecturer list stay owner-only; the admin page hides those tabs for lecturers.
+- Brute-force guard: more than 25 wrong passwords from one IP in 15 minutes blocks that IP for the rest of the window (`config/fail/<ip>`). The lecturer password is short at the owner's request.
+- One attendance rule for every student: all core items, 70% of the small activities, every section read.
+- Public GET /api/admin?sections lists class names only, for the "not on the list" picker on hadir.html.

@@ -546,7 +546,7 @@
   function fmtUnlock(ts) { var d = new Date(ts + 8 * 3600000); var M = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]; return d.getUTCDate() + " " + M[d.getUTCMonth()]; }
 
   /* identity prompt (modal); a matric not on the list can fall back to a manual entry (name + section), flagged for the lecturer */
-  var SECTIONS = ["PEMBINAAN BANGUNAN 1", "PEMBINAAN BANGUNAN 2", "MEKATRONIK 1", "ROBOTIK DAN AUTOMASI 3"];
+  var SECTIONS = ["PEMBINAAN BANGUNAN 1", "PEMBINAAN BANGUNAN 2", "MEKATRONIK 1", "ROBOTIK DAN AUTOMASI 3", "KOMPUTER 1", "KOMPUTER 2", "KOMPUTER 3", "SISTEM ELEKTRIK 1", "SISTEM ELEKTRONIK 1", "ELEKTRONIK INDUSTRI 1", "ROBOTIK DAN AUTOMASI 1", "ROBOTIK DAN AUTOMASI 2"];
   function askIdentity(opts) {
     opts = opts || {};
     return new Promise(function (resolve) {

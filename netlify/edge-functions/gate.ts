@@ -3,7 +3,7 @@ import { getStore } from "@netlify/blobs";
 
 /* Reveal gate: a week page opens 2 days before its Monday (00:00 Malaysia time),
    unless the admin overrides it (store "config", key "reveal": { w03: "open" | "locked" }).
-   The lecturer passes with the admin cookie set by admin.html. */
+   Lecturers (owner or any lecturer login) pass with the cookie set by admin.html. */
 
 const WEEK_START: Record<string, string> = {
   w01: "2026-10-05", w02: "2026-10-12", w03: "2026-10-19", w04: "2026-10-26", w05: "2026-11-02", w06: "2026-11-09", w07: "2026-11-16",
@@ -12,15 +12,30 @@ const WEEK_START: Record<string, string> = {
 const MYT = 8 * 3600 * 1000;
 const unlockTs = (w: string) => Date.parse(WEEK_START[w] + "T00:00:00Z") - MYT - 2 * 86400000;
 
+
+/* owner password or any lecturer password (config/lecturers holds sha256("etc:" + password)) */
+async function staffKey(key: string): Promise<boolean> {
+  if (!key) return false;
+  const admin = Netlify.env.get("ADMIN_PASSWORD") || "";
+  if (admin && key === admin) return true;
+  try {
+    const list = ((await getStore({ name: "config", consistency: "strong" }).get("lecturers", { type: "json" })) as any[] | null) || [];
+    if (!list.length) return false;
+    const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("etc:" + key));
+    const h = Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    return list.some((l) => l && l.hash === h);
+  } catch { return false; }
+}
+
 export default async (req: Request, context: Context) => {
   const url = new URL(req.url);
   const m = url.pathname.match(/\/weeks\/week-(\d\d)\.html$/);
   if (!m) return;
   const week = "w" + m[1];
   if (!WEEK_START[week]) return;
-  const admin = Netlify.env.get("ADMIN_PASSWORD") || "";
   const cookie = req.headers.get("cookie") || "";
-  if (admin && cookie.split(/;\s*/).some((c) => c === "etc_admin=" + encodeURIComponent(admin))) return;
+  const ck = cookie.split(/;\s*/).find((c) => c.startsWith("etc_admin="));
+  if (ck) { let v = ""; try { v = decodeURIComponent(ck.slice(10)); } catch { /* bad cookie */ } if (await staffKey(v)) return; }
   let override: string | undefined;
   try {
     const store = getStore({ name: "config", consistency: "strong" });

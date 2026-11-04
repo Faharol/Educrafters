@@ -49,7 +49,7 @@ export default async (req: Request) => {
       if (s.qi >= 0) {
         const a = await store.list({ prefix: `a/${code}/${s.qi}/` });
         out.answered = a.blobs.length;
-        if (url.searchParams.has("dist") && pinOk(req)) {
+        if (url.searchParams.has("dist") && (await pinOk(req))) {
           const ans = (await Promise.all(a.blobs.map((b: any) => store.get(b.key, { type: "json" }).catch(() => null)))).filter(Boolean) as any[];
           const dist = [0, 0, 0, 0, 0, 0]; ans.forEach((x) => { if (x.k >= 0 && x.k < 6) dist[x.k]++; });
           out.dist = dist.slice(0, (s.questions[s.qi] || { opts: [] }).opts.length);
@@ -58,7 +58,7 @@ export default async (req: Request) => {
       const pid = clean(url.searchParams.get("pid"), 16);
       if (pid) { const me = ps.findIndex((p) => p.pid === pid); out.me = me >= 0 ? { rank: me + 1, score: ps[me].score, nick: ps[me].nick } : null; }
     }
-    if (url.searchParams.has("full") && pinOk(req)) out.questions = s.questions;
+    if (url.searchParams.has("full") && (await pinOk(req))) out.questions = s.questions;
     return json(out);
   }
 
@@ -68,7 +68,7 @@ export default async (req: Request) => {
   const action = clean(body.action, 12);
 
   if (action === "create") {
-    if (!pinOk(req)) return json({ error: "Lecturer PIN required" }, 401);
+    if (!(await pinOk(req))) return json({ error: "Lecturer PIN required" }, 401);
     const qs: Q[] = (Array.isArray(body.questions) ? body.questions : []).slice(0, 20).map((q: any) => ({
       q: clean(q.q, 400), opts: (Array.isArray(q.opts) ? q.opts : []).slice(0, 6).map((o: any) => clean(o, 200)), right: Math.max(0, Math.min(5, Number(q.right) || 0)), why: clean(q.why, 300) }))
       .filter((q: Q) => q.q && q.opts.length >= 2 && q.right < q.opts.length);
@@ -121,7 +121,7 @@ export default async (req: Request) => {
   }
 
   // lecturer controls
-  if (!pinOk(req)) return json({ error: "Lecturer PIN required" }, 401);
+  if (!(await pinOk(req))) return json({ error: "Lecturer PIN required" }, 401);
   if (action === "next") {
     if (s.qi + 1 >= s.questions.length) { s.state = "ended"; }
     else { s.qi += 1; s.state = "q"; s.qStart = Date.now(); }

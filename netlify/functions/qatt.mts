@@ -1,7 +1,7 @@
 import { getStore } from "@netlify/blobs";
 import type { Config } from "@netlify/functions";
 import { createHmac, randomBytes } from "node:crypto";
-import { json, clean, adminOk, normMatric, WEEK_RE, DEV_RE } from "../lib/shared.mts";
+import { json, clean, normMatric, WEEK_RE, DEV_RE, whoAmI, canSee } from "../lib/shared.mts";
 
 /* QR attendance per class (section).
    Only the lecturer (admin password) can start a session and see the QR.
@@ -42,14 +42,16 @@ export default async (req: Request) => {
   const store = getStore({ name: "qatt", consistency: "strong" });
   const url = new URL(req.url);
   const now = Date.now();
-  const admin = adminOk(req);
+  const who = req.headers.get("x-admin-key") ? await whoAmI(req) : null;
+  const admin = !!who;
+  const mineS = (s: any) => !!s && canSee(who, s.section); // a lecturer handles only their own classes
 
   if (req.method === "GET") {
     if (!admin) return json({ error: "Admin password required" }, 401);
     // the lecturer's screen: current QR code + live count
     if (url.searchParams.has("live")) {
       const s = await getSess(store, clean(url.searchParams.get("live"), 12));
-      if (!s) return json({ error: "No such session" }, 404);
+      if (!mineS(s)) return json({ error: "No such session" }, 404);
       const step = Math.floor(now / STEP);
       const recs = await listJson(store, `r/${s.id}/`);
       recs.sort((a, b) => b.ts - a.ts);
@@ -58,14 +60,14 @@ export default async (req: Request) => {
         recent: recs.slice(0, 8).map((r) => ({ name: r.name, manual: !!r.manual, other: !!r.other })) });
     }
     if (url.searchParams.has("sessions")) {
-      const all = await listJson(store, "s/");
+      const all = (await listJson(store, "s/")).filter(mineS);
       all.sort((a, b) => b.created - a.created);
       const out = await Promise.all(all.slice(0, 60).map(async (s) => { const { blobs } = await store.list({ prefix: `r/${s.id}/` }); return { id: s.id, section: s.section, week: s.week, created: s.created, open: isLive(s, now), present: blobs.length }; }));
       return json({ sessions: out });
     }
     if (url.searchParams.has("records")) {
       const s = await getSess(store, clean(url.searchParams.get("records"), 12));
-      if (!s) return json({ error: "No such session" }, 404);
+      if (!mineS(s)) return json({ error: "No such session" }, 404);
       const recs = await listJson(store, `r/${s.id}/`);
       const byKey: Record<string, any> = {}; recs.forEach((r) => { byKey[normMatric(r.matric)] = r; });
       const ros = (await roster()).filter((r) => r.section === s.section);
@@ -87,13 +89,14 @@ export default async (req: Request) => {
     if (action === "start") {
       const section = clean(body.section, 60), week = clean(body.week, 3);
       if (!section) return json({ error: "Choose a class" }, 400);
+      if (!canSee(who, section)) return json({ error: "That is not one of your classes." }, 403);
       if (week && !WEEK_RE.test(week)) return json({ error: "Bad week" }, 400);
       const id = Array.from(randomBytes(10)).map((b) => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31]).join("");
       await store.setJSON("s/" + id, { id, secret: randomBytes(24).toString("base64url"), section, week, created: now, expires: now + LIFE, open: true });
       return json({ id });
     }
     const s = await getSess(store, clean(body.s, 12));
-    if (!s) return json({ error: "No such session" }, 404);
+    if (!mineS(s)) return json({ error: "No such session" }, 404);
     if (action === "stop") { s.open = false; await store.setJSON("s/" + s.id, s); return json({ ok: true }); }
     if (action === "delete") {
       const { blobs } = await store.list({ prefix: `r/${s.id}/` });

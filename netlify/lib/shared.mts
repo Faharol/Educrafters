@@ -6,13 +6,60 @@ export const json = (data: unknown, status = 200) =>
 export const clean = (s: unknown, max: number) =>
   String(s ?? "").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").trim().slice(0, max);
 
-/* Lecturer PIN (wall, live round) or the admin password both unlock lecturer actions. */
-export const pinOk = (req: Request) => {
+/* ---------- who is calling: the owner (ADMIN_PASSWORD) or a lecturer from config/lecturers ----------
+   config/lecturers = [{ id, name, hash, sections: [...] }], hash = sha256("etc:" + password).
+   The owner sees every class; a lecturer sees only their own sections. */
+import { getStore } from "@netlify/blobs";
+export type Who = { role: "owner" | "lecturer"; id: string; name: string; sections: string[] | null };
+export type Lecturer = { id: string; name: string; hash: string; sections: string[] };
+
+export async function sha(s: string) {
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("etc:" + s));
+  return Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+export async function lecturers(): Promise<Lecturer[]> {
+  try { const cfg = getStore({ name: "config", consistency: "strong" }); return ((await cfg.get("lecturers", { type: "json" })) as Lecturer[] | null) || []; } catch { return []; }
+}
+export async function whoByKey(key: string): Promise<Who | null> {
+  if (!key) return null;
+  const admin = Netlify.env.get("ADMIN_PASSWORD") || "";
+  if (admin && key === admin) return { role: "owner", id: "owner", name: "Owner", sections: null };
+  const list = await lecturers(); if (!list.length) return null;
+  const h = await sha(key);
+  const l = list.find((x) => x.hash === h);
+  return l ? { role: "lecturer", id: l.id, name: l.name, sections: l.sections || [] } : null;
+}
+/* too many wrong passwords from one address: stop answering for 15 minutes (short passwords are guessable) */
+async function throttled(req: Request, failed: boolean) {
+  const ip = (req.headers.get("x-nf-client-connection-ip") || req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
+  if (!ip) return false;
+  try {
+    const st = getStore({ name: "config", consistency: "strong" }), k = "fail/" + ip.replace(/[^0-9a-fA-F:.]/g, "");
+    const rec = ((await st.get(k, { type: "json" })) as { n: number; t: number } | null) || { n: 0, t: Date.now() };
+    if (Date.now() - rec.t > 15 * 60_000) { rec.n = 0; rec.t = Date.now(); }
+    if (failed) { rec.n++; await st.setJSON(k, rec); }
+    return rec.n > 25;
+  } catch { return false; }
+}
+export async function whoAmI(req: Request): Promise<Who | null> {
+  const key = req.headers.get("x-admin-key") || "";
+  if (!key) return null;
+  const who = await whoByKey(key);
+  if (await throttled(req, !who)) return null;
+  return who;
+}
+export const canSee = (who: Who | null, section: string | undefined | null) => !!who && (!who.sections || who.sections.includes(String(section || "")));
+export const isOwner = (who: Who | null) => !!who && who.role === "owner";
+
+/* Lecturer PIN (wall, live round): the wall PIN, the admin password or any lecturer password. */
+export async function pinOk(req: Request) {
   const h = req.headers.get("x-wall-pin") || req.headers.get("x-admin-key") || "";
+  if (!h) return false;
   const pin = Netlify.env.get("WALL_PIN");
-  const admin = Netlify.env.get("ADMIN_PASSWORD");
-  return Boolean(h) && ((Boolean(pin) && h === pin) || (Boolean(admin) && h === admin));
-};
+  if (pin && h === pin) return true;
+  return !!(await whoByKey(h));
+}
+/* owner only (kept for old callers) */
 export const adminOk = (req: Request) => {
   const h = req.headers.get("x-admin-key") || "";
   const admin = Netlify.env.get("ADMIN_PASSWORD");

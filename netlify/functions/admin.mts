@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import type { Config } from "@netlify/functions";
-import { json, clean, adminOk, normMatric, WEEK_RE, WEEK_START, unlockTs, isOpen, type RevealConfig } from "../lib/shared.mts";
+import { json, clean, normMatric, WEEK_RE, WEEK_START, unlockTs, isOpen, whoAmI, whoByKey, isOwner, sha, lecturers, type RevealConfig } from "../lib/shared.mts";
 
 /* Admin API: login check, roster import, reveal schedule.
    Blobs: store "config": "reveal" (overrides), "roster" (array), "roster-index" (normalised matric -> entry). */
@@ -18,10 +18,21 @@ export default async (req: Request) => {
       for (const w of Object.keys(WEEK_START)) weeks[w] = { open: isOpen(w, cfg, now), unlock: unlockTs(w), override: cfg[w] || null };
       return json({ now, weeks });
     }
-    if (!adminOk(req)) return json({ error: "Admin password required" }, 401);
-    if (url.searchParams.has("roster")) {
+    // public: class names (for the "not on the list" pickers); names of students are never sent here
+    if (url.searchParams.has("sections")) {
       const roster = ((await config.get("roster", { type: "json" })) as any[] | null) || [];
+      return json({ sections: Array.from(new Set(roster.map((r) => r.section).filter(Boolean))).sort() });
+    }
+    const who = await whoAmI(req);
+    if (!who) return json({ error: "Admin password required" }, 401);
+    if (url.searchParams.has("roster")) {
+      const all = ((await config.get("roster", { type: "json" })) as any[] | null) || [];
+      const roster = who.sections ? all.filter((r) => who.sections!.includes(r.section)) : all;
       return json({ roster, count: roster.length });
+    }
+    if (url.searchParams.has("lecturers")) {
+      if (!isOwner(who)) return json({ error: "Owner only" }, 403);
+      return json({ lecturers: (await lecturers()).map((l) => ({ id: l.id, name: l.name, sections: l.sections })) });
     }
     return json({ ok: true });
   }
@@ -32,12 +43,36 @@ export default async (req: Request) => {
   const action = clean(body.action, 16);
 
   if (action === "login") {
-    const pw = Netlify.env.get("ADMIN_PASSWORD");
-    if (!pw) return json({ error: "ADMIN_PASSWORD is not set on the site yet." }, 503);
-    if (clean(body.password, 64) !== pw) return json({ error: "Wrong password" }, 401);
-    return json({ ok: true });
+    const pw = clean(body.password, 64);
+    const fake = new Request(req.url, { headers: Object.assign({ "x-admin-key": pw }, Object.fromEntries(["x-nf-client-connection-ip", "x-forwarded-for"].map((h) => [h, req.headers.get(h) || ""]))) });
+    const who = pw ? await whoAmI(fake) : null;
+    if (!who) return json({ error: "Wrong password" }, 401);
+    let sections = who.sections;
+    if (!sections) { const roster = ((await config.get("roster", { type: "json" })) as any[] | null) || []; sections = Array.from(new Set(roster.map((r) => r.section).filter(Boolean))).sort(); }
+    return json({ ok: true, role: who.role, name: who.name, sections });
   }
-  if (!adminOk(req)) return json({ error: "Admin password required" }, 401);
+  const who = await whoAmI(req);
+  if (!who) return json({ error: "Admin password required" }, 401);
+  // everything below changes shared settings: owner only
+  if (!isOwner(who)) return json({ error: "Only the course owner can change this." }, 403);
+
+  if (action === "lecturers") {
+    // [{ id, name, password?, sections[] }]; a missing password keeps the old one
+    const old = await lecturers();
+    const list = Array.isArray(body.lecturers) ? body.lecturers : [];
+    const out = [];
+    for (const l of list.slice(0, 20)) {
+      const id = clean(l.id, 24).toLowerCase().replace(/[^a-z0-9-]/g, ""); if (!id) continue;
+      const pw = clean(l.password, 64);
+      const prev = old.find((o) => o.id === id);
+      const hash = pw ? await sha(pw) : prev ? prev.hash : "";
+      if (!hash) return json({ error: "Password needed for " + id }, 400);
+      if (pw && pw === Netlify.env.get("ADMIN_PASSWORD")) return json({ error: "Use a different password from the owner's." }, 400);
+      out.push({ id, name: clean(l.name, 80), hash, sections: (Array.isArray(l.sections) ? l.sections : []).map((x: any) => clean(x, 60)).filter(Boolean) });
+    }
+    await config.setJSON("lecturers", out);
+    return json({ ok: true, lecturers: out.map((l) => ({ id: l.id, name: l.name, sections: l.sections })) });
+  }
 
   if (action === "reveal") {
     const week = clean(body.week, 3);
