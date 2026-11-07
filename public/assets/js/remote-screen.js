@@ -92,7 +92,20 @@
     bigEl.innerHTML = '<div><div class="rm-qr"></div><p>Scan to open ETC Lab</p><small>' + esc(url.replace(/^https?:\/\//, "").replace(/\/$/, "")) + "</small></div>";
     document.body.appendChild(bigEl); drawQR($(".rm-qr", bigEl), url, 360);
   }
-  function clearAll() { timer(0); black(false); if (bigEl) { bigEl.remove(); bigEl = null; } closeModal(); }
+  /* smooth scrolling at a speed set from the watch: -3..3; stops by itself if the watch goes quiet */
+  var speed = 0, speedAt = 0, speedRaf = 0, speedLast = 0;
+  var SPEEDS = [0, 140, 340, 760]; // pixels per second
+  function setSpeed(v) {
+    speed = Math.max(-3, Math.min(3, parseInt(v, 10) || 0)); speedAt = Date.now();
+    if (speed && !speedRaf) { speedLast = performance.now(); speedRaf = requestAnimationFrame(speedTick); }
+  }
+  function speedTick(t) {
+    if (!speed || Date.now() - speedAt > 3500) { speed = 0; speedRaf = 0; postState(); return; }
+    var dt = Math.min(0.1, (t - speedLast) / 1000); speedLast = t;
+    window.scrollBy({ top: (speed < 0 ? -1 : 1) * SPEEDS[Math.abs(speed)] * dt, behavior: "instant" });
+    speedRaf = requestAnimationFrame(speedTick);
+  }
+  function clearAll() { setSpeed(0); timer(0); black(false); if (bigEl) { bigEl.remove(); bigEl = null; } closeModal(); }
   function showAnswers() {
     var list = sections(), x = list[curIndex(list)]; if (!x) return;
     $$("details.reveal, details", x).forEach(function (d) { d.open = true; try { d.dispatchEvent(new Event("toggle")); } catch (e) {} });
@@ -130,8 +143,9 @@
     var list = sections(), i = curIndex(list);
     switch (c.cmd) {
       case "hello": closeModal(); toast("📱 Phone connected"); break;
-      case "next": goTo(list, i + 1); break;
-      case "prev": goTo(list, i - 1); break;
+      case "speed": setSpeed(c.arg); return;
+      case "next": setSpeed(0); goTo(list, i + 1); break;
+      case "prev": setSpeed(0); goTo(list, i - 1); break;
       case "up": window.scrollBy({ top: -Math.round(innerHeight * 0.6), behavior: "smooth" }); break;
       case "down": window.scrollBy({ top: Math.round(innerHeight * 0.6), behavior: "smooth" }); break;
       case "top": window.scrollTo({ top: 0, behavior: "smooth" }); break;

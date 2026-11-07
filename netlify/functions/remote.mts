@@ -1,6 +1,6 @@
 import { getStore } from "@netlify/blobs";
 import type { Config } from "@netlify/functions";
-import { json, clean, whoAmI } from "../lib/shared.mts";
+import { json, clean, whoAmI, sha, isOwner } from "../lib/shared.mts";
 
 /* Phone remote for the projector screen. Admin password required on both sides,
    so a student who scans the QR on the projector gets nothing.
@@ -12,7 +12,7 @@ import { json, clean, whoAmI } from "../lib/shared.mts";
 
 const ID_RE = /^[a-z0-9]{10}$/;
 const LIFE = 6 * 3600 * 1000;
-const CMDS = new Set(["hello", "next", "prev", "up", "down", "top", "goto", "week", "react", "answers", "timer", "black", "qr", "wall", "clear", "home"]);
+const CMDS = new Set(["hello", "next", "prev", "up", "down", "top", "goto", "week", "react", "answers", "timer", "black", "qr", "wall", "clear", "home", "speed"]);
 const seqKey = (n: number) => String(n).padStart(13, "0");
 
 async function live(store: any, id: string) {
@@ -32,7 +32,8 @@ async function cmdsAfter(store: any, id: string, after: number) {
 function tokenOk(req: Request, s: any) { const t = req.headers.get("x-remote-token") || ""; return !!(s && s.token && t && t === s.token); }
 
 export default async (req: Request) => {
-  const admin = req.headers.get("x-admin-key") ? !!(await whoAmI(req)) : false;
+  const who = req.headers.get("x-admin-key") ? await whoAmI(req) : null;
+  const admin = !!who;
   const store = getStore({ name: "remote", consistency: "strong" });
   const url = new URL(req.url);
   const now = Date.now();
@@ -68,8 +69,38 @@ export default async (req: Request) => {
     if (!admin) return json({ error: "Admin password required" }, 401);
     const token = Array.from({ length: 16 }, () => "abcdefghjkmnpqrstuvwxyz23456789"[Math.floor(Math.random() * 31)]).join("");
     const id = Array.from({ length: 10 }, () => "abcdefghjkmnpqrstuvwxyz23456789"[Math.floor(Math.random() * 31)]).join("");
-    await store.setJSON("s/" + id, { id, token, created: now, expires: now + LIFE });
+    await store.setJSON("s/" + id, { id, token, created: now, expires: now + LIFE, by: who!.id });
+    await store.setJSON("latest/" + who!.id, { id, ts: now }); // the watch sends to the lecturer's latest session
     return json({ id, token, expires: now + LIFE });
+  }
+
+  /* Apple Watch: a personal watch key (no QR); it can only send remote commands to its owner's latest session */
+  if (action === "watchkey") {
+    if (!isOwner(who)) return json({ error: "Owner only" }, 403);
+    const cfg = getStore({ name: "config", consistency: "strong" });
+    const key = Array.from({ length: 28 }, () => "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 55)]).join("");
+    const forId = clean(body.for, 24) || "owner";
+    const list = (((await cfg.get("watchkeys", { type: "json" })) as any[] | null) || []).filter((k) => k.id !== forId);
+    list.push({ id: forId, hash: await sha("watch:" + key), created: now });
+    await cfg.setJSON("watchkeys", list);
+    return json({ key, for: forId });
+  }
+  if (action === "watch") {
+    const cfg = getStore({ name: "config", consistency: "strong" });
+    const h = await sha("watch:" + clean(body.key, 40));
+    const k = (((await cfg.get("watchkeys", { type: "json" })) as any[] | null) || []).find((x) => x.hash === h);
+    if (!k) return json({ error: "Unknown watch key" }, 401);
+    const lt = (await store.get("latest/" + k.id, { type: "json" }).catch(() => null)) as any;
+    const ses = lt ? await live(store, lt.id) : null;
+    if (!ses) return json({ error: "Start the remote on the computer" }, 404);
+    const cmd = clean(body.cmd, 10);
+    if (cmd && cmd !== "ping") {
+      if (!CMDS.has(cmd)) return json({ error: "Unknown command" }, 400);
+      const seq = now * 1000 + Math.floor(Math.random() * 1000);
+      await store.setJSON(`c/${ses.id}/${seqKey(seq)}`, { seq, cmd, arg: clean(body.arg, 40), ts: now });
+    }
+    const st = (await store.get("st/" + ses.id, { type: "json" }).catch(() => null)) as any;
+    return json({ ok: true, state: st ? { title: st.title, cur: st.cur, total: (st.sections || []).length } : null });
   }
 
   const id = clean(body.id, 12);

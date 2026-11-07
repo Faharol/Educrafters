@@ -113,3 +113,9 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - Brute-force guard: more than 25 wrong passwords from one IP in 15 minutes blocks that IP for the rest of the window (`config/fail/<ip>`). The lecturer password is short at the owner's request.
 - One attendance rule for every student: all core items, 70% of the small activities, every section read.
 - Public GET /api/admin?sections lists class names only, for the "not on the list" picker on hadir.html.
+
+## 7 Nov 2026: Apple Watch remote
+- Owner can drive the projector from an Apple Watch (Ultra 2). POST `/api/remote` `{action:"watch", key, cmd, arg}` sends to the lecturer's newest live session (`latest/<whoId>`); `cmd:"ping"` returns the screen state only.
+- Watch keys: owner-only `{action:"watchkey"}` issues a 28-char key; stored hashed in `config/watchkeys` as sha256("etc:watch:"+key). Issuing a new key replaces the old one. The key is NOT in this repo.
+- New command `speed` (-3..3) for smooth scrolling on the screen (`remote-screen.js`, 140/340/760 px/s, `behavior:"instant"`); stops on its own after 3.5 s without a keepalive. Next/Prev and clear reset it to 0.
+- The watch app (SwiftUI, watchOS 11: double tap via `handGestureShortcut(.primaryAction)`, tilt via CoreMotion gravity) lives outside the repo because it embeds the key. Free Apple ID: reinstall from Xcode every 7 days.
