@@ -129,6 +129,14 @@
   var hudRects = [], hudAt = 0, hudHover = null, hoverAt = 0, hoverFired = false;
   var focus = [innerWidth / 2, innerHeight / 2], anchor = [innerWidth / 2, innerHeight / 2], anchorAt = 0;
   var wantM = 0, wantAt = 0, ZOOM_IN = 2.2;
+  // Scrolling, tuned on the owner's own use (10 Nov 2026): his hand sits thumb-up about a quarter of the
+  // time while talking, so scrolling has to be slow, has to be armed by holding still, and rests after use.
+  var SCROLL_DEAD = 7;           // degrees of hand movement that do nothing
+  var SCROLL_GAIN = 26;          // px/s per degree beyond that
+  var SCROLL_MAX = 600;          // px/s at most (under one screen a second)
+  var SCROLL_ARM = 600;          // ms thumb-up before scrolling can start
+  var SCROLL_REST = 1200;        // ms pause after a scroll ends
+  var scrollArmAt = 0, wasScrolling = false, flingRestUntil = 0;
   var zoomTarget = 1, flingV = 0, trailAt = 0, trailX = 0, trailY = 0, dbgEl = null, dbgHist = [];
 
   /* ---------- effects ---------- */
@@ -247,7 +255,7 @@
   }
   function modeName() {
     if (hudHover) return hudHover.el.getAttribute("data-label") + (/^z/.test(hudHover.kind) ? " " + zoom.toFixed(1) + "×" : "");
-    if (mode === 1) return "↕ Scroll";
+    if (mode === 1) return scrollV ? "↕ Scrolling" : (lastAt < scrollArmAt ? "↕ Scroll · hold" : "↕ Scroll · ready");
     if (mode === 2) return "⌕ Zoom " + zoom.toFixed(1) + "×";
     return zoom > 1.02 ? "◎ Point · " + zoom.toFixed(1) + "×" : "◎ Point";
   }
@@ -278,7 +286,8 @@
       var r = +p.r, want = wantM;
       if (r < 45) want = 0; else if (r > 60 && r < 140) want = 1;
       if (want !== wantM) { wantM = want; wantAt = lastAt; }
-      m = !active || mode < 0 ? 0 : (lastAt - wantAt >= 300 ? wantM : mode);
+      // going into scroll takes a longer hold than coming out of it
+      m = !active || mode < 0 ? 0 : (lastAt - wantAt >= (wantM === 1 ? 450 : 250) ? wantM : mode);
       if (!active) { wantM = 0; wantAt = lastAt; }
     }
     if (!p.a) { sleep("⏸ Arm down"); return; }
@@ -287,7 +296,7 @@
       layer.classList.add("air-live"); refreshHud(); anchor = [cx, cy]; anchorAt = performance.now(); boot();
     }
     if (m !== mode) {
-      if (m === 1) { scrollY0 = y; }
+      if (m === 1) { scrollY0 = null; scrollArmAt = lastAt + SCROLL_ARM; wasScrolling = false; }
       if (m === 2) { zoomY0 = y; zoom0 = zoom; if (zoom <= 1.02) zoomOrigin = null; }
       if (m === 0 && (mode === 1 || mode === 2)) { offY += y - lastY; offX += -x + lastX; } // keep the ring where it was when pointing resumes
       mode = m; clearHover(); snapped = null;
@@ -299,8 +308,18 @@
       var s = toScreen(x, y); tx = s[0]; ty = s[1];
       lastX = x; lastY = y;
     } else if (m === 1) {
-      var d = y - scrollY0, a = Math.abs(d);
-      scrollV = a < 3 ? 0 : (d > 0 ? -1 : 1) * Math.min(2000, Math.pow(a - 3, 1.35) * 55); // hand up = page up
+      if (lastAt < scrollArmAt) { scrollV = 0; scrollY0 = null; }      // arming, or resting after a scroll
+      else {
+        if (scrollY0 === null) scrollY0 = y;                            // neutral = where the hand is now
+        var d = y - scrollY0, a = Math.abs(d);
+        if (a < SCROLL_DEAD) {
+          scrollV = 0;
+          if (wasScrolling) { wasScrolling = false; scrollArmAt = lastAt + SCROLL_REST; scrollY0 = null; }
+        } else {
+          wasScrolling = true;
+          scrollV = (d > 0 ? -1 : 1) * Math.min(SCROLL_MAX, (a - SCROLL_DEAD) * SCROLL_GAIN);   // hand up = page up
+        }
+      }
     } else {
       zoom = clamp(zoom0 * Math.pow(2, (y - zoomY0) / 14), 1, 4);
       applyZoom();
@@ -353,9 +372,12 @@
       case "next": hudAct("next"); break;
       case "prev": hudAct("prev"); break;
       case "fling":
-        var fv = +e.v || 0; if (!fv) break;
+        var fv = +e.v || 0, nowF = performance.now();
+        // only a strong, deliberate flick counts, it moves about a third of a screen, and then it rests
+        if (Math.abs(fv) < 165 || nowF < flingRestUntil) break;
+        flingRestUntil = nowF + 1500;
         // flick up throws the content up (the page scrolls down), like a touch screen
-        flingV = clamp(fv * 10.5, -4200, 4200); streaks(fv > 0 ? 1 : -1); candsAt = 0; break;
+        flingV = clamp(fv * 4.5, -1300, 1300); streaks(fv > 0 ? 1 : -1); candsAt = 0; break;
       case "push":
         if (!hudHover && zoom <= 1.02) { focus = e.x != null && e.y != null ? toScreen(+e.x, +e.y) : [cx, cy]; zoomOrigin = null; }
         zoomTarget = clamp(zoomTarget * 1.7, 1, 4); wave(focus[0], focus[1], false); break;
