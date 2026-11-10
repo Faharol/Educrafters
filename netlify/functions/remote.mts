@@ -127,7 +127,7 @@ export default async (req: Request) => {
     const r = await fetch(`https://rest.ably.io/keys/${encodeURIComponent(keyName)}/requestToken`, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: "Basic " + btoa(ablyKey) },
-      body: JSON.stringify({ keyName, capability, ttl: 3 * 3600 * 1000, timestamp: now }),
+      body: JSON.stringify({ keyName, capability, clientId: (action === "airsub" ? "screen-" : "watch-") + ownerId, ttl: 3 * 3600 * 1000, timestamp: now }),
     });
     const td = (await r.json().catch(() => null)) as any;
     if (!r.ok || !td || !td.token) return json({ error: "Could not get a realtime token", detail: td && td.error ? td.error.message : r.status }, 502);
