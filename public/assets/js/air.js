@@ -7,8 +7,11 @@
           x and y are relative to where the arm settled after being raised, so a raise re-centres the ring.
      "e"  { s:seq, k:"click"|"next"|"prev"|"zreset"|"hello", x?, y? }  (x,y: pose just before the gesture)
 
-   EASY mode (default): only "point" and "click" are needed. Scroll, zoom and next/previous are big
-   on-screen buttons the ring hovers over; the watch's palm-roll modes are ignored.
+   Version 3 (simple): the watch also sends r = palm roll in degrees (0 palm down, 90 thumb up).
+     palm down            -> point
+     thumb up             -> scroll: move the hand up/down from where it was
+     double tap on a target -> click; on empty space -> zoom in there; again -> zoom out
+     PREV / NEXT at the bottom: rest the ring on them (or click)
 
    Big arm gestures (watch app v2) arrive as events too:
      "next"/"prev"  swing the arm left/right        -> section change with a wipe
@@ -95,12 +98,6 @@
     '<g class="spin2"><circle cx="32" cy="32" r="20" fill="none" stroke="#9ff0ff" stroke-width="1.5" stroke-dasharray="4 6"/></g>' +
     '<circle cx="32" cy="32" r="3.2" fill="#e8fdff"/></svg><div class="glyph"></div></div>' +
     '<div class="air-focus"></div>' +
-    '<div class="air-dock">' +
-    '<div class="air-btn" data-air="up" data-label="Scroll up">▲<small>UP</small></div>' +
-    '<div class="air-btn" data-air="down" data-label="Scroll down">▼<small>DOWN</small></div>' +
-    '<div class="air-btn sep" data-air="zin" data-label="Zoom in">＋<small>ZOOM</small></div>' +
-    '<div class="air-btn dim" data-air="zout" data-label="Zoom out">－<small>ZOOM</small></div>' +
-    '</div>' +
     '<div class="air-bar">' +
     '<div class="air-btn wide" data-air="prev" data-label="Previous section">‹ PREV</div>' +
     '<div class="air-hud"><span class="dot"></span><span class="txt">Air control</span></div>' +
@@ -131,6 +128,7 @@
   var lastY = 0, lastX = 0;
   var hudRects = [], hudAt = 0, hudHover = null, hoverAt = 0, hoverFired = false;
   var focus = [innerWidth / 2, innerHeight / 2], anchor = [innerWidth / 2, innerHeight / 2], anchorAt = 0;
+  var wantM = 0, wantAt = 0, ZOOM_IN = 2.2;
   var zoomTarget = 1, flingV = 0, trailAt = 0, trailX = 0, trailY = 0, dbgEl = null, dbgHist = [];
 
   /* ---------- effects ---------- */
@@ -258,10 +256,10 @@
   function applyZoom() {
     var b = document.body;
     if (zoom <= 1.001) {
-      zoom = 1; b.style.transform = ""; b.style.transformOrigin = ""; document.documentElement.classList.remove("air-zoomed"); zoomOrigin = null; zoutBtn.classList.add("dim"); return;
+      zoom = 1; b.style.transform = ""; b.style.transformOrigin = ""; document.documentElement.classList.remove("air-zoomed"); zoomOrigin = null; if (zoutBtn) zoutBtn.classList.add("dim"); return;
     }
     if (!zoomOrigin) zoomOrigin = EASY ? [focus[0] + scrollX, focus[1] + scrollY] : [cx + scrollX, cy + scrollY];
-    zoutBtn.classList.remove("dim");
+    if (zoutBtn) zoutBtn.classList.remove("dim");
     document.documentElement.classList.add("air-zoomed");
     b.style.transformOrigin = zoomOrigin[0] + "px " + zoomOrigin[1] + "px";
     b.style.transform = "scale(" + zoom.toFixed(3) + ")";
@@ -274,7 +272,15 @@
     if (!p || typeof p.s !== "number") return;
     if (p.s <= lastSeq) return;          // arrived late; a newer pose is already shown
     lastSeq = p.s; lastAt = performance.now();
-    var x = +p.x || 0, y = +p.y || 0, m = EASY ? 0 : p.m | 0;
+    var x = +p.x || 0, y = +p.y || 0, m = 0;
+    if (p.r != null) {
+      // palm roll picks the mode; it has to hold for a moment so a passing twist does not switch
+      var r = +p.r, want = wantM;
+      if (r < 45) want = 0; else if (r > 60 && r < 140) want = 1;
+      if (want !== wantM) { wantM = want; wantAt = lastAt; }
+      m = !active || mode < 0 ? 0 : (lastAt - wantAt >= 300 ? wantM : mode);
+      if (!active) { wantM = 0; wantAt = lastAt; }
+    }
     if (!p.a) { sleep("⏸ Arm down"); return; }
     if (!active) {
       active = true; offX = 0; offY = 0; mode = -1; cx = tx = innerWidth / 2; cy = ty = innerHeight / 2;
@@ -284,7 +290,7 @@
       if (m === 1) { scrollY0 = y; }
       if (m === 2) { zoomY0 = y; zoom0 = zoom; if (zoom <= 1.02) zoomOrigin = null; }
       if (m === 0 && (mode === 1 || mode === 2)) { offY += y - lastY; offX += -x + lastX; } // keep the ring where it was when pointing resumes
-      mode = m;
+      mode = m; clearHover(); snapped = null;
       ring.classList.toggle("mode-scroll", m === 1); ring.classList.toggle("mode-zoom", m === 2);
       glyph.textContent = m === 1 ? "↕" : m === 2 ? "⌕" : "";
     }
@@ -338,10 +344,12 @@
           else hudAct(hudHover.kind);
           break;
         }
-        var px = cx, py = cy;
-        if (snapped) { var r = snapped.el.getBoundingClientRect(); px = (r.left + r.right) / 2; py = (r.top + r.bottom) / 2; }
-        if (e.x != null && e.y != null && mode === 0 && !snapped) { var s = toScreen(+e.x, +e.y); px = s[0]; py = s[1]; }
-        clickAt(px, py); break;
+        if (mode === 1) break;                      // scrolling: a tap does nothing
+        if (snapped) { var r = snapped.el.getBoundingClientRect(); clickAt((r.left + r.right) / 2, (r.top + r.bottom) / 2); break; }
+        // nothing under the ring: double tap zooms in on that spot, and again zooms back out
+        if (zoom > 1.02 || zoomTarget > 1.02) { zoomTarget = 1; wave(cx, cy, true); }
+        else { focus = [cx, cy]; zoomOrigin = null; zoomTarget = ZOOM_IN; wave(cx, cy, false); }
+        break;
       case "next": hudAct("next"); break;
       case "prev": hudAct("prev"); break;
       case "fling":
