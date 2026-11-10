@@ -8,7 +8,13 @@
      "e"  { s:seq, k:"click"|"next"|"prev"|"zreset"|"hello", x?, y? }  (x,y: pose just before the gesture)
 
    EASY mode (default): only "point" and "click" are needed. Scroll, zoom and next/previous are big
-   on-screen buttons the ring hovers over; the watch's palm-roll modes are ignored. */
+   on-screen buttons the ring hovers over; the watch's palm-roll modes are ignored.
+
+   Big arm gestures (watch app v2) arrive as events too:
+     "next"/"prev"  swing the arm left/right        -> section change with a wipe
+     "fling" {v}    flick up/down (deg/s, + = up)   -> the page glides with momentum (flick up = content goes up)
+     "push"/"pull"  thrust toward / away from screen -> zoom in / out on the ring
+     "dbg" {...}    calibration numbers, shown in a small panel */
 (function () {
   "use strict";
   if (window.LABAir) return;
@@ -60,6 +66,22 @@
     ".air-hud.warm{border-color:rgba(255,190,60,.7);color:#ffe2a6;box-shadow:0 0 18px rgba(255,170,40,.35)}.air-hud.warm .dot{background:#ffbe3c;box-shadow:0 0 8px #ffbe3c}" +
     ".air-swipe{position:absolute;top:50%;font:200 120px/1 system-ui;color:#4fe3ff;text-shadow:0 0 24px #4fe3ff;margin-top:-60px;animation:airSwipe .6s ease-out forwards}" +
     ".air-swipe.r{right:6vw}.air-swipe.l{left:6vw}@keyframes airSwipe{0%{opacity:0;transform:translateX(0)}30%{opacity:1}100%{opacity:0;transform:translateX(var(--d))}}" +
+    ".air-wipe{position:absolute;top:0;bottom:0;width:60vw;background:linear-gradient(90deg,transparent,rgba(79,227,255,.10) 30%,rgba(79,227,255,.38) 50%,rgba(79,227,255,.10) 70%,transparent);border-left:2px solid rgba(159,240,255,.0);animation:airWipe .55s cubic-bezier(.3,.6,.3,1) forwards}" +
+    ".air-wipe::after{content:'';position:absolute;top:0;bottom:0;left:50%;width:3px;background:#bff6ff;box-shadow:0 0 30px 6px rgba(79,227,255,.9)}" +
+    "@keyframes airWipe{from{transform:translateX(var(--from))}to{transform:translateX(var(--to))}}" +
+    ".air-streak{position:absolute;width:2px;height:22vh;background:linear-gradient(180deg,transparent,rgba(159,240,255,.85),transparent);animation:airStreak .5s ease-out forwards}" +
+    "@keyframes airStreak{from{transform:translateY(0);opacity:1}to{transform:translateY(var(--dy));opacity:0}}" +
+    ".air-wave{position:absolute;width:80px;height:80px;margin:-40px 0 0 -40px;border-radius:50%;border:3px solid #ffd27a;box-shadow:0 0 26px rgba(255,190,60,.8),inset 0 0 20px rgba(255,190,60,.5);animation:airWave .6s ease-out forwards}" +
+    ".air-wave.in{animation-name:airWaveIn}" +
+    "@keyframes airWave{from{transform:scale(.4);opacity:1}to{transform:scale(7);opacity:0;border-width:1px}}" +
+    "@keyframes airWaveIn{from{transform:scale(7);opacity:0;border-width:1px}60%{opacity:1}to{transform:scale(.4);opacity:0}}" +
+    ".air-boot{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid #4fe3ff;box-shadow:0 0 30px rgba(79,227,255,.7),inset 0 0 30px rgba(79,227,255,.35);animation:airBoot .7s cubic-bezier(.2,.7,.3,1) forwards}" +
+    ".air-boot.b2{animation-delay:.12s;border-style:dashed;opacity:0}" +
+    "@keyframes airBoot{0%{transform:scale(6) rotate(0);opacity:0}40%{opacity:1}100%{transform:scale(.5) rotate(120deg);opacity:0}}" +
+    ".air-trail{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#9ff0ff;box-shadow:0 0 12px 3px rgba(79,227,255,.8);animation:airTrail .45s ease-out forwards}" +
+    "@keyframes airTrail{to{transform:scale(.1);opacity:0}}" +
+    ".air-dbg{position:absolute;left:14px;top:120px;min-width:300px;padding:12px 14px;border-radius:12px;background:rgba(2,16,24,.9);border:1px solid rgba(79,227,255,.6);color:#bff6ff;font:600 14px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;box-shadow:0 0 18px rgba(64,220,255,.3)}" +
+    ".air-dbg h4{margin:0 0 6px;font:700 12px/1 ui-monospace,monospace;letter-spacing:.14em;color:#7fd8ea}.air-dbg table{border-collapse:collapse;width:100%}.air-dbg td{padding:2px 8px 2px 0}.air-dbg td:nth-child(n+2){text-align:right}.air-dbg .ok{color:#7dffb0}.air-dbg .no{color:#ffb86b}.air-dbg small{display:block;margin-top:6px;color:#8fb5c0;font-weight:500}" +
     "html.air-zoomed body{transition:transform .08s linear}";
   document.head.appendChild(css);
 
@@ -109,6 +131,33 @@
   var lastY = 0, lastX = 0;
   var hudRects = [], hudAt = 0, hudHover = null, hoverAt = 0, hoverFired = false;
   var focus = [innerWidth / 2, innerHeight / 2], anchor = [innerWidth / 2, innerHeight / 2], anchorAt = 0;
+  var zoomTarget = 1, flingV = 0, trailAt = 0, trailX = 0, trailY = 0, dbgEl = null, dbgHist = [];
+
+  /* ---------- effects ---------- */
+  function fx(cls, style, ms) {
+    var n = document.createElement("div"); n.className = cls;
+    for (var k in style) { if (k.slice(0, 2) === "--") n.style.setProperty(k, style[k]); else n.style[k] = style[k]; }
+    layer.appendChild(n); setTimeout(function () { n.remove(); }, ms); return n;
+  }
+  function wipe(dir) { fx("air-wipe", { "--from": dir > 0 ? "100vw" : "-60vw", "--to": dir > 0 ? "-60vw" : "100vw" }, 600); }
+  function streaks(dir) {
+    for (var i = 0; i < 9; i++) fx("air-streak", { left: (6 + Math.random() * 88) + "vw", top: (10 + Math.random() * 60) + "vh", "--dy": (dir > 0 ? -1 : 1) * (18 + Math.random() * 22) + "vh", animationDelay: (i * 18) + "ms" }, 800);
+  }
+  function wave(px, py, inward) { fx("air-wave" + (inward ? " in" : ""), { left: px + "px", top: py + "px" }, 650); }
+  function boot() { fx("air-boot", {}, 800); fx("air-boot b2", {}, 950); }
+  function showDbg(d) {
+    var now = performance.now(), ef = +d.ef || 1;
+    dbgHist.push({ t: now, d: d }); while (dbgHist.length && now - dbgHist[0].t > 6000) dbgHist.shift();
+    var pk = { yr: 0, pr: 0, pu: 0, pl: 0, tw: 0 };
+    dbgHist.forEach(function (h) { for (var k in pk) pk[k] = Math.max(pk[k], Math.abs(+h.d[k] || 0)); });
+    if (!dbgEl) { dbgEl = document.createElement("div"); dbgEl.className = "air-dbg"; layer.appendChild(dbgEl); }
+    var rows = [["Swing left/right", "yr", 220 * ef, "°/s", 0], ["Flick up/down", "pr", 190 * ef, "°/s", 0], ["Push", "pu", 0.42 * ef, "g", 2], ["Pull", "pl", 0.42 * ef, "g", 2], ["Twist (click)", "tw", 380 * ef, "°/s", 0]];
+    dbgEl.innerHTML = "<h4>GESTURE CALIBRATION</h4><table><tr><td></td><td>now</td><td>best 6s</td><td>needs</td></tr>" + rows.map(function (r) {
+      var v = Math.abs(+d[r[1]] || 0), b = pk[r[1]];
+      return "<tr><td>" + r[0] + "</td><td>" + v.toFixed(r[4]) + "</td><td class='" + (b >= r[2] ? "ok" : "no") + "'>" + b.toFixed(r[4]) + "</td><td>" + r[2].toFixed(r[4]) + " " + r[3] + "</td></tr>";
+    }).join("") + "</table><small>Do each gesture 3 times. Green = strong enough. Effort " + ef.toFixed(1) + "×</small>";
+    clearTimeout(showDbg.t); showDbg.t = setTimeout(function () { if (dbgEl) { dbgEl.remove(); dbgEl = null; dbgHist = []; } }, 4000);
+  }
 
   /* ---------- on-screen buttons ---------- */
   function refreshHud() {
@@ -134,13 +183,13 @@
   }
   function hudAct(kind) {
     var R = window.LABRemote || {};
-    if (kind === "next") { resetZoom(); swipeFx(1); if (R.act) R.act({ cmd: "next" }); }
-    else if (kind === "prev") { resetZoom(); swipeFx(-1); if (R.act) R.act({ cmd: "prev" }); }
+    if (kind === "next") { resetZoom(); flingV = 0; wipe(1); swipeFx(1); if (R.act) R.act({ cmd: "next" }); }
+    else if (kind === "prev") { resetZoom(); flingV = 0; wipe(-1); swipeFx(-1); if (R.act) R.act({ cmd: "prev" }); }
     else if (kind === "up" || kind === "down") { window.scrollBy({ top: (kind === "up" ? -0.7 : 0.7) * innerHeight, behavior: "smooth" }); candsAt = 0; }
-    else if (kind === "zin" || kind === "zout") { zoom = clamp(zoom * (kind === "zin" ? 1.4 : 1 / 1.4), 1, 4); applyZoom(); }
+    else if (kind === "zin" || kind === "zout") { zoomTarget = clamp(zoomTarget * (kind === "zin" ? 1.4 : 1 / 1.4), 1, 4); }
   }
   function sleep(text) {
-    active = false; scrollV = 0; snapped = null; clearHover();
+    active = false; scrollV = 0; flingV = 0; snapped = null; clearHover();
     ring.classList.remove("on", "snap"); lock.classList.remove("on"); layer.classList.remove("air-live");
     setHud(text, "paused");
   }
@@ -208,7 +257,7 @@
   /* ---------- zoom (a lens on the page; the overlay stays sharp) ---------- */
   function applyZoom() {
     var b = document.body;
-    if (zoom <= 1.02) {
+    if (zoom <= 1.001) {
       zoom = 1; b.style.transform = ""; b.style.transformOrigin = ""; document.documentElement.classList.remove("air-zoomed"); zoomOrigin = null; zoutBtn.classList.add("dim"); return;
     }
     if (!zoomOrigin) zoomOrigin = EASY ? [focus[0] + scrollX, focus[1] + scrollY] : [cx + scrollX, cy + scrollY];
@@ -217,7 +266,7 @@
     b.style.transformOrigin = zoomOrigin[0] + "px " + zoomOrigin[1] + "px";
     b.style.transform = "scale(" + zoom.toFixed(3) + ")";
   }
-  function resetZoom() { zoom = 1; applyZoom(); }
+  function resetZoom() { zoom = 1; zoomTarget = 1; applyZoom(); }
 
   /* ---------- packets ---------- */
   function parse(d) { if (typeof d === "string") { try { return JSON.parse(d); } catch (e) { return null; } } return d; }
@@ -229,7 +278,7 @@
     if (!p.a) { sleep("⏸ Arm down"); return; }
     if (!active) {
       active = true; offX = 0; offY = 0; mode = -1; cx = tx = innerWidth / 2; cy = ty = innerHeight / 2;
-      layer.classList.add("air-live"); refreshHud(); anchor = [cx, cy]; anchorAt = performance.now();
+      layer.classList.add("air-live"); refreshHud(); anchor = [cx, cy]; anchorAt = performance.now(); boot();
     }
     if (m !== mode) {
       if (m === 1) { scrollY0 = y; }
@@ -293,8 +342,18 @@
         if (snapped) { var r = snapped.el.getBoundingClientRect(); px = (r.left + r.right) / 2; py = (r.top + r.bottom) / 2; }
         if (e.x != null && e.y != null && mode === 0 && !snapped) { var s = toScreen(+e.x, +e.y); px = s[0]; py = s[1]; }
         clickAt(px, py); break;
-      case "next": resetZoom(); swipeFx(1); if (R.act) R.act({ cmd: "next" }); break;
-      case "prev": resetZoom(); swipeFx(-1); if (R.act) R.act({ cmd: "prev" }); break;
+      case "next": hudAct("next"); break;
+      case "prev": hudAct("prev"); break;
+      case "fling":
+        var fv = +e.v || 0; if (!fv) break;
+        // flick up throws the content up (the page scrolls down), like a touch screen
+        flingV = clamp(fv * 10.5, -4200, 4200); streaks(fv > 0 ? 1 : -1); candsAt = 0; break;
+      case "push":
+        if (!hudHover && zoom <= 1.02) { focus = e.x != null && e.y != null ? toScreen(+e.x, +e.y) : [cx, cy]; zoomOrigin = null; }
+        zoomTarget = clamp(zoomTarget * 1.7, 1, 4); wave(focus[0], focus[1], false); break;
+      case "pull":
+        zoomTarget = clamp(zoomTarget / 1.7, 1, 4); wave(focus[0], focus[1], true); break;
+      case "dbg": showDbg(e); break;
       case "zreset": resetZoom(); setHud(modeName()); break;
     }
   }
@@ -306,6 +365,16 @@
     if (active && t - lastAt > STALE) sleep("Watch quiet");
     if (active) {
       if (scrollV) { window.scrollBy({ top: scrollV * dt, behavior: "instant" }); candsAt = 0; }
+      if (flingV) {
+        window.scrollBy({ top: flingV * dt, behavior: "instant" }); candsAt = 0;
+        flingV *= Math.exp(-dt * 2.2); if (Math.abs(flingV) < 40) flingV = 0;
+      }
+      if (Math.abs(zoomTarget - zoom) > 0.004) { zoom += (zoomTarget - zoom) * (1 - Math.exp(-dt * 9)); if (Math.abs(zoomTarget - zoom) <= 0.004 || (zoomTarget === 1 && zoom < 1.02)) zoom = zoomTarget; applyZoom(); }
+      if (t - trailAt > 28) {
+        var mvx = cx - trailX, mvy = cy - trailY;
+        if (mvx * mvx + mvy * mvy > 324) { fx("air-trail", { left: cx + "px", top: cy + "px" }, 480); trailX = cx; trailY = cy; }
+        trailAt = t;
+      }
       if (mode === 0) {
         var k = 1 - Math.exp(-dt * 16);
         cx += (tx - cx) * k; cy += (ty - cy) * k;
@@ -323,7 +392,7 @@
             if (held > 220) { window.scrollBy({ top: (hk === "up" ? -1 : 1) * Math.min(1500, 450 + (held - 220) * 0.6) * dt, behavior: "instant" }); candsAt = 0; }
           } else if (hk === "zin" || hk === "zout") {
             focusEl.style.transform = "translate(" + focus[0] + "px," + focus[1] + "px)"; focusEl.classList.add("on");
-            if (held > 280) { zoom = clamp(zoom * Math.exp((hk === "zin" ? 1 : -1) * dt * 0.55), 1, 4); applyZoom(); }
+            if (held > 280) { zoom = clamp(zoom * Math.exp((hk === "zin" ? 1 : -1) * dt * 0.55), 1, 4); if (hk === "zout" && zoom < 1.02) zoom = 1; zoomTarget = zoom; applyZoom(); }
           } else {
             hudHover.el.style.setProperty("--p", hoverFired ? 0 : clamp(held / DWELL, 0, 1));
             if (!hoverFired && held >= DWELL) { hoverFired = true; pulseAt((hr.left + hr.right) / 2, (hr.top + hr.bottom) / 2); hudAct(hk); }
@@ -390,6 +459,6 @@
     connect: connect, disconnect: disconnect,
     feed: function (name, data) { if (name === "p") onPose(parse(data)); else onEvent(parse(data)); }, // for testing
     poseFor: function (px, py) { return { x: -(((px - innerWidth / 2) / (innerWidth / 2)) * GX + offX), y: ((innerHeight / 2 - py) / (innerHeight / 2)) * GY + offY }; }, // for testing
-    state: function () { return { active: active, mode: mode, cx: cx, cy: cy, zoom: zoom, scrollV: scrollV, snapped: snapped ? labelOf(snapped.el) : null, hud: hudHover ? hudHover.kind : null, focus: focus }; }
+    state: function () { return { active: active, mode: mode, cx: cx, cy: cy, zoom: zoom, scrollV: scrollV, snapped: snapped ? labelOf(snapped.el) : null, hud: hudHover ? hudHover.kind : null, focus: focus, flingV: flingV, zoomTarget: zoomTarget }; }
   };
 })();
