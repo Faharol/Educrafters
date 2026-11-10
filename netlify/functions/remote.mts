@@ -103,6 +103,37 @@ export default async (req: Request) => {
     return json({ ok: true, state: st ? { title: st.title, cur: st.cur, total: (st.sections || []).length } : null });
   }
 
+  /* Air gestures (watch as a motion pointer): the motion stream goes through Ably, not Netlify.
+     Netlify only hands out short-lived Ably tokens; the Ably key itself stays in the ABLY_KEY env var.
+       airtoken  watch key  -> token that may only PUBLISH to its owner's channel
+       airsub    staff key  -> token that may only SUBSCRIBE to that lecturer's channel */
+  if (action === "airtoken" || action === "airsub") {
+    let ownerId = "";
+    if (action === "airsub") {
+      if (!admin) return json({ error: "Admin password required" }, 401);
+      ownerId = who!.id;
+    } else {
+      const cfg = getStore({ name: "config", consistency: "strong" });
+      const h = await sha("watch:" + clean(body.key, 40));
+      const k = (((await cfg.get("watchkeys", { type: "json" })) as any[] | null) || []).find((x) => x.hash === h);
+      if (!k) return json({ error: "Unknown watch key" }, 401);
+      ownerId = k.id;
+    }
+    const ablyKey = Netlify.env.get("ABLY_KEY") || "";
+    const keyName = ablyKey.split(":")[0];
+    if (!ablyKey || !keyName) return json({ error: "Air gestures are not set up yet (no ABLY_KEY)." }, 503);
+    const channel = "etc-air:" + ownerId.replace(/[^a-zA-Z0-9_-]/g, "");
+    const capability = JSON.stringify({ [channel]: action === "airsub" ? ["subscribe"] : ["publish"] });
+    const r = await fetch(`https://rest.ably.io/keys/${encodeURIComponent(keyName)}/requestToken`, {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: "Basic " + btoa(ablyKey) },
+      body: JSON.stringify({ keyName, capability, ttl: 3 * 3600 * 1000, timestamp: now }),
+    });
+    const td = (await r.json().catch(() => null)) as any;
+    if (!r.ok || !td || !td.token) return json({ error: "Could not get a realtime token", detail: td && td.error ? td.error.message : r.status }, 502);
+    return json({ token: td.token, expires: td.expires, issued: td.issued, capability: td.capability, keyName: td.keyName, channel });
+  }
+
   const id = clean(body.id, 12);
   const ses = await live(store, id);
   if (!ses) return json({ error: "This remote session has ended. Start a new one on the computer." }, 404);

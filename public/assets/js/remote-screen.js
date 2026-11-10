@@ -181,10 +181,21 @@
   function start() {
     if (sess && sess.token) { showPair(sess.id); return; }
     api("POST", "", { action: "start" }).then(function (d) {
-      sess = { id: d.id, token: d.token, after: Date.now() * 1000 }; setSess(sess); navBtn(); showPair(d.id); postState(true); poll();
+      sess = { id: d.id, token: d.token, after: Date.now() * 1000 }; setSess(sess); navBtn(); showPair(d.id); postState(true); poll(); air();
     }).catch(function (e) { toast(e.status === 401 ? "Sign in as lecturer first (Admin)." : "Could not start the remote. " + e.message); });
   }
+  /* air gestures from the watch (Ably realtime); silent if not set up */
+  var airOn = false;
+  function air() {
+    if (airOn || !sess) return; airOn = true;
+    var go = function () { if (window.LABAir) window.LABAir.connect(function () { return api("POST", "", { action: "airsub" }); }); };
+    if (window.LABAir) { go(); return; }
+    api("POST", "", { action: "airsub" }).then(function () {
+      var s = document.createElement("script"); s.src = ROOT + "assets/js/air.js?v=1"; s.onload = go; document.head.appendChild(s);
+    }).catch(function () { airOn = false; });
+  }
   function stop() {
+    if (window.LABAir) window.LABAir.disconnect(); airOn = false;
     var s = sess; sess = null; setSess(null); clearAll(); navBtn();
     if (s) api("POST", "", { action: "end", id: s.id }).catch(function () {});
     toast("Remote stopped");
@@ -194,11 +205,11 @@
   var nb = $(".gl-remote");
   if (nb) nb.addEventListener("click", function (e) { e.preventDefault(); start(); });
   sess = getSess(); navBtn();
-  if (sess) { lastState = ""; setTimeout(function () { postState(true); }, 1200); poll(); }
+  if (sess) { lastState = ""; setTimeout(function () { postState(true); }, 1200); poll(); air(); }
   if (/[?&]remote=start\b/.test(location.search)) { try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {} setTimeout(start, 600); }
   try { if (sessionStorage.getItem("etc-remote-proj")) { sessionStorage.removeItem("etc-remote-proj"); setTimeout(function () { var p = $('[data-wall="proj"]'); if (p) p.click(); }, 1500); } } catch (e) {}
   var scT = null;
   window.addEventListener("scroll", function () { if (!sess) return; clearTimeout(scT); scT = setTimeout(function () { postState(); }, 700); }, { passive: true });
   window.addEventListener("keydown", function (e) { if (e.key === "Escape") { if (bigEl || blackEl || timerEl) clearAll(); } });
-  window.LABRemote = { start: start, stop: stop };
+  window.LABRemote = { start: start, stop: stop, act: act };
 })();
