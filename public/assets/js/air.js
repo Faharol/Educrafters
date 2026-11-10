@@ -254,12 +254,17 @@
   /* ---------- realtime link (Ably) ---------- */
   var client = null, chan = null;
   function connect(getToken) {
-    var go = function () {
-      client = new window.Ably.Realtime({
-        authCallback: function (params, cb) { getToken().then(function (d) { cb(null, { token: d.token, expires: d.expires, issued: d.issued, capability: d.capability, keyName: d.keyName }); chanName = d.channel; }).catch(function (e) { cb(e.message || String(e), null); }); },
-        echoMessages: false, closeOnUnload: true
+    var chanName = null;
+    // Ably accounts on the per-user plan only accept their "device" SDK
+    import("https://cdn.jsdelivr.net/npm/@ably/pubsub-device@3.0.0/+esm").then(function (mod) {
+      var make = mod.createClient || (mod.default && mod.default.createClient);
+      client = make({
+        authCallback: function (params, cb) {
+          getToken().then(function (d) { chanName = d.channel; cb(null, { token: d.token, expires: d.expires, issued: d.issued, capability: d.capability, keyName: d.keyName }); })
+            .catch(function (e) { cb(e.message || String(e), null); });
+        },
+        echoMessages: false
       });
-      var chanName = null;
       client.connection.on("connected", function () {
         if (chan || !chanName) return;
         chan = client.channels.get(chanName);
@@ -267,13 +272,8 @@
         chan.subscribe("e", function (m) { onEvent(parse(m.data)); });
         setHud("Air control ready", "paused");
       });
-      client.connection.on("failed", function () { setHud("Air link failed", "paused"); });
-    };
-    if (window.Ably) { go(); return; }
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/ably@2.29.0/build/ably.min.js"; s.onload = go;
-    s.onerror = function () { setHud("Air link failed", "paused"); };
-    document.head.appendChild(s);
+      client.connection.on("failed", function (st) { setHud("Air link failed", "paused"); try { console.warn("Air link failed", st && st.reason && st.reason.message); } catch (e) {} });
+    }).catch(function (e) { setHud("Air link failed", "paused"); console.warn("Air SDK load failed", e); });
   }
   function disconnect() {
     try { if (client) client.close(); } catch (e) {}

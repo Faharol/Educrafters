@@ -191,7 +191,7 @@
     var go = function () { if (window.LABAir) window.LABAir.connect(function () { return api("POST", "", { action: "airsub" }); }); };
     if (window.LABAir) { go(); return; }
     api("POST", "", { action: "airsub" }).then(function () {
-      var s = document.createElement("script"); s.src = ROOT + "assets/js/air.js?v=1"; s.onload = go; document.head.appendChild(s);
+      var s = document.createElement("script"); s.src = ROOT + "assets/js/air.js?v=2"; s.onload = go; document.head.appendChild(s);
     }).catch(function () { airOn = false; });
   }
   function stop() {
