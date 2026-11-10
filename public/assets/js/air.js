@@ -393,13 +393,14 @@
   function frame(t) {
     var dt = Math.min(0.1, (t - lastT) / 1000); lastT = t;
     if (active && t - lastAt > STALE) sleep("Watch quiet");
+    // a zoom in progress finishes even if the arm drops meanwhile
+    if (Math.abs(zoomTarget - zoom) > 0.004) { zoom += (zoomTarget - zoom) * (1 - Math.exp(-dt * 9)); if (Math.abs(zoomTarget - zoom) <= 0.004 || (zoomTarget === 1 && zoom < 1.02)) zoom = zoomTarget; applyZoom(); }
     if (active) {
       if (scrollV) { window.scrollBy({ top: scrollV * dt, behavior: "instant" }); candsAt = 0; }
       if (flingV) {
         window.scrollBy({ top: flingV * dt, behavior: "instant" }); candsAt = 0;
         flingV *= Math.exp(-dt * 2.2); if (Math.abs(flingV) < 40) flingV = 0;
       }
-      if (Math.abs(zoomTarget - zoom) > 0.004) { zoom += (zoomTarget - zoom) * (1 - Math.exp(-dt * 9)); if (Math.abs(zoomTarget - zoom) <= 0.004 || (zoomTarget === 1 && zoom < 1.02)) zoom = zoomTarget; applyZoom(); }
       if (t - trailAt > 28) {
         var mvx = cx - trailX, mvy = cy - trailY;
         if (mvx * mvx + mvy * mvy > 324) { fx("air-trail", { left: cx + "px", top: cy + "px" }, 480); trailX = cx; trailY = cy; }
