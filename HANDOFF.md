@@ -143,3 +143,4 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - **Differences from the lost build:** yaw is integrated from the rotation rate about gravity (`-(w . g)`), elevation rate is the smoothed derivative of `asin(-g.x)`; poses go out at about 12 a second with up to 3 requests in flight (the screen drops late ones by `s`), idle heartbeat every 3 s; `info` diagnostics are sent only while the arm is up; the twist-click option was dropped.
 - **Owner's local folder** should live outside Downloads. Chrome's unpacked extension must be loaded again from the new `ETCAir-Chrome` folder.
 - Renewal every 7 days: iPhone cabled, open the project, Run.
+- **18 Nov, 08:17:** the rebuilt watch app built in Xcode 27 on the first try (1 warning, no errors), installed on the watch and is publishing: `hello`, poses at about 10 a second with the arm up, `info` twice a second. Gestures not yet re-tested by hand.
