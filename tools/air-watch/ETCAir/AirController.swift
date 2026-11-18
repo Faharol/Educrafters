@@ -8,6 +8,7 @@ final class AirController: NSObject, ObservableObject, WKExtendedRuntimeSessionD
     @Published var linked = false
     @Published var armUp = false
     @Published var lastGesture = ""
+    @Published var enabled = true     // the big ON / OFF button
 
     let engine = GestureEngine()
     private let link = AirLink()
@@ -34,7 +35,7 @@ final class AirController: NSObject, ObservableObject, WKExtendedRuntimeSessionD
     func start() {
         if !started {
             started = true
-            engine.start()
+            if enabled { engine.start() }
             link.connect { [weak self] ok in
                 if ok { self?.event("hello", [:]) }
             }
@@ -42,7 +43,29 @@ final class AirController: NSObject, ObservableObject, WKExtendedRuntimeSessionD
         keepAwake()
     }
 
-    func click() { event("click", [:]) }
+    func click() {
+        guard enabled else { return }
+        event("click", [:])
+    }
+
+    /// OFF: the watch stops reading the arm and the ring leaves the screen. ON: back to normal.
+    func setEnabled(_ on: Bool) {
+        guard on != enabled else { return }
+        enabled = on
+        WKInterfaceDevice.current().play(on ? .start : .stop)
+        if on {
+            engine.start()
+        } else {
+            engine.stop()
+            armUp = false
+            lastGesture = ""
+            latest = Pose(active: false, x: 0, y: 0, roll: 0)
+            lastSentActive = true      // send the "arm down" pose now, not at the next heartbeat
+            inFlight = 0
+            pump()
+            latest = nil
+        }
+    }
 
     // MARK: staying awake (Info.plist: WKBackgroundModes = mindfulness)
 
@@ -81,6 +104,7 @@ final class AirController: NSObject, ObservableObject, WKExtendedRuntimeSessionD
     }
 
     private func pose(_ p: Pose) {
+        guard enabled else { return }
         if p.active != armUp { armUp = p.active }
         latest = p
         pump()
@@ -103,6 +127,7 @@ final class AirController: NSObject, ObservableObject, WKExtendedRuntimeSessionD
     }
 
     private func event(_ k: String, _ d: [String: Double]) {
+        if !enabled && k != "hello" { return }
         var json = "{\"s\":\(nextSeq()),\"k\":\"\(k)\""
         for (key, v) in d { json += ",\"\(key)\":\(num(v))" }
         json += "}"

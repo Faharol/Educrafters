@@ -144,3 +144,9 @@ The owner asked to hold the Netlify deploy until more changes are ready, then pu
 - **Owner's local folder** should live outside Downloads. Chrome's unpacked extension must be loaded again from the new `ETCAir-Chrome` folder.
 - Renewal every 7 days: iPhone cabled, open the project, Run.
 - **18 Nov, 08:17:** the rebuilt watch app built in Xcode 27 on the first try (1 warning, no errors), installed on the watch and is publishing: `hello`, poses at about 10 a second with the arm up, `info` twice a second. Gestures not yet re-tested by hand.
+
+## 18 Nov 2026 (evening): ON/OFF button, and lowering the arm no longer changes the slide
+- **Report from class:** after a left swing (next), putting the hand down fired "prev". Cause: the arm coming down also turns the forearm about the vertical axis, and near vertical a wrist twist reads as yaw.
+- **Watch fix (`GestureEngine.detectSwing`):** a swing is tracked only while the arm is level (`elev > -30`, elevation rate above -90 deg/s) and is thrown away if the arm sinks more than 15 deg from where the swing began (then no new swing for 0.6 s). After "next" fires, "prev" is locked for 2.5 s, and the reverse.
+- **ON/OFF button** at the top of the watch app (`AirController.enabled`, not saved: every launch starts ON). OFF stops motion updates, sends one `a:0` pose so the ring leaves the screen, and ignores double tap.
+- Not compiled in the build session; syntax-checked only. Files changed: `GestureEngine.swift`, `AirController.swift`, `ContentView.swift`.

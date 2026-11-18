@@ -15,6 +15,9 @@ Keep this folder somewhere safe (not Downloads). `ETCAir/Config.swift` holds you
 | Push your hand toward the screen / pull it back | Zoom in / out |
 | Flick the hand up / down | The page glides a little |
 | Drop your arm | Pause |
+| Tap the big **ON / OFF** button on the watch | Switch air control off (the ring leaves the screen) or back on |
+
+A swing only counts when the arm is level, so lowering your arm does not change the slide. After a swing, the opposite swing is ignored for 2.5 seconds.
 
 In the app: **Gesture effort** (lower = easier), **Pointer speed**, switches for each gesture,
 **Flip up/down** if the ring moves the wrong way, **Calibrate** to show gesture strength on the screen.

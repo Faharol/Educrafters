@@ -19,6 +19,19 @@ struct ContentView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 10) {
+                Button {
+                    air.setEnabled(!air.enabled)
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "power")
+                        Text(air.enabled ? "ON" : "OFF")
+                    }
+                    .font(.title3.bold())
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(air.enabled ? Color.green : Color.gray)
+
                 HStack(spacing: 6) {
                     Circle()
                         .fill(air.linked ? Color.green : Color.orange)
@@ -27,9 +40,9 @@ struct ContentView: View {
                         .font(.footnote)
                         .lineLimit(2)
                     Spacer()
-                    Text(air.armUp ? "ON" : "PAUSED")
+                    Text(!air.enabled ? "OFF" : (air.armUp ? "ARM UP" : "ARM DOWN"))
                         .font(.caption2)
-                        .foregroundStyle(air.armUp ? Color.cyan : Color.secondary)
+                        .foregroundStyle(air.enabled && air.armUp ? Color.cyan : Color.secondary)
                 }
 
                 Button {
@@ -43,6 +56,7 @@ struct ContentView: View {
                 }
                 .handGestureShortcut(.primaryAction)
                 .tint(.cyan)
+                .disabled(!air.enabled)
 
                 Text(air.lastGesture.isEmpty ? " " : air.lastGesture)
                     .font(.title3.bold())

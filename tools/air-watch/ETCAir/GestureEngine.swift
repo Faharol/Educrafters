@@ -59,9 +59,16 @@ final class GestureEngine {
         var travel: Double
         var peak: Double
         var pose: Pose
+        var elevStart: Double
     }
     private var swing: Track?
     private var fling: Track?
+
+    // a swing has to be level: an arm on its way down is not a swing, and after a swing
+    // the way back does not count as a swing the other way
+    private var swingBlockUntil = 0.0
+    private var noNextUntil = 0.0
+    private var noPrevUntil = 0.0
 
     private var pushNegAt = -10.0
     private var pullCandAt: Double?
@@ -96,6 +103,13 @@ final class GestureEngine {
         active = false
         lastT = 0
         hasPrev = false
+        stillFor = 0
+        downFor = 0
+        frozen = nil
+        swing = nil
+        fling = nil
+        pullCandAt = nil
+        hist.removeAll()
     }
 
     // MARK: one motion sample (50 a second, on the main thread)
@@ -180,7 +194,7 @@ final class GestureEngine {
         while let first = hist.first, t - first.t > 1.0 { hist.removeFirst() }
 
         if t >= quietUntil {
-            detectSwing(t: t, dt: dt, yawRate: yawRate, pose: pose)
+            detectSwing(t: t, dt: dt, yawRate: yawRate, elev: elev, pose: pose)
         } else {
             swing = nil
             fling = nil
@@ -218,23 +232,45 @@ final class GestureEngine {
     }
 
     /// Swing the arm left = next section, right = previous.
-    private func detectSwing(t: Double, dt: Double, yawRate: Double, pose: Pose) {
+    /// Only a level swing counts. Dropping the arm also turns the forearm, so a swing is thrown away
+    /// when the arm is low, is falling, or has sunk since the swing began. After a swing, the way
+    /// back (or the arm coming down) cannot fire the opposite direction for a while.
+    private func detectSwing(t: Double, dt: Double, yawRate: Double, elev: Double, pose: Pose) {
         guard swings else { swing = nil; return }
         let r = abs(yawRate)
         let dir = yawRate >= 0 ? 1.0 : -1.0
+        let level = elev > -30 && elevRate > -90
         if var s = swing {
-            if dir == s.dir && r > 40 && t - s.start < 0.9 {
+            let sunk = s.elevStart - elev
+            if !level || sunk > 15 {
+                swing = nil
+                swingBlockUntil = t + 0.6
+            } else if dir == s.dir && r > 40 && t - s.start < 0.9 {
                 s.travel += r * dt
                 s.peak = max(s.peak, r)
                 swing = s
                 if s.travel >= 30 && s.peak >= 200 * effort {
-                    fire(s.dir > 0 ? "next" : "prev", [:], back: s.pose, t: t)
+                    if s.dir > 0 {
+                        if t >= noNextUntil {
+                            noPrevUntil = t + 2.5
+                            fire("next", [:], back: s.pose, t: t)
+                        } else {
+                            swing = nil
+                        }
+                    } else {
+                        if t >= noPrevUntil {
+                            noNextUntil = t + 2.5
+                            fire("prev", [:], back: s.pose, t: t)
+                        } else {
+                            swing = nil
+                        }
+                    }
                 }
             } else {
                 swing = nil
             }
-        } else if r >= 110 * effort {
-            swing = Track(start: t, dir: dir, travel: r * dt, peak: r, pose: poseBefore(t - 0.15) ?? pose)
+        } else if r >= 110 * effort && level && t >= swingBlockUntil {
+            swing = Track(start: t, dir: dir, travel: r * dt, peak: r, pose: poseBefore(t - 0.15) ?? pose, elevStart: elev)
         }
     }
 
@@ -255,7 +291,7 @@ final class GestureEngine {
                 }
             }
         } else if r >= 90 * effort {
-            fling = Track(start: t, dir: dir, travel: r * dt, peak: r, pose: poseBefore(t - 0.15) ?? pose)
+            fling = Track(start: t, dir: dir, travel: r * dt, peak: r, pose: poseBefore(t - 0.15) ?? pose, elevStart: elev)
         }
     }
 
