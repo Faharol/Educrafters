@@ -29,6 +29,7 @@ final class AirController: NSObject, ObservableObject, WKExtendedRuntimeSessionD
         }
         engine.onPose = { [weak self] p in self?.pose(p) }
         engine.onEvent = { [weak self] k, d in self?.event(k, d) }
+        engine.onTrace = { [weak self] rows in self?.trace(rows) }
     }
 
     /// Safe to call again and again (app opened, wrist raised).
@@ -126,12 +127,18 @@ final class AirController: NSObject, ObservableObject, WKExtendedRuntimeSessionD
         }
     }
 
+    /// A short raw recording around a gesture, for tuning. The screen ignores it.
+    private func trace(_ rows: String) {
+        guard enabled else { return }
+        link.publish("e", "{\"s\":\(nextSeq()),\"k\":\"raw\",\"d\":\(rows)}")
+    }
+
     private func event(_ k: String, _ d: [String: Double]) {
         if !enabled && k != "hello" { return }
         var json = "{\"s\":\(nextSeq()),\"k\":\"\(k)\""
         for (key, v) in d { json += ",\"\(key)\":\(num(v))" }
         json += "}"
-        let quiet = (k == "dbg" || k == "info")
+        let quiet = (k == "dbg" || k == "info" || k == "note")
         link.publish("e", json, retry: !quiet)
         if quiet || k == "hello" { return }
 
